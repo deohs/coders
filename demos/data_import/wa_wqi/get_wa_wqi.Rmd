@@ -1,7 +1,7 @@
 ---
 title: 'Data Import: WA WQI'
 author: "Brian High"
-date: "6/13/2019"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -169,5 +169,5 @@ g <- g + geom_point(aes(x = lon, y = lat, fill = WQIFC),
 ## View the Map
 
 ```{r view map, fig.height=5, fig.width=7, echo=FALSE}
-print(g)
+g
 ```
