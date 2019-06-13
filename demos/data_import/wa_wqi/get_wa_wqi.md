@@ -18,14 +18,16 @@ output:
 
 ## Data Import and Cleanup Demo
 
-Today's example demonstrates using a public dataset freely available on the web.
+Today's example demonstrates these objectives:
 
-Objectives:
-
+* Use a public dataset freely available on the web.
 * Automate data processing from start to finish (importing to reporting).
 * Explore alternatives to "base" functions.
 * Use data "pipelines" for improved readability.
 * Use "regular expressions" to simplify data manipulation.
+* Use of "literate programming" to provide a reproducable report.
+* Use of a consitent coding [style](https://google.github.io/styleguide/Rguide.xml).
+* Share code through a public [repository](https://github.com/deohs/coders) to facilitate collaboration.
 
 We will be using the R language, but several other tools could do the job.
 
@@ -72,7 +74,7 @@ We are loading:
 
 * `readr` for `read_csv()` -- a [tidyverse](https://www.tidyverse.org/) replacement for `read.csv()`
 * `dplyr` for `mutate()` -- a [tidyverse](https://www.tidyverse.org/) function for data modification
-* `tidyr` for `separate()` -- a [tidyverse](https://www.tidyverse.org/) function for column separation
+* `tidyr` for `separate()` -- a [tidyverse](https://www.tidyverse.org/) function for column splitting
 * `ggmap` for `ggmap()` -- a function, similar to `ggplot()`, to create maps
 
 ## Get the Data
@@ -122,6 +124,8 @@ head(wa_wqi$`Location 1`)
 ## [5] "POINT (-122.2101 48.1969)" "POINT (-122.119 48.2007)"
 ```
 
+We will want to split out the longitude and latitude into their own variables.
+
 ## Cleanup the Data
 
 Parse location column to get latitude and longitude columns using a "pipeline". 
@@ -135,8 +139,28 @@ Parse location column to get latitude and longitude columns using a "pipeline".
 ```r
 wa_wqi <- wa_wqi %>% 
   mutate(Location.1 = gsub('POINT |[()]', '', `Location 1`)) %>%
-  separate(Location.1, c('lon', 'lat'), ' ', convert = TRUE)
+  separate(col = Location.1, into = c('lon', 'lat'), sep = ' ', convert = TRUE)
 ```
+
+Note: the `sep` parameter of `separate()` will also accept a "regular expression".
+
+## Our Regular Expression
+
+We used a [regular expression](https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf) to split the location variable.
+
+The expression was: `POINT |[()]`
+
+* The `POINT ` is a literal string (including a literal space after it).
+* The `|` (vertical bar) symbol means "or" in this context.
+* The `[` and `]` (angle brackets) defines a character set in this context.
+* The `(` and `)` (parenthesis) are the characters in that set.
+
+Translating the whole expression we have:
+
+* Either `POINT ` or `(` or `)`.
+
+When used in `gsub()` for replacement, we replaced matching character strings 
+with `''`, which is the same as removing them.
 
 ## View the Cleaned Data
 
