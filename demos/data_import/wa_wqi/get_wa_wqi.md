@@ -25,8 +25,8 @@ Today's example demonstrates these objectives:
 * Explore alternatives to "base" functions.
 * Use data "pipelines" for improved readability.
 * Use "regular expressions" to simplify data manipulation.
-* Use of "literate programming" to provide a reproducable report.
-* Use of a consitent coding [style](https://google.github.io/styleguide/Rguide.xml).
+* Use "literate programming" to provide a reproducable report.
+* Use a consitent coding [style](https://google.github.io/styleguide/Rguide.xml).
 * Share code through a public [repository](https://github.com/deohs/coders) to facilitate collaboration.
 
 We will be using the R language, but several other tools could do the job.
@@ -144,11 +144,18 @@ wa_wqi <- wa_wqi %>%
   separate(col = Location.1, into = c('lon', 'lat'), sep = ' ', convert = TRUE)
 ```
 
-Note: the `sep` parameter of `separate()` will also accept a "regular expression".
+Note: The `sep` parameter of `separate()` will also accept a "regular expression".
 
 ## Our Regular Expression
 
-We used a [regular expression](https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf) to split the location variable.
+When we used `gsub()` for cleaning the `Location 1` variable, we replaced 
+matching character strings with `''` in order to remove them.
+
+```
+gsub(pattern = 'POINT |[()]', replacement = '', x = `Location 1`)
+```
+
+The **pattern match** was made using a [regular expression](https://www.rstudio.com/wp-content/uploads/2016/09/RegExCheatsheet.pdf).
 
 The expression was: `POINT |[()]`
 
@@ -157,12 +164,11 @@ The expression was: `POINT |[()]`
 * The `[` and `]` (angle brackets) defines a character set in this context.
 * The `(` and `)` (parenthesis) are the characters in that set.
 
-Translating the whole expression we have:
+Translating the whole expression we get:
 
 * Either `POINT ` or `(` or `)`.
 
-When used in `gsub()` for replacement, we replaced matching character strings 
-with `''`, which is the same as removing them.
+So, any character strings which matched these patterns were removed.
 
 ## View the Cleaned Data
 
