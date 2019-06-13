@@ -210,4 +210,4 @@ g <- g + geom_point(aes(x = lon, y = lat, fill = WQIFC),
 
 ## View the Map
 
-![](get_wa_wqi_files/figure-html/view map-1.png)<!-- -->
+![](get_wa_wqi_files/figure-html/view_map-1.png)<!-- -->

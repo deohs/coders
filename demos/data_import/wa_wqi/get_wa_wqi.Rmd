@@ -168,6 +168,6 @@ g <- g + geom_point(aes(x = lon, y = lat, fill = WQIFC),
 
 ## View the Map
 
-```{r view map, fig.height=5, fig.width=7, echo=FALSE}
+```{r view_map, fig.height=5, fig.width=7, echo=FALSE}
 g
 ```
