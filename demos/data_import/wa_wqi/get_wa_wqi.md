@@ -151,7 +151,8 @@ Note: The `sep` parameter of `separate()` will also accept a "regular expression
 When we used `gsub()` for cleaning the `Location 1` variable, we replaced 
 matching character strings with `''` in order to remove them.
 
-```
+
+```r
 gsub(pattern = 'POINT |[()]', replacement = '', x = `Location 1`)
 ```
 
