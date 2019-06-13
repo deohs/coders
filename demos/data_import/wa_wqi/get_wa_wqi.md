@@ -43,7 +43,9 @@ To find the data, we can search this page: https://catalog.data.gov/dataset
 ... for these terms: `washington state annual freshwater coliform`
 
 The result for "Annual 2013 Water Quality Index Scores" provides a link to a 
-CSV file. We will use this [link](https://data.wa.gov/api/views/h7j9-vgr3/rows.csv?accessType=DOWNLOAD) to import the data into R.
+CSV file. 
+
+We will use this [link](https://data.wa.gov/api/views/h7j9-vgr3/rows.csv?accessType=DOWNLOAD) to import the data into R.
 
 ## Access & Use Information
 
@@ -60,7 +62,7 @@ The data page also says:
 
 ## Setup
 
-Load Packages.
+Load packages with `pacman` to auto-install any missing packages.
 
 
 ```r
