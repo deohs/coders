@@ -257,7 +257,9 @@ modify the example to use base-R functions in place of all `tidyverse`
 functions used here, such as `read_csv()` and `mutate()`. Which approach is 
 easier to code? Which is easier to read?
 
-B. Consider downloading a different dataset and import, clean, and plot, etc.
+B. What alternatives to the regular expression `POINT |[()]` could we use?
+
+C. Consider downloading a different dataset and import, clean, and plot, etc.
 
 For example, search [data.gov](https://catalog.data.gov/dataset) for: 
 `WQI Parameter Scores 1994-2013`.
