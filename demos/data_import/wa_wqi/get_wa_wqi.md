@@ -246,3 +246,21 @@ g <- g + geom_point(aes(x = lon, y = lat, fill = `OVERALLWQI 2013`),
 ## View the Map
 
 ![](get_wa_wqi_files/figure-html/view_map-1.png)<!-- -->
+
+## Excercises
+
+If you would like to give this a try, consider downloading a different dataset
+and repeating the steps above on that.
+
+For example, search `data.gov` for: `WQI Parameter Scores 1994-2013`
+
+You will find a dataset with that same title. If you download it, you will see 
+that it contains WQI data for 2014, despite the year range in the title. 
+
+Modify the above code to work with this dataset to produce a WQI map for 
+Washington using the 2014 data. You can use the `filter()` function in `dplyr` 
+to filter the dataset by year. You can incorporate this into your "pipeline".
+
+You may also wish to plot a different parameter than `Overall WQI`. Or you way
+want to look at change over time with a scatter plot or bar plot.
+
