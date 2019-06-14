@@ -33,14 +33,14 @@ We will be using the R language, but several other tools could do the job.
 
 ## WA Water Quality Index Scores
 
-We would like to get fecal coliform environmental data and visualize it.
+We would like to get Washington water quality index (WQI) data and visualize it.
 
 We will download [Annual 2013 Water Quality Index Scores](https://catalog.data.gov/dataset/annual-2013-water-quality-index-scores-4d1fd) from `data.gov`, 
 import, clean and plot on a map.
 
 To find the data, we can search this page: https://catalog.data.gov/dataset
 
-... for these terms: `washington state annual freshwater coliform`
+... for these terms: `washington state wqi stream monitoring`
 
 The result for "Annual 2013 Water Quality Index Scores" provides a link to a 
 CSV file. 
@@ -55,10 +55,12 @@ The data page says:
 * Non-Federal: This dataset is covered by different Terms of Use than Data.gov.
 * License: No license information was provided.
 
-The data page also says:
+The [River & stream water quality index](https://ecology.wa.gov/Research-Data/Monitoring-assessment/River-stream-monitoring/Water-quality-monitoring/River-stream-water-quality-index) page also says:
 
-    For temperature, pH, oxygen, and fecal coliform bacteria, the WQI is based 
-    on criteria in Washington’s Water Quality Standards, WAC 173-201A.
+    Data  presented in the Freshwater Quality Index helps indicate whether 
+    water quality is good, meeting standards to protect aquatic life, whether 
+    it is of moderate concern or is poor and doesn't meet expectations. The 
+    index ranges from 1 to 100; a higher number indicates better water quality.
 
 ## Setup
 
@@ -231,11 +233,11 @@ Add points, a legend, and a title to the map.
 
 
 ```r
-g <- g + geom_point(aes(x = lon, y = lat, fill = WQIFC), 
+g <- g + geom_point(aes(x = lon, y = lat, fill = `OVERALLWQI 2013`), 
                data = wa_wqi, pch = 21, size = 3) + 
-  scale_fill_gradient(name = "FCI", low = "red", high = "green") + 
+  scale_fill_gradient(name = "WQI", low = "red", high = "green") + 
   ggtitle(label = paste("Washington State", 
-                        "Freshwater Fecal Coliform Index (FCI)", sep = " "),
+                        "River and Stream Water Quality Index (WQI)", sep = " "),
           subtitle = paste("Source: River and Stream Monitoring Program,", 
                            "WA State Department of Ecology (2013)")) +
   theme(legend.position = c(.98, .02), legend.justification = c(1, 0)) 
