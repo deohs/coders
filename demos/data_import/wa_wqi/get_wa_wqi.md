@@ -1,7 +1,7 @@
 ---
 title: 'Data Import: WA WQI'
 author: "Brian High"
-date: "14 June, 2019"
+date: "19 June, 2019"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -45,11 +45,11 @@ To find the data, we can search this page: https://catalog.data.gov/dataset
 The result for "Annual 2013 Water Quality Index Scores" provides a link to a 
 CSV file. 
 
-We will use this [link](https://data.wa.gov/api/views/h7j9-vgr3/rows.csv?accessType=DOWNLOAD) to import the data into R.
+We will use this data.wa.gov [link](https://data.wa.gov/api/views/h7j9-vgr3/rows.csv?accessType=DOWNLOAD) to import the data into R.
 
 ## Access & Use Information
 
-The data page says:
+The data.wa.gov page says:
 
 * Public: This dataset is intended for public access and use.
 * Non-Federal: This dataset is covered by different Terms of Use than Data.gov.
@@ -61,6 +61,11 @@ The [River & stream water quality index](https://ecology.wa.gov/Research-Data/Mo
     water quality is good, meeting standards to protect aquatic life, whether 
     it is of moderate concern or is poor and doesn't meet expectations. The 
     index ranges from 1 to 100; a higher number indicates better water quality.
+
+Lastly, the authors of the `ggmap` package ask that users provide a citation:
+
+    D. Kahle and H. Wickham. ggmap: Spatial Visualization with ggplot2. The R Journal, 
+    5(1), 144-161. URL http://journal.r-project.org/archive/2013-1/kahle-wickham.pdf
 
 ## Setup
 
