@@ -1,7 +1,7 @@
 ---
 title: 'Data Import: WA WQI'
 author: "Brian High"
-date: "19 June, 2019"
+date: "20 June, 2019"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -30,6 +30,9 @@ Today's example demonstrates these objectives:
 * Share code through a public [repository](https://github.com/deohs/coders) to facilitate collaboration.
 
 We will be using the R language, but several other tools could do the job.
+
+The code and this presentation are free share and modify according to the 
+[MIT License](https://github.com/deohs/coders/blob/master/LICENSE).
 
 ## WA Water Quality Index Scores
 

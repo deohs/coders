@@ -16,7 +16,7 @@ output:
 # Filename: get_wa_wqi.Rmd
 # Copyright (c) University of Washington
 # License: MIT https://opensource.org/licenses/MIT (See LICENSE file.)
-# Repository: https://github.com/brianhigh/web-scraping-with-r
+# Repository: https://github.com/deohs/coders
 ```
 
 ```{r setup, include=FALSE}
@@ -37,6 +37,9 @@ Today's example demonstrates these objectives:
 * Share code through a public [repository](https://github.com/deohs/coders) to facilitate collaboration.
 
 We will be using the R language, but several other tools could do the job.
+
+The code and this presentation are free share and modify according to the 
+[MIT License](https://github.com/deohs/coders/blob/master/LICENSE).
 
 ## WA Water Quality Index Scores
 
