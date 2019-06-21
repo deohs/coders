@@ -29,7 +29,7 @@ knitr::opts_chunk$set(echo = TRUE, cache = FALSE)
 # If file is missing from current folder, then first rendering attempt may fail.
 template_pkg <- file.path(system.file(package = 'rmarkdown'), 
                           'rmd', 'ioslides', 'default.html')
-if (.Platform$OS.type == "windows" & grep(' ', template_pkg)) { 
+if (.Platform$OS.type == "windows" & length(grep(' ', template_pkg) > 0)) { 
   template_loc <- "template.html"
   if (!file.exists(template_loc)) {
     file.copy(template_pkg, template_loc, copy.mode = FALSE)
