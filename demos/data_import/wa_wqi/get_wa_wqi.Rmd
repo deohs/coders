@@ -10,7 +10,9 @@ output:
     fig_height: 3
     keep_md: yes
     smaller: yes
-    template: template.html
+    template: ../../../templates/ioslides_template.html
+  html_document:
+    template: ../../../templates/html_template.html
 ---
 
 ```{r header, include=FALSE}
@@ -26,11 +28,13 @@ knitr::opts_chunk$set(echo = TRUE, cache = FALSE)
 
 ```{r get_template, include=FALSE}
 # Copy template from package folder to work around Pandoc bug on Windows.
-# If file is missing from current folder, then first rendering attempt may fail.
+# If file is missing from template_dir, then first rendering attempt may fail.
 template_pkg <- file.path(system.file(package = 'rmarkdown'), 
                           'rmd', 'ioslides', 'default.html')
 if (.Platform$OS.type == "windows" & length(grep(' ', template_pkg) > 0)) { 
-  template_loc <- "template.html"
+  template_dir <- file.path('..', '..', '..', 'templates')
+  dir.create(template_dir, showWarnings = FALSE)
+  template_loc <- file.path(template_dir, 'ioslides_template.html')
   if (!file.exists(template_loc)) {
     file.copy(template_pkg, template_loc, copy.mode = FALSE)
   }
