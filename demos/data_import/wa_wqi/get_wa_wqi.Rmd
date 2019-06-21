@@ -10,6 +10,7 @@ output:
     fig_height: 3
     keep_md: yes
     smaller: yes
+    template: ioslides_template.html
 ---
 
 ```{r header, include=FALSE}
@@ -20,7 +21,7 @@ output:
 ```
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, cache = FALSE)
 ```
 
 ## Data Import and Cleanup Demo

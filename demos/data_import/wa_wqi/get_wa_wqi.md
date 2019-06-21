@@ -1,7 +1,7 @@
 ---
 title: 'Data Import: WA WQI'
 author: "Brian High"
-date: "20 June, 2019"
+date: "21 June, 2019"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -10,6 +10,7 @@ output:
     fig_height: 3
     keep_md: yes
     smaller: yes
+    template: ioslides_template.html
 ---
 
 
