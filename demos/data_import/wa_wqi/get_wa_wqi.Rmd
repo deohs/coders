@@ -10,7 +10,7 @@ output:
     fig_height: 3
     keep_md: yes
     smaller: yes
-    template: ioslides_template.html
+    template: template.html
 ---
 
 ```{r header, include=FALSE}
@@ -22,6 +22,19 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, cache = FALSE)
+```
+
+```{r get_template, include=FALSE}
+# Copy template from package folder to work around Pandoc bug on Windows.
+# If file is missing from current folder, then first rendering attempt may fail.
+template_pkg <- file.path(system.file(package = 'rmarkdown'), 
+                          'rmd', 'ioslides', 'default.html')
+if (.Platform$OS.type == "windows" & grep(' ', template_pkg)) { 
+  template_loc <- "template.html"
+  if (!file.exists(template_loc)) {
+    file.copy(template_pkg, template_loc, copy.mode = FALSE)
+  }
+}
 ```
 
 ## Data Import and Cleanup Demo

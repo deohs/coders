@@ -10,8 +10,10 @@ output:
     fig_height: 3
     keep_md: yes
     smaller: yes
-    template: ioslides_template.html
+    template: template.html
 ---
+
+
 
 
 
