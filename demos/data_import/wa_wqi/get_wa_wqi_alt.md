@@ -38,7 +38,7 @@ Today's example demonstrates these objectives:
 
 We will be using the R language, but several other tools could do the job.
 
-The code and this presentation are free share and modify according to the 
+The code and this presentation are free to share and modify according to the 
 [MIT License](https://github.com/deohs/coders/blob/master/LICENSE).
 
 ## WA Water Quality Index Scores
