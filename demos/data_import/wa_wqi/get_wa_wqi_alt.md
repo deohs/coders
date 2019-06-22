@@ -1,7 +1,7 @@
 ---
 title: 'Data Import: WA WQI'
 author: "Brian High"
-date: "21 June, 2019"
+date: "22 June, 2019"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -33,8 +33,9 @@ Today's example demonstrates these objectives:
 * Use data "pipelines" for improved readability.
 * Use "regular expressions" to simplify data manipulation.
 * Use "literate programming" to provide a reproducable report.
-* Use a consitent coding [style](https://google.github.io/styleguide/Rguide.xml).
-* Share code through a public [repository](https://github.com/deohs/coders) to facilitate collaboration.
+* Use a consistent coding [style](https://google.github.io/styleguide/Rguide.xml).
+* Share code through a public [repository](https://github.com/deohs/coders) to 
+  facilitate collaboration.
 
 We will be using the R language, but several other tools could do the job.
 

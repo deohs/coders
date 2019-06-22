@@ -1,7 +1,7 @@
 ---
 title: 'Data Cleaning in Base-R: WA WQI'
 author: "Brian High"
-date: "21 June, 2019"
+date: "22 June, 2019"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -33,8 +33,9 @@ Today's example demonstrates these objectives:
 * Try various ways to clean up a dataset using only "base-R" functions.
 * Use "regular expressions" to simplify data manipulation.
 * Use "literate programming" to provide a reproducable report.
-* Use a consitent coding [style](https://google.github.io/styleguide/Rguide.xml).
-* Share code through a public [repository](https://github.com/deohs/coders) to facilitate collaboration.
+* Use a consistent coding [style](https://google.github.io/styleguide/Rguide.xml).
+* Share code through a public [repository](https://github.com/deohs/coders) to 
+  facilitate collaboration.
 
 The code and this presentation are free to share and modify according to the 
 [MIT License](https://github.com/deohs/coders/blob/master/LICENSE).
@@ -70,50 +71,17 @@ str(wa_wqi, vec.len = 1)
 ##  $ Counties       : int  3212 3212 ...
 ```
 
-## Variation 1: strsplit and sapply
+## Variation 1: strsplit and lapply
 
 
 ```r
-v1_wa_wqi <- wa_wqi
-coords <- as.data.frame(t(sapply(strsplit(trimws(
-  gsub('[^0-9. -]', '', v1_wa_wqi$Location.1)), ' '), as.numeric)))
-names(coords) <- c('lon', 'lat')
-v1_wa_wqi <- cbind(v1_wa_wqi, coords)
-
-head(v1_wa_wqi[, c('STATION', 'OVERALLWQI.2013', 'lon', 'lat')])
-```
-
-```
-##   STATION OVERALLWQI.2013       lon     lat
-## 1  03A060              86 -122.3352 48.4451
-## 2  03B050              86 -122.3382 48.5458
-## 3  04A100              75 -121.4290 48.5268
-## 4  05A065              79 -122.2470 48.2100
-## 5  05A070              79 -122.2101 48.1969
-## 6  05A090              69 -122.1190 48.2007
-```
-
-```r
-str(v1_wa_wqi[ , c('lon', 'lat')])
-```
-
-```
-## 'data.frame':	89 obs. of  2 variables:
-##  $ lon: num  -122 -122 -121 -122 -122 ...
-##  $ lat: num  48.4 48.5 48.5 48.2 48.2 ...
-```
-
-## Variation 2: strsplit and lapply
-
-
-```r
-v2_wa_wqi <- wa_wqi
+v1 <- wa_wqi
 coords <- as.data.frame(do.call('rbind', strsplit(
-    gsub('POINT |[()]', '', v2_wa_wqi$Location.1), ' ')), stringsAsFactors = FALSE)
+    gsub('POINT |[()]', '', v1$Location.1), ' ')), stringsAsFactors = FALSE)
 coords <- as.data.frame(lapply(coords, as.numeric), col.names = c('lon', 'lat'))
-v2_wa_wqi <- cbind(v2_wa_wqi, coords)
+v1 <- cbind(v1, coords)
 
-head(v2_wa_wqi[, c('STATION', 'OVERALLWQI.2013', 'lon', 'lat')])
+head(v1[, c('STATION', 'OVERALLWQI.2013', 'lon', 'lat')])
 ```
 
 ```
@@ -127,7 +95,7 @@ head(v2_wa_wqi[, c('STATION', 'OVERALLWQI.2013', 'lon', 'lat')])
 ```
 
 ```r
-str(v2_wa_wqi[ , c('lon', 'lat')])
+str(v1[ , c('lon', 'lat')])
 ```
 
 ```
@@ -136,18 +104,50 @@ str(v2_wa_wqi[ , c('lon', 'lat')])
 ##  $ lat: num  48.4 48.5 48.5 48.2 48.2 ...
 ```
 
+## Variation 2: strsplit and sapply
+
+
+```r
+v2 <- wa_wqi
+coords <- data.frame(t(sapply(strsplit(trimws(
+  gsub('[^0-9. -]', '', v2$Location.1)), ' '), as.numeric)))
+names(coords) <- c('lon', 'lat')
+v2 <- cbind(v2, coords)
+
+head(v2[, c('STATION', 'OVERALLWQI.2013', 'lon', 'lat')])
+```
+
+```
+##   STATION OVERALLWQI.2013       lon     lat
+## 1  03A060              86 -122.3352 48.4451
+## 2  03B050              86 -122.3382 48.5458
+## 3  04A100              75 -121.4290 48.5268
+## 4  05A065              79 -122.2470 48.2100
+## 5  05A070              79 -122.2101 48.1969
+## 6  05A090              69 -122.1190 48.2007
+```
+
+```r
+str(v2[ , c('lon', 'lat')])
+```
+
+```
+## 'data.frame':	89 obs. of  2 variables:
+##  $ lon: num  -122 -122 -121 -122 -122 ...
+##  $ lat: num  48.4 48.5 48.5 48.2 48.2 ...
+```
 
 ## Variation 3: gsub (twice)
 
 
 ```r
-# We can just copy, paste, and modify our gsub() code, but what a nasty habit!
-v3_wa_wqi <- wa_wqi
+# We can just copy, paste, and modify our gsub() code for each variable.
+v3 <- wa_wqi
 regex <- c(lon = '^.*\\(([0-9.-]+) .*$', lat = '^.*\\(.* ([0-9.-]+)\\)$')
-v3_wa_wqi$lon <- as.numeric(gsub(regex[['lon']], '\\1', v3_wa_wqi$Location.1))
-v3_wa_wqi$lat <- as.numeric(gsub(regex[['lat']], '\\1', v3_wa_wqi$Location.1))
+v3$lon <- as.numeric(gsub(regex[['lon']], '\\1', v3$Location.1))
+v3$lat <- as.numeric(gsub(regex[['lat']], '\\1', v3$Location.1))
 
-head(v3_wa_wqi[, c('STATION', 'OVERALLWQI.2013', 'lon', 'lat')])
+head(v3[, c('STATION', 'OVERALLWQI.2013', 'lon', 'lat')])
 ```
 
 ```
@@ -161,7 +161,7 @@ head(v3_wa_wqi[, c('STATION', 'OVERALLWQI.2013', 'lon', 'lat')])
 ```
 
 ```r
-str(v3_wa_wqi[ , c('lon', 'lat')])
+str(v3[ , c('lon', 'lat')])
 ```
 
 ```
@@ -174,13 +174,13 @@ str(v3_wa_wqi[ , c('lon', 'lat')])
 
 
 ```r
-# We avoid the dreaded copy-and-paste with lapply(). But is it worth it?
-v4_wa_wqi <- wa_wqi
+# We can use lapply() to iterate through out regexs, applying gsub() to each.
+v4 <- wa_wqi
 regex <- c(lon = '^.*\\(([0-9.-]+) .*$', lat = '^.*\\(.* ([0-9.-]+)\\)$')
-v4_wa_wqi[, names(regex)] <- lapply(names(regex), function(x) {
-  as.numeric(gsub(regex[[x]], '\\1', v4_wa_wqi$Location.1)) })
+v4[, names(regex)] <- lapply(names(regex), function(x) {
+  as.numeric(gsub(regex[[x]], '\\1', v4$Location.1)) })
 
-head(v4_wa_wqi[, c('STATION', 'OVERALLWQI.2013', 'lon', 'lat')])
+head(v4[, c('STATION', 'OVERALLWQI.2013', 'lon', 'lat')])
 ```
 
 ```
@@ -194,7 +194,7 @@ head(v4_wa_wqi[, c('STATION', 'OVERALLWQI.2013', 'lon', 'lat')])
 ```
 
 ```r
-str(v4_wa_wqi[ , c('lon', 'lat')])
+str(v4[ , c('lon', 'lat')])
 ```
 
 ```
@@ -207,13 +207,12 @@ str(v4_wa_wqi[ , c('lon', 'lat')])
 
 
 ```r
-# This one accomplishes the split with less code -- in just one statement.
-v5_wa_wqi <- wa_wqi
-v5_wa_wqi <- cbind(v5_wa_wqi, read.table(
-  text = gsub('^POINT \\((.*)\\)$', '\\1', v5_wa_wqi$Location.1), 
-  sep = ' ', col.names = c('lon', 'lat')))
+# read.table() reads a file or a "text", splitting by a separator.
+v5 <- wa_wqi
+v5 <- cbind(v5, read.table(sep = ' ', col.names = c('lon', 'lat'), 
+  text = gsub('^POINT \\((.*)\\)$', '\\1', v5$Location.1)))
 
-head(v5_wa_wqi[, c('STATION', 'OVERALLWQI.2013', 'lon', 'lat')])
+head(v5[, c('STATION', 'OVERALLWQI.2013', 'lon', 'lat')])
 ```
 
 ```
@@ -227,7 +226,7 @@ head(v5_wa_wqi[, c('STATION', 'OVERALLWQI.2013', 'lon', 'lat')])
 ```
 
 ```r
-str(v5_wa_wqi[ , c('lon', 'lat')])
+str(v5[ , c('lon', 'lat')])
 ```
 
 ```
@@ -243,10 +242,10 @@ pairwise comparison of the 1st variation against each of the others to find out.
 
 
 ```r
-c(identical(v1_wa_wqi, v2_wa_wqi),
-  identical(v1_wa_wqi, v3_wa_wqi),
-  identical(v1_wa_wqi, v4_wa_wqi),
-  identical(v1_wa_wqi, v5_wa_wqi))
+c(identical(v1, v2),
+  identical(v1, v3),
+  identical(v1, v4),
+  identical(v1, v5))
 ```
 
 ```
@@ -258,8 +257,8 @@ prefer this alternative:
 
 
 ```r
-sapply(list(v2_wa_wqi, v3_wa_wqi, v4_wa_wqi, v5_wa_wqi), 
-       function(x) identical(v1_wa_wqi, x))
+sapply(list(v2, v3, v4, v5), 
+       function(x) identical(v1, x))
 ```
 
 ```
@@ -285,8 +284,8 @@ sapply(list(v2_wa_wqi, v3_wa_wqi, v4_wa_wqi, v5_wa_wqi),
 
 ```r
 library(tidyverse)
-v6_wa_wqi <- read_csv(url) %>% 
+v6 <- read_csv(url) %>% 
   mutate(Location.1 = gsub('POINT |[()]', '', `Location 1`)) %>%
   separate(col = Location.1, into = c('lon', 'lat'), sep = ' ', convert = TRUE)
-identical(as_tibble(v1_wa_wqi[, c('lat', 'lon')]), v6_wa_wqi[, c('lat', 'lon')])
+identical(as_tibble(v1[, c('lat', 'lon')]), v6[, c('lat', 'lon')])
 ```
