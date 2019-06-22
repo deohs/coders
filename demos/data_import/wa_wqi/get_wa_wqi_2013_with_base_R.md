@@ -141,6 +141,7 @@ str(v2_wa_wqi[ , c('lon', 'lat')])
 
 
 ```r
+# We can just copy, paste, and modify our gsub() code, but what a nasty habit!
 v3_wa_wqi <- wa_wqi
 regex <- c(lon = '^.*\\(([0-9.-]+) .*$', lat = '^.*\\(.* ([0-9.-]+)\\)$')
 v3_wa_wqi$lon <- as.numeric(gsub(regex[['lon']], '\\1', v3_wa_wqi$Location.1))
@@ -173,6 +174,7 @@ str(v3_wa_wqi[ , c('lon', 'lat')])
 
 
 ```r
+# We avoid the dreaded copy-and-paste with lapply(). But is it worth it?
 v4_wa_wqi <- wa_wqi
 regex <- c(lon = '^.*\\(([0-9.-]+) .*$', lat = '^.*\\(.* ([0-9.-]+)\\)$')
 v4_wa_wqi[, names(regex)] <- lapply(names(regex), function(x) {
@@ -205,6 +207,7 @@ str(v4_wa_wqi[ , c('lon', 'lat')])
 
 
 ```r
+# This one accomplishes the split with less code -- in just one statement.
 v5_wa_wqi <- wa_wqi
 v5_wa_wqi <- cbind(v5_wa_wqi, read.table(
   text = gsub('^POINT \\((.*)\\)$', '\\1', v5_wa_wqi$Location.1), 
@@ -235,39 +238,32 @@ str(v5_wa_wqi[ , c('lon', 'lat')])
 
 ## Compare results
 
-Are the `lat` and `lon` variables indentical in all of the variations?
+Are the all of the variables indentical in all of the variations? Perform a 
+pairwise comparison of the 1st variation against each of the others to find out.
 
 
 ```r
-identical(v1_wa_wqi[, c('lat', 'lon')], v2_wa_wqi[, c('lat', 'lon')])
+c(identical(v1_wa_wqi, v2_wa_wqi),
+  identical(v1_wa_wqi, v3_wa_wqi),
+  identical(v1_wa_wqi, v4_wa_wqi),
+  identical(v1_wa_wqi, v5_wa_wqi))
 ```
 
 ```
-## [1] TRUE
+## [1] TRUE TRUE TRUE TRUE
 ```
 
-```r
-identical(v1_wa_wqi[, c('lat', 'lon')], v3_wa_wqi[, c('lat', 'lon')])
-```
+Since we generally do not like to copy and paste code over and over, we may 
+prefer this alternative:
 
-```
-## [1] TRUE
-```
-
-```r
-identical(v1_wa_wqi[, c('lat', 'lon')], v4_wa_wqi[, c('lat', 'lon')])
-```
-
-```
-## [1] TRUE
-```
 
 ```r
-identical(v1_wa_wqi[, c('lat', 'lon')], v5_wa_wqi[, c('lat', 'lon')])
+sapply(list(v2_wa_wqi, v3_wa_wqi, v4_wa_wqi, v5_wa_wqi), 
+       function(x) identical(v1_wa_wqi, x))
 ```
 
 ```
-## [1] TRUE
+## [1] TRUE TRUE TRUE TRUE
 ```
 
 ## Excercises
@@ -279,8 +275,8 @@ identical(v1_wa_wqi[, c('lat', 'lon')], v5_wa_wqi[, c('lat', 'lon')])
    do and what tidyverse function will accomplish this?
 3. In Var. 3, what are the two regular expressions doing. Explain each piece of
    each expression and what it matches.
-4. In Var. 4, the method of Var. 3 was implemented using `lapply()`. Why would
-   anyone want to go to the trouble?
+4. In Var. 4, the method of Var. 3 was implemented using `lapply()`. Aside from
+   wanting to avoid copy-and-paste, why would anyone want to go to the trouble?
 5. In Var. 5, we did not need to use `as.numeric()` to set the correct variable 
    types as we did on the other 4 variations. How was this possible?
 6. Are these results identical with those produced with tidyverse functions 
