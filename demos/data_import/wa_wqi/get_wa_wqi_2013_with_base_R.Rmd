@@ -164,5 +164,5 @@ library(tidyverse)
 v6_wa_wqi <- read_csv(url) %>% 
   mutate(Location.1 = gsub('POINT |[()]', '', `Location 1`)) %>%
   separate(col = Location.1, into = c('lon', 'lat'), sep = ' ', convert = TRUE)
-identical(v1_wa_wqi$lat, v5_wa_wqi$lat)
+identical(v1_wa_wqi$lat, v6_wa_wqi$lat)
 ```
