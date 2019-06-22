@@ -3,6 +3,8 @@
 # License: MIT https://opensource.org/licenses/MIT (See LICENSE file.)
 # Repository: https://github.com/deohs/coders
 
+# Get daily SMOKE files from May through Sept. for the years 2008-2017.
+
 import re
 import os.path
 import urlparse
