@@ -75,14 +75,13 @@ element.
 
 Ideally, the element will have an "id" or at least a "class" or other 
 identifier. If not, you will have to get all elements of the type that contains 
-your data, then chose among them by number or a pattern match.
-
-To select elements, use a [CSS selector](https://www.w3schools.com/cssref/css_selectors.asp) or [XPATH expression](https://www.w3schools.com/xml/xml_xpath.asp). 
+your data, then choose among them by number or a pattern match. To select 
+elements, use a [CSS selector](https://www.w3schools.com/cssref/css_selectors.asp) 
+or [XPATH expression](https://www.w3schools.com/xml/xml_xpath.asp). 
 
 You will then need to parse the content or extract attributes of the elements 
-to get the data you want.
-
-`rvest` includes functions to help you do all of this, so let's get started.
+to get the data you want. `rvest` includes functions to help you do all of this, 
+so let's get started.
 
 ## Setup
 
