@@ -28,6 +28,21 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r get_template, include=FALSE}
+# Copy template from package folder to work around Pandoc bug on Windows.
+# If file is missing from template_dir, then first rendering attempt may fail.
+template_pkg <- file.path(system.file(package = 'rmarkdown'), 
+                          'rmd', 'ioslides', 'default.html')
+if (.Platform$OS.type == "windows" & length(grep(' ', template_pkg) > 0)) { 
+  template_dir <- file.path('..', '..', '..', 'templates')
+  dir.create(template_dir, showWarnings = FALSE)
+  template_loc <- file.path(template_dir, 'ioslides_template.html')
+  if (!file.exists(template_loc)) {
+    file.copy(template_pkg, template_loc, copy.mode = FALSE)
+  }
+}
+```
+
 ## Data Import and Cleanup Demo
 
 Today's example demonstrates these objectives:
@@ -88,21 +103,6 @@ if (! suppressPackageStartupMessages(require(pacman))) {
   install.packages('pacman', repos = 'http://cran.us.r-project.org')
 }
 pacman::p_load(readr, dplyr, tidyr, ggmap)
-```
-
-```{r get_template, include=FALSE}
-# Copy template from package folder to work around Pandoc bug on Windows.
-# If file is missing from template_dir, then first rendering attempt may fail.
-template_pkg <- file.path(system.file(package = 'rmarkdown'), 
-                          'rmd', 'ioslides', 'default.html')
-if (.Platform$OS.type == "windows" & length(grep(' ', template_pkg) > 0)) { 
-  template_dir <- file.path('..', '..', '..', 'templates')
-  dir.create(template_dir, showWarnings = FALSE)
-  template_loc <- file.path(template_dir, 'ioslides_template.html')
-  if (!file.exists(template_loc)) {
-    file.copy(template_pkg, template_loc, copy.mode = FALSE)
-  }
-}
 ```
 
 We are loading:

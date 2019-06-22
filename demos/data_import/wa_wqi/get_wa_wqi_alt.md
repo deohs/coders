@@ -21,6 +21,8 @@ editor_options:
 
 
 
+
+
 ## Data Import and Cleanup Demo
 
 Today's example demonstrates these objectives:
@@ -83,8 +85,6 @@ if (! suppressPackageStartupMessages(require(pacman))) {
 }
 pacman::p_load(readr, dplyr, tidyr, ggmap)
 ```
-
-
 
 We are loading:
 
