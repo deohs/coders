@@ -36,7 +36,7 @@ Today's example demonstrates these objectives:
 * Use a consitent coding [style](https://google.github.io/styleguide/Rguide.xml).
 * Share code through a public [repository](https://github.com/deohs/coders) to facilitate collaboration.
 
-The code and this presentation are free share and modify according to the 
+The code and this presentation are free to share and modify according to the 
 [MIT License](https://github.com/deohs/coders/blob/master/LICENSE).
 
 ## Read the data
@@ -239,7 +239,7 @@ Are the `lat` and `lon` variables indentical in all of the variations?
 
 
 ```r
-identical(v1_wa_wqi$lat, v2_wa_wqi$lat)
+identical(v1_wa_wqi[, c('lat', 'lon')], v2_wa_wqi[, c('lat', 'lon')])
 ```
 
 ```
@@ -247,7 +247,7 @@ identical(v1_wa_wqi$lat, v2_wa_wqi$lat)
 ```
 
 ```r
-identical(v1_wa_wqi$lat, v3_wa_wqi$lat)
+identical(v1_wa_wqi[, c('lat', 'lon')], v3_wa_wqi[, c('lat', 'lon')])
 ```
 
 ```
@@ -255,7 +255,7 @@ identical(v1_wa_wqi$lat, v3_wa_wqi$lat)
 ```
 
 ```r
-identical(v1_wa_wqi$lat, v4_wa_wqi$lat)
+identical(v1_wa_wqi[, c('lat', 'lon')], v4_wa_wqi[, c('lat', 'lon')])
 ```
 
 ```
@@ -263,7 +263,7 @@ identical(v1_wa_wqi$lat, v4_wa_wqi$lat)
 ```
 
 ```r
-identical(v1_wa_wqi$lat, v5_wa_wqi$lat)
+identical(v1_wa_wqi[, c('lat', 'lon')], v5_wa_wqi[, c('lat', 'lon')])
 ```
 
 ```
@@ -292,5 +292,5 @@ library(tidyverse)
 v6_wa_wqi <- read_csv(url) %>% 
   mutate(Location.1 = gsub('POINT |[()]', '', `Location 1`)) %>%
   separate(col = Location.1, into = c('lon', 'lat'), sep = ' ', convert = TRUE)
-identical(v1_wa_wqi$lat, v6_wa_wqi$lat)
+identical(as_tibble(v1_wa_wqi[, c('lat', 'lon')]), v6_wa_wqi[, c('lat', 'lon')])
 ```
