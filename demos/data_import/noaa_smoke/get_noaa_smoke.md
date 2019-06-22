@@ -57,6 +57,10 @@ each file individually, three per day. We will automate this tedious task.
 
 _Credit: We thank Annie Doubleday for presenting us with this challenge._
 
+Our task:
+
+__Get all "hms_smoke" files ending in .dbf, .shp, and .shx from May-September for the years 2008-2017.__
+
 ## Web Scraping with `rvest`
 
 We will use web scraping techniques to get a list of links for each year and 
@@ -112,11 +116,12 @@ data_dir <- file.path('data', 'smoke')
 dir.create(data_dir, recursive = TRUE, showWarnings = FALSE)
 
 # For each year, load the index page, get a list of files and download them.
-res <- sapply(seq(2006, 2017), function(year) { 
+res <- sapply(seq(2008, 2017), function(year) { 
   URL <- "http://satepsanone.nesdis.noaa.gov" %s+%  
     "/pub/volcano/FIRE/HMS_ARCHIVE/" %s+% year %s+% "/GIS/SMOKE/"
   
   # Get all links from the index page that match our regular expression.
+  # Need dbf, shp, and shx files from May-September for the years 2008-2017.
   regexp <- 'hms_smoke[0-9]{4}0[5-9]{1}[0-9]{2}\\.(dbf|shp|shx)\\.gz$'
   files <- read_html(URL) %>% html_nodes("a") %>% html_attr("href") %>% 
     grep(regexp, ., value=TRUE)
@@ -128,3 +133,54 @@ res <- sapply(seq(2006, 2017), function(year) {
   })
 })
 ```
+
+## Exercises
+
+1. Go through the code and make sure you understand how it works. Look the the
+   online help for each function you are unsure of, including what parameters 
+   are being used, the values being supplied to them, and what they return. 
+   Run parts of the code with test variables to confirm your understanding.
+2. Look at the strucure of the web page we are using to fetch the links. You
+   view the source of a web page using Ctrl-U (or Cmd-U on a Mac) or you can 
+   use the "developer console" included in some web browsers. Find the links 
+   that we are extracting and locate the HTML tags (elements) we used (and 
+   their attributes) so you can see how the content extraction worked. Try 
+   alternate CSS selectors or XPATH expressions to obtain the same results.
+3. Try alternate regular expressions with `grep()` to achieve the same results, 
+   or modify your code to extract different types of links. 
+4.Try using a CSS selector or an XPATH expression to grab only the
+   links we wanted such that we could avoid using `grep()`.
+5. Look at the structure of the code we have for this. Find where there are 
+   two functions embedded in the code. Rewrite the code so those two functions 
+   are defined separately from the `sapply()` function calls which invoke them.
+   That is, define them outside of the `sapply()` calls and give them function
+   names. Call those functions from within the `sapply()` calls. What benefit 
+   is there to this this approach?
+
+## A Version in Bash
+
+Since there is a sytem utility that can be run from a `Bash` shell or script, 
+this is easier to do in `Bash` than in `R`.
+
+
+```bash
+#!/bin/bash
+
+# Get daily SMOKE files from May through Sept. for the years 2008-2017.
+
+URL='http://satepsanone.nesdis.noaa.gov/pub/volcano/FIRE/HMS_ARCHIVE'
+
+for YEAR in $(seq 2008 2017); do \ 
+  wget -r -nc -nH --cut-dirs=6 --no-parent --accept .gz \
+    --reject "hms_smoke????0[1234]*" --reject "hms_smoke????1[012]*" \
+    "$URL/$YEAR/GIS/SMOKE/"
+done
+```
+
+
+## A Version in Python
+
+We have an implementation in Python that is too big to fit on a slide in this
+presentation.
+
+We have included this as a [separate file](get_noaa_smoke.py).
