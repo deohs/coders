@@ -26,7 +26,7 @@ class get_hms_shapefiles(scrapy.Spider):
 
     def parse(self, response):
         start_urls = []
-        for href in response.xpath('//table/tr/td/a/@href').extract():
+        for href in response.xpath('//a/@href').extract():
             regexp = r'hms_smoke[0-9]{4}0[5-9]{1}[0-9]{2}\.(dbf|shp|shx)\.gz$'
             if re.match(regexp, href):
                 yield Request(
