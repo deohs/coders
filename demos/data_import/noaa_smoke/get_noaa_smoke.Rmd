@@ -195,7 +195,9 @@ We can decode this expression as follows:
 
 Since there is a sytem utility for automating bulk downloading called 
 [wget](https://www.gnu.org/software/wget/) that can be run from a `Bash` 
-shell or script, this task is easier to do in `Bash` than in `R`.
+shell or script, this task is easier to do in `Bash` than in `R`. (Well, 
+technically, you can also run `wget` from within R, as you can with many 
+languages.)
 
 ```{bash, eval=FALSE}
 #!/bin/bash
@@ -220,3 +222,6 @@ The `wget` options used above are:
 
 We have an implementation in Python that is too big to fit on a slide in this
 presentation. Instead, we have included this as a [separate file](get_noaa_smoke.py).
+
+![](get_noaa_smoke_py_sm.png)
+
