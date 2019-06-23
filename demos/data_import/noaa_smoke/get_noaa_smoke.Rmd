@@ -191,7 +191,7 @@ We can decode this expression as follows:
    names. Call those functions from within the `sapply()` calls. What benefit 
    is there to this this approach?
 
-## It's easier in Bash
+## Alternative: Using `wget` in Bash
 
 Since there is a sytem utility for automating bulk downloading called 
 [wget](https://www.gnu.org/software/wget/) that can be run from a `Bash` 
@@ -218,10 +218,32 @@ The `wget` options used above are:
 * `-np`, `--no-parent` ... Don't ascend when retrieving recursively
 * `--accept-regex` ... Filename must match regular expression provided.
 
-## It's harder in Python
+## Alternative: Using `scrapy` in Python
 
-We have an implementation in Python that is too big to fit on a slide in this
-presentation. Instead, we have included this as a [separate file](get_noaa_smoke.py).
+```
+import re, os.path, urlparse, scrapy
+from scrapy.http import Request
+from scrapy.crawler import CrawlerProcess
 
-![](get_noaa_smoke_py_sm.png)
+class get_hms_shapefiles(scrapy.Spider):
+    """Get daily SMOKE files from May through Sept. for the years 2008-2017."""
+    name = "get_hms_shapefiles"
+    domain = "satepsanone.nesdis.noaa.gov"
+    allowed_domains = [domain]
+    start_urls = [ "http://%s/pub/volcano/FIRE/HMS_ARCHIVE/%s/GIS/SMOKE/" %
+                     (domain, year) for year in range(2008, 2017) ]
 
+    def parse(self, response):
+        for href in response.xpath('//table/tr/td/a/@href').extract():
+            regexp = r'hms_smoke[0-9]{4}0[5-9]{1}[0-9]{2}\.(dbf|shp|shx)\.gz$'
+            if re.match(regexp, href):
+                yield Request(url=response.urljoin(href), callback=self.save_file)
+
+    def save_file(self, response):
+        path = response.url.split('/')[-1]
+        if not os.path.exists(path):
+            with open(path, 'wb') as f: f.write(response.body)
+
+process = CrawlerProcess()
+process.crawl(get_hms_shapefiles) & process.start()
+```

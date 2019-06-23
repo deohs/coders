@@ -1,9 +1,11 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
 # Filename: get_noaa_smoke.py
 # Copyright (c) University of Washington
 # License: MIT https://opensource.org/licenses/MIT (See LICENSE file.)
 # Repository: https://github.com/deohs/coders
-
-# Get daily SMOKE files from May through Sept. for the years 2008-2017.
+"""
 
 import re
 import os.path
@@ -13,6 +15,9 @@ from scrapy.http import Request
 from scrapy.crawler import CrawlerProcess
 
 class get_hms_shapefiles(scrapy.Spider):
+    """
+    Get daily SMOKE files from May through Sept. for the years 2008-2017.
+    """
     name = "get_hms_shapefiles"
     domain = "satepsanone.nesdis.noaa.gov"
     allowed_domains = [domain]
