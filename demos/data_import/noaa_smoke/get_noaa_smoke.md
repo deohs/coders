@@ -134,6 +134,23 @@ res <- sapply(seq(2008, 2017), function(year) {
 })
 ```
 
+## The regular expression
+
+We used this regular expression to filter our file links for a specific pattern.
+
+
+```r
+regexp <- 'hms_smoke[0-9]{4}0[5-9]{1}[0-9]{2}\\.(dbf|shp|shx)\\.gz$'
+```
+
+We can decode this expression as follows:
+
+* Contains the string `hms_smoke` followed by ...
+* 4 digits (year), a `0` and 1 digit from `5-9` (month) and 2 digits (day) and ...
+* A (literal) period (escaped with `\\`) and one of three filename suffixes and...
+* A (literal) period (escaped with `\\`) and the file suffix `gz` and ...
+* The very end of the string (`$`) with no characters following.
+
 ## Exercises
 
 1. Go through the code and make sure you understand how it works. Look the the
@@ -148,8 +165,8 @@ res <- sapply(seq(2008, 2017), function(year) {
    alternate CSS selectors or XPATH expressions to obtain the same results.
 3. Try alternate regular expressions with `grep()` to achieve the same results, 
    or modify your code to extract different types of links. 
-4.Try using a CSS selector or an XPATH expression to grab only the
-   links we wanted such that we could avoid using `grep()`.
+4. Try using a CSS selector or an XPATH expression to grab only the
+   links that start with 'hms_smoke'. (There is a special syntax for this.)
 5. Look at the structure of the code we have for this. Find where there are 
    two functions embedded in the code. Rewrite the code so those two functions 
    are defined separately from the `sapply()` function calls which invoke them.
@@ -157,30 +174,33 @@ res <- sapply(seq(2008, 2017), function(year) {
    names. Call those functions from within the `sapply()` calls. What benefit 
    is there to this this approach?
 
-## A Version in Bash
+## It's easier in Bash
 
-Since there is a sytem utility that can be run from a `Bash` shell or script, 
-this is easier to do in `Bash` than in `R`.
+Since there is a sytem utility for automating bulk downloading called 
+[wget](https://www.gnu.org/software/wget/) that can be run from a `Bash` 
+shell or script, this task is easier to do in `Bash` than in `R`.
 
 
 ```bash
 #!/bin/bash
-
 # Get daily SMOKE files from May through Sept. for the years 2008-2017.
-
 URL='http://satepsanone.nesdis.noaa.gov/pub/volcano/FIRE/HMS_ARCHIVE'
-
-for YEAR in $(seq 2008 2017); do \ 
-  wget -r -nc -nH --cut-dirs=6 --no-parent --accept .gz \
-    --reject "hms_smoke????0[1234]*" --reject "hms_smoke????1[012]*" \
-    "$URL/$YEAR/GIS/SMOKE/"
+regex='hms_smoke[0-9]{4}0[5-9]{1}[0-9]{2}\.(dbf|shp|shx)\.gz$'
+for YEAR in $(seq 2008 2017); do \
+  wget -r -nc -nH --cut-dirs=6 -np --accept-regex "$regex" "$URL/$YEAR/GIS/SMOKE/"
 done
 ```
 
+The `wget` options used above are:
 
-## A Version in Python
+* `-r`, `--recursive` ... Descend (and maybe ascend) into the file heirarchy.
+* `-nc`, `--no-clobber` ... Don't download a file again if you already have it.
+* `-nH`, `--no-host-directories` ... Omit the hostname in the saved file path.
+* `--cut-dirs=n` ... Skip the top `n` levels of the heirarchy when saving files.
+* `-np`, `--no-parent` ... Don't ascend when retrieving recursively
+* `--accept-regex` ... Filename must match regular expression provided.
+
+## It's harder in Python
 
 We have an implementation in Python that is too big to fit on a slide in this
-presentation.
-
-We have included this as a [separate file](get_noaa_smoke.py).
+presentation. Instead, we have included this as a [separate file](get_noaa_smoke.py).
