@@ -1,7 +1,7 @@
 ---
 title: 'Automating Downloads: NOAA Smoke Shapefiles'
 author: "Brian High"
-date: "23 June, 2019"
+date: "24 June, 2019"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -153,13 +153,13 @@ We can decode this expression as follows:
 
 ## Exercises
 
-1. Go through the code and make sure you understand how it works. Look the the
+1. Go through the code and make sure you understand how it works. Look at the
    online help for each function you are unsure of, including what parameters 
    are being used, the values being supplied to them, and what they return. 
    Run parts of the code with test variables to confirm your understanding.
 2. Look at the strucure of the web page we are using to fetch the links. You
    view the source of a web page using Ctrl-U (or Cmd-U on a Mac) or you can 
-   use the "developer console" included in some web browsers. Find the links 
+   use the "developer tools" included in some web browsers. Find the links 
    that we are extracting and locate the HTML tags (elements) we used (and 
    their attributes) so you can see how the content extraction worked. Try 
    alternate CSS selectors or XPATH expressions to obtain the same results.
