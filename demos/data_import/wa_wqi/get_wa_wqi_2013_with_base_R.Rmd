@@ -156,11 +156,11 @@ sapply(list(v2, v3, v4, v5),
 
 ## Excercises
 
-1. In Var. 1, what data structure does `strplit()` return? What did `sapply()` 
-   do and why was `t()` needed?
-2. In Var. 2, what does `as.data.frame(do.call('rbind', ...` do and what is 
+1. In Var. 1, what does `as.data.frame(do.call('rbind', ...` do and what is 
    the tidyverse replacement for this idiom? What does `as.data.frame(lapply( ...`
    do and what tidyverse function will accomplish this?
+2. In Var. 2, what data structure does `strplit()` return? What did `sapply()` 
+   do and why was `t()` needed?
 3. In Var. 3, what are the two regular expressions doing. Explain each piece of
    each expression and what it matches.
 4. In Var. 4, the method of Var. 3 was implemented using `lapply()`. Aside from
