@@ -1,7 +1,7 @@
 ---
 title: 'Data Import: WA WQI'
 author: "Brian High"
-date: "22 June, 2019"
+date: "23 June, 2019"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -90,7 +90,7 @@ pacman::p_load(readr, dplyr, tidyr, ggmap)
 We are loading:
 
 * `readr` for `read_csv()` -- a [tidyverse](https://www.tidyverse.org/) replacement for `read.csv()`
-* `dplyr` for `mutate()` -- a [tidyverse](https://www.tidyverse.org/) function for data modification
+* `dplyr` for several functions -- a [tidyverse](https://www.tidyverse.org/) package for data manipulation
 * `tidyr` for `separate()` -- a [tidyverse](https://www.tidyverse.org/) function for column splitting
 * `ggmap` for `ggmap()` -- a function, similar to `ggplot()`, to create maps
 
@@ -293,6 +293,9 @@ For these Stations, it appears that we need move `lat` values to `Year`,
 wa_wqi[wa_wqi$Year < 0, c('Year', 'lon', 'lat')] <- 
   wa_wqi[wa_wqi$Year < 0, c('lat', 'Year', 'lon')]
 ```
+
+We could have also swapped these by column index, but doing so by name is 
+more clear and less error prone.
 
 ## Verify Changes: List Locations
 

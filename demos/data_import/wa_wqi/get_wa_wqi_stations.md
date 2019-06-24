@@ -159,11 +159,22 @@ table(stations$type)
 
 ## Exercises
 
-1. Find an alternate way to extract the station data from the station list web 
+1. This was a lot of work just to parse one web page. When would this technique 
+   be worth the effort? Describe a few scenarios.
+2. Find a way to extract the color-code key from the web page. This will allow 
+   us to avoid hard-coding this information into our script. The benefit is 
+   that a change in the `class` names of the table elements would not break 
+   our script. Web scraping is fragile in that a small change to a web page
+   can completely break your ability to extact data. Why would this matter once 
+   you have obtained your data? Why would we care about future changes to the page?
+3. Find an alternate way to extract the station data from the station list web 
    page using different CSS selectors, xpath expressions, or a different approach 
    to combining the variables. Compare your results to the method provided using 
    the `identical()` function or a similar method. Explain any mismatches.
-2. Compare the station lists between those used in [get_wa_wqi.Rmd](get_wa_wqi.Rmd) 
+
+## Advanced Exercises
+
+1. Compare the station lists between those used in [get_wa_wqi.Rmd](get_wa_wqi.Rmd) 
    and [get_wa_wqi_alt.Rmd](get_wa_wqi_alt.Rmd) examples, where we read in two 
    different datasets and plotted 2013 WA WQI on a state map. Merge the datasets 
    from those examples with the station list of this example and use the `table` 
@@ -173,9 +184,9 @@ table(stations$type)
    but missing from the other, and vice-versa, using the `filter()` function and 
    the `%in%` operator or a similar approach. (Datasets are 
    [wa_wqi.csv](data/wa_wqi.csv) and [wa_wqi_alt.csv](data/wa_wqi_alt.csv).)
-3. Write a function to read the station details for a specific station from the 
+2. Write a function to read the station details for a specific station from the 
    station URL we obtained from the station list. Use a looping method (either 
-   sapply, lappy, etc. or a for-loop, etc.) to get all station details from all
+   sapply, lapply, etc. or a for-loop, etc.) to get all station details from all
    stations and combine them into a single dataset. Write a function to load this 
    from a file if present or from the web if not, as we did for the station list.
    Compare the station types from the station list with those reported in the 
