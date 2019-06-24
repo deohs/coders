@@ -1,7 +1,7 @@
 ---
 title: 'Data Cleaning in Base-R: WA WQI'
 author: "Brian High"
-date: "22 June, 2019"
+date: "24 June, 2019"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -289,3 +289,18 @@ v6 <- read_csv(url) %>%
   separate(col = Location.1, into = c('lon', 'lat'), sep = ' ', convert = TRUE)
 identical(as_tibble(v1[, c('lat', 'lon')]), v6[, c('lat', 'lon')])
 ```
+
+## Bonus
+
+Try the various regular expressions used here, or your own, on 
+[regex101.com](https://regex101.com/).
+
+![](regex0.png) &nbsp;&nbsp;&nbsp;
+![](regex3lon.png)
+
+* In R, we have to use `\\` as the escape, but in most other languages, you 
+  would use `\` instead. You will need to modify your R regular expressions 
+  for them to work on regex101.com.
+* In R, we refer to the matched replacement variables as `\\1`, `\\2`, etc. In
+  most other languages this would be either `\1`, `\2`, etc. or `$1`, `$2`, etc.
+  Again, we will need to make this adjustment for regex101.com.
