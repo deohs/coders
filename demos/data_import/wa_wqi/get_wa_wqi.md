@@ -261,7 +261,7 @@ g <- g + geom_point(aes(x = lon, y = lat, fill = `OVERALLWQI 2013`),
 
 ![](get_wa_wqi_files/figure-html/view_map-1.png)<!-- -->
 
-## Excercises
+## Exercises
 
 
 A. We used the `separate()` function from the `tidyr` package to parse the 

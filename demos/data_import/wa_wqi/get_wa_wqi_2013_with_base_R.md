@@ -265,7 +265,7 @@ sapply(list(v2, v3, v4, v5),
 ## [1] TRUE TRUE TRUE TRUE
 ```
 
-## Excercises
+## Exercises
 
 1. In Var. 1, what does `as.data.frame(do.call('rbind', ...` do and what is 
    the tidyverse replacement for this idiom? What does `as.data.frame(lapply( ...`

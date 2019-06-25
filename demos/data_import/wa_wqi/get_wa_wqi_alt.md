@@ -391,7 +391,7 @@ g <- g + geom_point(aes(x = lon, y = lat, fill = `Overall WQI`),
 
 ![](get_wa_wqi_alt_files/figure-html/view_map-1.png)<!-- -->
 
-## Excercises
+## Exercises
 
 A. Look more carefully at this dataset and see if there are other errors which 
 you could fix. For example, we did not examine all of the variables. Are there

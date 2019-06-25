@@ -305,7 +305,7 @@ g <- g + geom_point(aes(x = lon, y = lat, fill = `Overall WQI`),
 g
 ```
 
-## Excercises
+## Exercises
 
 A. Look more carefully at this dataset and see if there are other errors which 
 you could fix. For example, we did not examine all of the variables. Are there
