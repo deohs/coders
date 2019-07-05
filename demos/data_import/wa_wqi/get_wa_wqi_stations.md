@@ -1,7 +1,7 @@
 ---
 title: 'Webscraping with rvest: WA WQI Stations'
 author: "Brian High"
-date: "23 June, 2019"
+date: "05 July, 2019"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -132,7 +132,7 @@ stations with the numbers listed (126 and 67, respectively, as of June 2019).
 
 
 ```r
-stations <- suppressMessages(load_station_list())
+stations <- suppressMessages(as_tibble(load_station_list()))
 print(stations, n = 4)
 ```
 
