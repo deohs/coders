@@ -233,11 +233,9 @@ create_wqi_map <- function(df, year) {
                         data = df, pch = 21, size = 3) + 
       scale_fill_gradient(name = "WQI", low = "red", high = "green") + 
       ggtitle(label = paste("Washington State", 
-                            "River and Stream Water Quality Index (WQI)", 
-                            sep = " "),
-              subtitle = paste("Source: River and Stream Monitoring Program, ", 
-                               "WA State Department of Ecology (", year, ")", 
-                               sep = '')) +
+                            "River and Stream Water Quality Index (WQI)"),
+              subtitle = paste0("Source: River and Stream Monitoring Program, ", 
+                               "WA State Department of Ecology (", year, ")")) +
       theme(legend.position = c(.98, .02), legend.justification = c(1, 0)) 
     return(g)
   } else {
