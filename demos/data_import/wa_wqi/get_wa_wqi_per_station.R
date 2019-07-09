@@ -140,7 +140,9 @@ clean_wa_wqi_data <- function(df) {
 get_wa_wqi_table_nodeset <- function(Station = '') {
   # Fetch web page.
   url <- 'https://fortress.wa.gov/ecy/eap/riverwq/station.asp'
-  qstr <- paste('theyear=&tab=wqi&scrolly=262&wria=03&sta=', Station, sep='')
+  query <- list(theyear = '', tab = 'wqi', scrolly = 262, wria = 03, 
+                sta = Station)
+  qstr <- paste(names(query), query, sep = "=", collapse = "&")
   pg <- read_html(paste(url, qstr, sep = '?'))
   
   # Extract year of most recent data. To be used for pages with only one year.
