@@ -35,9 +35,8 @@ get_list_of_stations <- function () {
   # Get the list of stations in a web page from an HTML table of class "list".
   url <- 'https://fortress.wa.gov/ecy/eap/riverwq/regions/state.asp?symtype=1'
   xmlns <- read_html(url) %>% html_nodes("table.list")
-  stations <- xmlns %>% html_table(fill = TRUE) %>% bind_rows()
-  stations <- stations[, 2:3]
-  names(stations) <- c('Station', 'Station Name')
+  stations <- xmlns %>% html_table(fill = TRUE) %>% bind_rows() %>% .[, 2:3] %>% 
+    set_names(c('Station', 'Station Name'))
   
   # Add a variable for station type, where class "Rsta" is for "Long-term".
   longterm <- xmlns %>% html_nodes('a.Rsta') %>% html_text() %>% .[c(T, F)]
