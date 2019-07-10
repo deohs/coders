@@ -36,10 +36,9 @@ get_list_of_stations <- function () {
   url <- 'https://fortress.wa.gov/ecy/eap/riverwq/regions/state.asp?symtype=1'
   xmlns <- read_html(url) %>% html_nodes("table.list")
   
-  # Extract station type from link class and station ID and name from table text.
-  stn_type <- xmlns %>% html_nodes("a[class $= 'sta']") %>% 
-    html_attr("class") %>% .[c(TRUE, FALSE)] %>%  
-    mgsub(., c('Rsta', 'Dsta'), c('Long-term', 'Basin'))
+  # Extract station type from img class and station ID and name from table text.
+  stn_type <- xmlns %>% html_nodes("img[class $= 'sta']") %>% 
+    html_attr("class") %>% mgsub(., c('Rsta', 'Dsta'), c('Long-term', 'Basin'))
   stations <- xmlns %>% html_table(fill = TRUE) %>% bind_rows() %>% .[, 2:3] %>% 
     set_names(c('Station', 'Station Name')) %>% mutate(`Station Type` = stn_type)
   
