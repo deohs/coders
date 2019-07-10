@@ -24,7 +24,7 @@ if (!is.null(sessionInfo()$otherPkgs)) {
 if (! suppressPackageStartupMessages(require(pacman))) {
   install.packages('pacman', repos = 'http://cran.us.r-project.org')
 }
-pacman::p_load(dplyr, tidyr, rvest, readr, purrr, ggmap)
+pacman::p_load(dplyr, tidyr, rvest, mgsub, readr, purrr, ggmap)
 
 
 # ---------
@@ -32,16 +32,17 @@ pacman::p_load(dplyr, tidyr, rvest, readr, purrr, ggmap)
 # ---------
 
 get_list_of_stations <- function () {
-  # Get the list of stations in a web page from an HTML table of class "list".
+  # Get XML nodeset of table(s) of class "list" containing a list of stations.
   url <- 'https://fortress.wa.gov/ecy/eap/riverwq/regions/state.asp?symtype=1'
   xmlns <- read_html(url) %>% html_nodes("table.list")
-  stations <- xmlns %>% html_table(fill = TRUE) %>% bind_rows() %>% .[, 2:3] %>% 
-    set_names(c('Station', 'Station Name'))
   
-  # Add a variable for station type, where class "Rsta" is for "Long-term".
-  longterm <- xmlns %>% html_nodes('a.Rsta') %>% html_text() %>% .[c(T, F)]
-  stations <- stations %>% 
-    mutate(`Station Type` = ifelse(Station %in% longterm, 'Long-term', 'Basin'))
+  # Extract station type from link class and station ID and name from table text.
+  stn_type <- xmlns %>% html_nodes("a[class $= 'sta']") %>% 
+    html_attr("class") %>% .[c(TRUE, FALSE)] %>%  
+    mgsub(., c('Rsta', 'Dsta'), c('Long-term', 'Basin'))
+  stations <- xmlns %>% html_table(fill = TRUE) %>% bind_rows() %>% .[, 2:3] %>% 
+    set_names(c('Station', 'Station Name')) %>% mutate(`Station Type` = stn_type)
+  
   return(stations)
 }
 
