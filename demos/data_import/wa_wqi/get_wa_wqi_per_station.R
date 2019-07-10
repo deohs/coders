@@ -51,6 +51,7 @@ get_station_details_ns <- function(Station = '') {
   qstr <- paste('sta=', Station, sep='')
   url <- paste(url, qstr, sep = '?')
   xmlns <- read_html(url) %>% html_nodes("table")
+  
   return(xmlns)
 }
 
@@ -63,6 +64,7 @@ extract_stn_details_from_ns <- function(xmlns) {
   names(df) <- gsub('\\W', '.', names(df))
   df$LLID <- as.character(df$LLID)
   df$`waterbody.id` <- as.character(df$`waterbody.id`)
+  
   return(df)
 }
 
@@ -72,6 +74,7 @@ extract_stn_qual_from_ns <- function(xmlns) {
     html_nodes(xpath='.//td[contains(@align, "center")]') %>% 
     html_text()
   stn_qual <- grep('Overall water quality', stn_qual, value = TRUE)
+  
   return(stn_qual)
 }
 
@@ -85,6 +88,7 @@ clean_station_details <- function(df) {
              convert = TRUE, remove = FALSE) %>% 
     select(-map.detail)
   names(df) <- gsub('[.]+', '.', names(df))
+  
   return(df)
 }
 
@@ -135,7 +139,7 @@ clean_wa_wqi_data <- function(df) {
   return(df)
 }
 
-get_wa_wqi_table_nodeset <- function(Station = '') {
+get_wa_wqi_table_ns <- function(Station = '') {
   # Fetch web page.
   url <- 'https://fortress.wa.gov/ecy/eap/riverwq/station.asp'
   query <- list(theyear = '', tab = 'wqi', scrolly = 262, wria = 03, 
@@ -191,7 +195,7 @@ get_wa_wqi_per_station <- function(Station = '') {
                  'adjusted.for.flow', 'Station')
   
   # Get table XML nodeset WA WQI data for a station.
-  lst <- get_wa_wqi_table_nodeset(Station)
+  lst <- get_wa_wqi_table_ns(Station)
   
   # Extract data from nodeset and clean up.
   df <- extract_wa_wqi_from_ns(lst[[1]], Station = Station, year = lst[[2]], 
