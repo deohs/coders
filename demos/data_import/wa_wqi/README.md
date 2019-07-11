@@ -23,4 +23,4 @@ This document shows how to get station details and WQI data with web scraping:
 
 This script goes through some checks to compare all of the above datasets.
 
-* [Compare WA WQI 2013 datasets](compare_stations_2013_wa_wqi.R)
+* [Compare WA WQI 2013 datasets](compare_wa_wqi_datasets.R)
