@@ -96,6 +96,29 @@ We are loading:
 * `purrr` for `set_names()`, like `colnames()` but for use in a pipeline 
 * `ggmap` (and `ggplot2`) for plotting a map of the results
 
+## User-defined functions
+
+We will define the following functions to facilitate automation.
+
+`get_list_of_stations()` - Gets station list to follow when getting more data.
+
+`get_station_details()` ... (wrapper) - Orchestrates station details collection.
+
+* `get_station_details_ns()` - Gets XML nodeset for station details tables.
+* `extract_stn_details_from_ns()` - Extracts data from tables.
+* `extract_stn_qual_from_ns()` - Extracts overall station quality level.
+* `clean_station_details()` - Cleans up dataset.
+
+`get_wa_wqi_per_station()` ... (wrapper) - Orchestrates WQI data collection.
+
+* `get_wa_wqi_table_ns()` - Gets XML nodeset for WQI data tables.
+* `extract_wa_wqi_from_ns()` ... - Extracts data from tables.
+   * `clean_wa_wqi_data()` - Cleans up dataset.
+
+`create_wqi_map()` ... - Creates the map, including base map, points, legend, etc.
+
+* `create_bbox()` - Creates boundary box for base map.
+
 ## Function: Get list of stations
 
 ```{r}
@@ -172,7 +195,7 @@ clean_station_details <- function(df) {
 }
 ```
 
-## Function: Get station details
+## Function: Get station details (wrapper)
 
 ```{r}
 get_station_details <- function(Station = '') {
