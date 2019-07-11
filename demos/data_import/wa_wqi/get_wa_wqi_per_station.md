@@ -86,14 +86,14 @@ We will define the following functions to facilitate automation.
 `get_station_details()` ... (wrapper) - Orchestrates station details collection.
 
 * `get_station_details_ns()` - Gets XML nodeset for station details tables.
-* `extract_stn_details_from_ns()` - Extracts data from tables.
+* `extract_stn_details_from_ns()` - Extracts data from tables nodeset.
 * `extract_stn_qual_from_ns()` - Extracts overall station quality level.
 * `clean_station_details()` - Cleans up dataset.
 
 `get_wa_wqi_per_station()` ... (wrapper) - Orchestrates WQI data collection.
 
 * `get_wa_wqi_table_ns()` - Gets XML nodeset for WQI data tables.
-* `extract_wa_wqi_from_ns()` ... - Extracts data from tables.
+* `extract_wa_wqi_from_ns()` ... - Extracts data from tables nodeset.
    * `clean_wa_wqi_data()` - Cleans up dataset.
 
 `create_wqi_map()` ... - Creates the map, including base map, points, legend, etc.
