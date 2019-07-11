@@ -71,9 +71,10 @@ all freashwater stream and river stations from the WA Department of Ecology.
 We will extract HTML tables from multiple web pages and combine into a 
 single WQI dataset. Each web page fetched represents data for one station.
 
-Finally, we will create a map for the most recent year of data available.
+Data files will be cached to save time when re-running the code.
 
-Note: Data files will be cached to save time when re-running the code.
+Finally, we will create a map for 2013 to compare with maps made from data 
+files obtained from data.wa.gov.
 
 ## Setup
 
@@ -90,7 +91,7 @@ pacman::p_load(dplyr, tidyr, rvest, mgsub, readr, purrr, ggmap)
 We are loading:
 
 * `dplyr` (several functions) and `tidyr` (`separate()`) for data cleanup
-* `rvest` (and `xml2`) for web-scraping with `read_html()`, etc.
+* `rvest` (and `xml2`) for web-scraping with `read_html()`, `html_nodes()`, etc.
 * `mgsub` for multiple-pattern search/replace with `mgsub()`
 * `readr` for reading files with `read_csv()`
 * `purrr` for `set_names()`, like `colnames()` but for use in a pipeline 
@@ -98,7 +99,7 @@ We are loading:
 
 ## User-defined functions
 
-We will define the following functions to facilitate automation.
+We will define the following functions for code modularity and automation.
 
 `get_list_of_stations()` - Gets station list to follow when getting more data.
 
@@ -136,63 +137,11 @@ get_list_of_stations <- function () {
 }
 ```
 
-## Function: Get station details
+Test it:
 
 ```{r}
-get_station_details_ns <- function(Station = '') {
-  # Get station details table XML nodeset for a station ID.
-  url <- 'https://fortress.wa.gov/ecy/eap/riverwq/station.asp'
-  qstr <- paste('sta=', Station, sep='')
-  url <- paste(url, qstr, sep = '?')
-  xmlns <- read_html(url) %>% html_nodes("table")
-  return(xmlns)
-}
-```
-
-## Function: Extract station details
-
-```{r}
-extract_stn_details_from_ns <- function(xmlns) {
-  # Get station details from two tables and combine them.
-  lst <- xmlns %>% 
-    html_nodes(xpath='.//table[contains(@width, "396")]') %>% 
-    html_table(fill = TRUE, header = TRUE)
-  df <- bind_cols(lst[[1]][1,], lst[[2]][1,])
-  names(df) <- gsub('\\W', '.', names(df))
-  df$LLID <- as.character(df$LLID)
-  df$`waterbody.id` <- as.character(df$`waterbody.id`)
-  return(df)
-}
-```
-
-## Function: Extract station quality
-
-```{r}
-extract_stn_qual_from_ns <- function(xmlns) {
-  # Get station overall water quality text comment from table XML nodeset.
-  stn_qual <- xmlns %>% 
-    html_nodes(xpath='.//td[contains(@align, "center")]') %>% 
-    html_text()
-  stn_qual <- grep('Overall water quality', stn_qual, value = TRUE)
-  return(stn_qual)
-}
-```
-
-## Function: Clean station details
-
-```{r}
-clean_station_details <- function(df) {
-  # Rename variables. Force longitude to be negative. Split overall quality.
-  df <- df %>% rename('lat' = 'latitude', 'lon' = 'longitude') %>% 
-    mutate(lon = ifelse(lon > 0, -lon, lon)) %>% 
-    mutate(overall.quality = gsub('^.* (\\w+) concern.*water-year (\\d+).*$', 
-                                  '\\1,\\2', overall.quality)) %>% 
-    separate(overall.quality, c('quality.level', 'quality.year'), ',', 
-             convert = TRUE, remove = FALSE) %>% 
-    select(-map.detail)
-  names(df) <- gsub('[.]+', '.', names(df))
-  return(df)
-}
+stations <- get_list_of_stations()
+head(stations, 4)
 ```
 
 ## Function: Get station details (wrapper)
@@ -224,30 +173,119 @@ get_station_details <- function(Station = '') {
 }
 ```
 
-## Function: Clean WA WQI data
+## Function: Get station details nodeset
 
 ```{r}
-clean_wa_wqi_data <- function(df) {
-  # Use first row as column names
-  df_col_names <- c('year', df[1, -1])
-  df_col_names <- gsub('[^A-Za-z0-9_.]', '.', df_col_names)
-  names(df) <- df_col_names
-  
-  # Remove rows missing the year and columns missing a column name.
-  df <- df[grepl('^\\d{4}$', df$year), df_col_names[df_col_names != '']]
-  
-  # Add missing variables with NA values.
-  if (!'overall.WQI' %in% names(df)) df$overall.WQI <- NA
-  if (!'adjusted.for.flow' %in% names(df)) df$adjusted.for.flow <- NA
-  
-  # Convert all values to numeric.
-  df <- suppressWarnings(
-    mutate_all(df, function(x) as.numeric(as.character(x))))
+get_station_details_ns <- function(Station = '') {
+  # Get station details table XML nodeset for a station ID.
+  url <- 'https://fortress.wa.gov/ecy/eap/riverwq/station.asp'
+  qstr <- paste('sta=', Station, sep='')
+  url <- paste(url, qstr, sep = '?')
+  xmlns <- read_html(url) %>% html_nodes("table")
+  return(xmlns)
+}
+```
+
+Test it:
+
+```{r}
+Station <- stations$Station[1]
+xmlns <- get_station_details_ns(Station)
+head(xmlns, 5)
+```
+
+## Function: Extract station details
+
+```{r}
+extract_stn_details_from_ns <- function(xmlns) {
+  # Get station details from two tables and combine them.
+  lst <- xmlns %>% 
+    html_nodes(xpath='.//table[contains(@width, "396")]') %>% 
+    html_table(fill = TRUE, header = TRUE)
+  df <- bind_cols(lst[[1]][1,], lst[[2]][1,])
+  names(df) <- gsub('\\W', '.', names(df))
+  df$LLID <- as.character(df$LLID)
+  df$`waterbody.id` <- as.character(df$`waterbody.id`)
   return(df)
 }
 ```
 
-## Function: Get WA WQI table
+Test it:
+
+```{r}
+stn_details <- extract_stn_details_from_ns(xmlns)
+stn_details %>% select(type, latitude, longitude, LLID, waterbody.id)
+```
+
+## Function: Extract station quality
+
+```{r}
+extract_stn_qual_from_ns <- function(xmlns) {
+  # Get station overall water quality text comment from table XML nodeset.
+  stn_qual <- xmlns %>% 
+    html_nodes(xpath='.//td[contains(@align, "center")]') %>% 
+    html_text()
+  stn_qual <- grep('Overall water quality', stn_qual, value = TRUE)
+  return(stn_qual)
+}
+```
+
+Test it:
+
+```{r}
+stn_qual <- extract_stn_qual_from_ns(xmlns)
+strwrap(stn_qual)
+```
+
+## Function: Clean station details
+
+```{r}
+clean_station_details <- function(df) {
+  # Rename variables. Force longitude to be negative. Split overall quality.
+  df <- df %>% rename('lat' = 'latitude', 'lon' = 'longitude') %>% 
+    mutate(lon = ifelse(lon > 0, -lon, lon)) %>% 
+    mutate(overall.quality = gsub('^.* (\\w+) concern.*water-year (\\d+).*$', 
+                                  '\\1,\\2', overall.quality)) %>% 
+    separate(overall.quality, c('quality.level', 'quality.year'), ',', 
+             convert = TRUE, remove = FALSE) %>% 
+    select(-map.detail)
+  names(df) <- gsub('[.]+', '.', names(df))
+  return(df)
+}
+```
+
+Test it:
+
+```{r}
+stn_details$overall.quality <- ifelse(length(stn_qual) > 0, stn_qual, NA)
+stn_details$Station <- Station
+stn_details <- clean_station_details(stn_details)
+stn_details %>% select(type, lat, lon, quality.level, quality.year, Station)
+```
+
+## Function: Get WA WQI (wrapper)
+
+```{r}
+get_wa_wqi_per_station <- function(Station = '') {
+  # Define column names to be returned in resulting data frame.
+  col_names <- c('year', 'fecal.coliform.bacteria', 'oxygen', 'pH', 
+                 'suspended.solids', 'temperature', 'total.persulf.nitrogen', 
+                 'total.phosphorus', 'turbidity', 'overall.WQI', 
+                 'adjusted.for.flow', 'Station')
+  
+  # Get table XML nodeset WA WQI data for a station.
+  lst <- get_wa_wqi_table_ns(Station)
+  
+  # Extract data from nodeset and clean up.
+  df <- extract_wa_wqi_from_ns(lst[[1]], Station = Station, year = lst[[2]], 
+                               col_names = col_names)
+  
+  # Return the data frame with the columns in a consitent order.
+  return(df[, col_names])
+}
+```
+
+## Function: Get WQI table nodeset
 
 ```{r}
 get_wa_wqi_table_ns <- function(Station = '') {
@@ -268,7 +306,7 @@ get_wa_wqi_table_ns <- function(Station = '') {
 }
 ```
 
-## Function: Extract WA WQI
+## Function: Extract WQI from nodeset
 
 ```{r}
 extract_wa_wqi_from_ns <- function(xmlns, Station = '', year = NA, col_names = c()) {
@@ -298,26 +336,45 @@ extract_wa_wqi_from_ns <- function(xmlns, Station = '', year = NA, col_names = c
 }
 ```
 
-## Function: Get WA WQI (wrapper)
+## Function: Clean WA WQI data
 
 ```{r}
-get_wa_wqi_per_station <- function(Station = '') {
-  # Define column names to be returned in resulting data frame.
-  col_names <- c('year', 'fecal.coliform.bacteria', 'oxygen', 'pH', 
-                 'suspended.solids', 'temperature', 'total.persulf.nitrogen', 
-                 'total.phosphorus', 'turbidity', 'overall.WQI', 
-                 'adjusted.for.flow', 'Station')
+clean_wa_wqi_data <- function(df) {
+  # Use first row as column names
+  df_col_names <- c('year', df[1, -1])
+  df_col_names <- gsub('[^A-Za-z0-9_.]', '.', df_col_names)
+  names(df) <- df_col_names
   
-  # Get table XML nodeset WA WQI data for a station.
-  lst <- get_wa_wqi_table_ns(Station)
+  # Remove rows missing the year and columns missing a column name.
+  df <- df[grepl('^\\d{4}$', df$year), df_col_names[df_col_names != '']]
   
-  # Extract data from nodeset and clean up.
-  df <- extract_wa_wqi_from_ns(lst[[1]], Station = Station, year = lst[[2]], 
-                               col_names = col_names)
+  # Add missing variables with NA values.
+  if (!'overall.WQI' %in% names(df)) df$overall.WQI <- NA
+  if (!'adjusted.for.flow' %in% names(df)) df$adjusted.for.flow <- NA
   
-  # Return the data frame with the columns in a consitent order.
-  return(df[, col_names])
+  # Convert all values to numeric.
+  df <- suppressWarnings(
+    mutate_all(df, function(x) as.numeric(as.character(x))))
+  return(df)
 }
+```
+
+## Test: Get WQI data and Clean
+
+Test the AQI data functions with a test function that runs the wrapper function:
+
+```{r}
+test_get_wa_wqi <- function(Station) {
+  get_wa_wqi_per_station(Station) %>% 
+  select(year, oxygen, pH, overall.WQI, adjusted.for.flow, Station) %>% head()
+}
+test_get_wa_wqi('01A050')
+```
+
+Test with a Station that only offers one year of AQI data:
+
+```{r}
+test_get_wa_wqi('07A100')
 ```
 
 ## Function: Create bounding box
@@ -336,6 +393,12 @@ create_bbox <- function(lat, lon, pad = 0.15) {
   names(bbox) <- c('left', 'bottom', 'right', 'top')
   return(bbox)
 }
+```
+
+Test it:
+
+```{r}
+with(stn_details, create_bbox(lat, lon))
 ```
 
 ## Function: Create WA WQI map
@@ -383,6 +446,7 @@ if (!file.exists(file_name)) {
 } else {
   stations <- suppressMessages(read_csv(file_name))
 }
+head(stations, 4)
 ```
 
 ## Using the functions: Get station details
@@ -394,10 +458,11 @@ if (!file.exists(file_name)) {
   station_details <- bind_rows(lapply(stations$Station, get_station_details))
   write.csv(station_details, file_name, row.names = FALSE)
 } else {
-  station_details <- read_csv(file_name) %>% 
+  station_details <- suppressMessages(read_csv(file_name)) %>% 
     mutate(LLID = as.character(LLID),
            `waterbody.id` = as.character(`waterbody.id`))
 }
+head(station_details, 4)
 ```
 
 ## Using the functions: Get WQI data
@@ -409,30 +474,27 @@ if (!file.exists(file_name)) {
   wa_wqi <- bind_rows(lapply(stations$Station, get_wa_wqi_per_station))
   write.csv(wa_wqi, file_name, row.names = FALSE)
 } else {
-  wa_wqi <- read_csv(file_name)
+  wa_wqi <- suppressMessages(read_csv(file_name))
 }
+head(wa_wqi, 4)
 ```
 
-## Prepare data for plotting
+## Using the functions: Create the map
 
 ```{r}
 # Prepare dataset for plotting. Join with station details to get lat and lon.
 wa_wqi <- wa_wqi %>% 
   inner_join(station_details %>% select(Station, lat, lon), by = 'Station')
 
-#Use the most recent year of WQI data available.
-#map_year <- max(wa_wqi$year)
-
 # Use 2013 for comparison with datasets from data.gov.
 map_year = 2013
 
+# Uncomment the line below to use the most recent year of WQI data available.
+#map_year <- max(wa_wqi$year)
+
 # Filter dataset by year. 
 df <- wa_wqi %>% filter(year == map_year)
-```
 
-## Plot the data as a map
-
-```{r}
 # Create a map from lon, lat, and overall.WQI variables in df for map_year.
 g <- create_wqi_map(df, map_year)
 ```
