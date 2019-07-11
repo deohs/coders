@@ -1,0 +1,164 @@
+---
+title: "ggplot2 Introduction"
+author: "Hank Flury"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Getting Started
+```{r, message=FALSE,echo=TRUE}
+if(! "ggplot2" %in% row.names(installed.packages())){
+  install.packages("ggplot2")
+}
+library(ggplot2)
+```
+
+-We will use the "diamonds" dataset that comes with ggplot2
+
+```{r, echo = TRUE}
+head(diamonds)
+```
+
+## Advantages to ggplot
+
+- _**Much more customizable than base R graphing functions**_
+- Automation of different aspects such as legend generation
+- More robust in its handeling of NAs and missing data
+- The ability to save your plots as objects
+
+```{r, out.width= "70%", out.height="70%"}
+knitr::include_graphics("lollipop.jpg")
+```
+
+## ggplot Structure
+
+- Very Similar to dplyr
+    - "+" replaces "%>%"
+- "ggplot()" is the basis of the plot
+- Add geoms to give the graph what you actually want
+- Miscelaneous functions help customize the plot to your needs
+
+## ggplot()
+
+- ggplot() creates the space in which the plot is created
+- all parts of your graph are "added" to ggplot()
+- Common Parameters
+    - data - The data for your plot
+    - aes() - Set inheritable aestetic traits for your graph
+    
+## ggplot()
+```{r, echo = TRUE}
+ggplot()
+```
+
+- Right now our plot is just blank since we have not told it what to plot
+
+## geoms
+
+- Common geoms
+    - geom_line()
+    - geom_point()
+    - geom_bar()
+    
+- geoms are what actually make up your plot
+
+- Multiple geoms can be added to the same plot
+    - The first geom added will be the bottom layer
+
+## geoms
+```{r, echo = TRUE}
+ggplot() +
+  geom_histogram() +
+  geom_density()
+```
+
+-Our plot is still blank since we have not given it any data
+
+
+## Aesthetics
+
+- Denoted by aes()
+- Aesthetics are used to define how your geoms should look
+    - Set the x, and y, positions 
+    - Other common variables
+        - size
+        - color
+        - shape
+- Anything that is not defined by a variable can be set outside of the aesthetics
+
+## Aesthetics
+```{r, message=FALSE, echo = TRUE}
+ggplot() +
+  geom_histogram(aes(x = diamonds$carat, y = ..density..)) +
+  geom_density(aes(x = diamonds$carat))
+```
+
+## Aesthetics
+
+-There's a better way to write this!
+```{r, message = FALSE, echo=TRUE}
+ggplot(data = diamonds, aes(x = carat)) +
+  geom_histogram(aes(y = ..density..)) +
+  geom_density()
+```
+
+
+
+## Non-Essential Aesthetics
+
+- Aesthetics that vary based on the data go inside aes()
+    - aes(x = diamonds$carat, y = ..density.., fill = ..density..)
+- Static aesthetics go inside the geom, but outside the aes().
+    - geom_histogram(aes(x = diamonds$carat, y = ..density), fill = "red")
+- Easiest way to add axis labels or a title is through labs()
+    - Add labs as if it were another geom
+    -labs(x = "Carat", y = "Density", main = "Density of Diamond Carats")
+  
+## Non-Essential Aesthetics
+```{r, message=FALSE, echo=TRUE}
+ggplot(data = diamonds, aes(x = carrat)) +
+  geom_histogram(aes(x = carat, y = ..density..), 
+                 fill = "purple", col = "black") +
+  geom_density(aes(x = carat), size = 1, col = "blue") +
+  labs(x = "Carat", y = "Density", title = "Density of Diamonds' Carats") +
+  theme_bw()
+```
+
+## Exercises
+
+1. Create a scatterplot of price against carat. Make it look nice, that is, create a title, axis labels and assign a new color.
+
+```{r, message = FALSE, include = FALSE}
+ggplot(data = diamonds, aes(x = carat, y = price)) +
+  geom_point(col = "blue") +
+  labs(x = "Carat", y = "Price", title = "Diamond Price vs Carat")
+```
+
+2. Modify the scatterplot such that the color of the points is linked to the cut. If you can, modify the legend labels so that they look a little nicer than the default.
+
+```{r, message= FALSE,  include = FALSE}
+ggplot(data = diamonds, aes(x = carat, y = price)) +
+  geom_point(aes(col = cut)) +
+  labs(x = "Carat", y = "Price (USD)", title = "Diamond Price vs Carat", col = "Cut")
+```
+
+3. There seems to be a little problem with overplotting; change the opacity of the points so that we can get a better idea of where the major point clusters are located.
+
+```{r, message = FALSE, include = FALSE}
+ggplot(data = diamonds, aes(x = carat, y = price)) +
+  geom_point(aes(col = cut), alpha = .01) +
+  labs(x = "Carat", y = "Price (USD)", title = "Diamond Price vs Carat", col = "Cut")
+```
+
+4. **Challenge** Adjust the color scheme of the points, to something you prefer more than the current one.
+```{r, meesage = FALSE, include = FALSE}
+ggplot(data = diamonds, aes(x = carat, y = price)) +
+  geom_point(aes(col = cut), alpha = .01) +
+  labs(x = "Carat", y = "Price (USD)", title = "Diamond Price vs Carat", col = "Cut") +
+  scale_color_manual(values = c("red", "orange", "green", "blue", "purple"))
+```
