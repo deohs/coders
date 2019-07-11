@@ -6,14 +6,14 @@ WA State Department of Ecology's [River and Stream Monitoring Program](https://e
 These two Markdown documents show process of two different datasets found on
 data.gov:
 
-* [WA WQI with Tidyverse](get_wa_wqi.md)
-* [WA WQI Alternate Dataset](get_wa_wqi_alt.md)
+* [WA WQI with Tidyverse](get_wa_wqi.md) - [dataset](https://catalog.data.gov/dataset/annual-2013-water-quality-index-scores-4d1fd)
+* [WA WQI Alternate Dataset](get_wa_wqi_alt.md) - [dataset](https://catalog.data.gov/dataset/wqi-parameter-scores-1994-2013-b0941)
 
 This document shows processing of the first dataset using only base-R functions:
 
 * [WA WQI with base-R](get_wa_wqi_2013_with_base_R.md)
 
-This document shows how to use "web scraping" to read the station list from a web page:
+This document shows how to use "web scraping" to read the [station list](https://fortress.wa.gov/ecy/eap/riverwq/regions/state.asp?symtype=1) from a web page:
 
 * [WA WQI Stations](get_wa_wqi_stations.md)
 
