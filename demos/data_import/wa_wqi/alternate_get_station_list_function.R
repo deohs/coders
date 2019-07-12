@@ -23,13 +23,13 @@ pacman::p_load(dplyr, purrr, rvest)
 get_station_list <- function() {
   # Read the page.
   url <- 'https://fortress.wa.gov/ecy/eap/riverwq/regions/state.asp?symtype=1'
-  pg <- read_html(url, encoding = 'windows-1252')
+  pg <- read_html(url)
   
   # Read the color coding key into a tibble with class and type columns.
   xmlns.td <- pg %>% html_nodes(xpath = "//table[@class='key']//table//td")
   key <- tibble(class = xmlns.td %>% html_attr('class'), 
                 type  = xmlns.td %>% html_text() %>% 
-                  gsub('^.?([A-Za-z-]+).*$', '\\1', .))
+                  gsub('(\\D+).*$', '\\1', .))
   
   # Get the list of stations from a two-column HTML table of class "list".
   xmlns.table <- pg %>% html_nodes(xpath = "//table[@class='list']")
@@ -38,14 +38,20 @@ get_station_list <- function() {
   
   # Extract attributes "class" and "href" from the hyperlinks ("a" tags).
   # As this will result in duplicates, remove these with "distinct()".
+  # Get the station.ID from the link text, filtered with a regular expression.
   xmlns.a <- xmlns.table %>% html_nodes("a")
-  df.attr <- xmlns.a %>% html_attrs() %>% t() %>% do.call("rbind", .) %>% 
-    as_tibble() %>% set_names(c('class', 'url')) %>% distinct()
+  df.attr <- xmlns.a %>% html_attrs() %>% bind_cols() %>% t() %>% 
+    as_tibble(.name_repair = 'universal') %>% 
+    set_names(c('class', 'url')) %>% distinct() %>% 
+    mutate(station.ID = xmlns.a %>% html_text() %>% 
+             grep('^[A-Z0-9]+$', ., value = TRUE))
   
-  df <- df.values %>% bind_cols(df.attr)
-  
+  # Merge table data and attributes variables into a single dataset.
   # Merge with "key" to translate CSS "class" attribute into station type.
-  return(df %>% inner_join(key, by = 'class') %>% select(-class))
+  df <- df.values %>% inner_join(df.attr, by = 'station.ID') %>% 
+    inner_join(key, by = 'class') %>% select(-class)
+  
+  return(df)
 }
 
 stations <- get_station_list()
