@@ -17,7 +17,7 @@ if (!is.null(sessionInfo()$otherPkgs)) {
 if (!require(pacman)) {
   install.packages('pacman', repos = 'http://cran.us.r-project.org')
 }
-pacman::p_load(dplyr, rvest)
+pacman::p_load(dplyr, purrr, rvest)
 
 # Read table of water quality stations from a web page.
 get_station_list <- function() {
@@ -26,20 +26,22 @@ get_station_list <- function() {
   pg <- read_html(url)
   
   # Read the color coding key into a tibble with class and type columns.
-  # Use an XPATH expression instead of a CSS selector to get the td tags.
   tds <- pg %>% html_nodes(xpath = "//table[@class='key']//table//td")
   key <- tibble(class = tds %>% html_attr('class'), 
                 type  = tds %>% html_text() %>% 
                   gsub('^.?([A-Za-z-]+).*$', '\\1', .))
   
   # Get the list of stations from a two-column HTML table of class "list".
-  links <- pg %>% html_nodes("table.list") %>% html_nodes("a")
-  df <- as_tibble(t(matrix(links %>% html_text(), nrow = 2)), 
-                  .name_repair = 'unique')
-  names(df) <- c('station.ID', 'station.name')
-  df$class <- t(matrix(links %>% html_attr('class'), nrow = 2))[, 1]
-  df$url <- t(matrix(links %>% html_attr('href'), nrow = 2))[, 1]
+  # Extract all needed variables from the hyperlinks ("a" tags).
+  a <- pg %>% html_nodes(xpath = "//table[@class='list']//td//a")
+  df <- a %>% html_text() %>% matrix(nrow = 2) %>% t() %>% 
+    as_tibble(.name_repair = 'unique') %>% 
+    set_names(c('station.ID', 'station.name'))
+  df.attr <- a %>% html_attrs() %>% t() %>% do.call("rbind", .) %>% 
+    as_tibble() %>% set_names(c('class', 'url')) %>% distinct()
+  df <- df %>% bind_cols(df.attr)
   
+  # Merge with "key" to translate CSS "class" attribute into station type.
   return(df %>% inner_join(key, by = 'class') %>% select(-class))
 }
 
