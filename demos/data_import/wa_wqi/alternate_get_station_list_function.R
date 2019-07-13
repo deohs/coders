@@ -44,12 +44,14 @@ get_station_list <- function() {
     as_tibble(.name_repair = 'universal') %>% 
     set_names(c('class', 'url')) %>% distinct() %>% 
     mutate(station.ID = xmlns.a %>% html_text() %>% 
-             grep('^[A-Z0-9]+$', ., value = TRUE))
+             grep('^[A-Z0-9]+$', ., value = TRUE)) %>% 
+    mutate_all(trimws)
   
   # Merge table data and attributes variables into a single dataset.
   # Merge with "key" to translate CSS "class" attribute into station type.
   df <- df.values %>% inner_join(df.attr, by = 'station.ID') %>% 
-    inner_join(key, by = 'class') %>% select(-class)
+    inner_join(key, by = 'class') %>% 
+    select(station.ID, station.name, type, url)
   
   return(df)
 }
