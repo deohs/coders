@@ -16,6 +16,7 @@ This document shows processing of the first dataset using only base-R functions:
 This document shows how to use "web scraping" to read the [station list](https://fortress.wa.gov/ecy/eap/riverwq/regions/state.asp?symtype=1) from a web page:
 
 * [WA WQI Stations](get_wa_wqi_stations.md)
+* [Alternate version of web scraping function (exercise)](alternate_get_station_list_function.R)
 
 This document shows how to get station details and WQI data with web scraping:
 
