@@ -505,3 +505,39 @@ g <- create_wqi_map(df, map_year)
 # View the map.
 if (!is.null(g)) print(g)
 ```
+
+## Exercises
+
+1. Run the code in [compare_stations_2013_wa_wqi.R](compare_stations_2013_wa_wqi.R) 
+   to compare the three data sources we found for WA WQI 2013. Are there any 
+   stations which have data values which are not the same in all three datasets?
+   Which dataset includes the most and least stations? Which has errors? What 
+   might be the source of these errors?
+2. What is the most recent year of WA WQI data in this dataset? Is there more 
+   recent data to be found online? How would you import it into R?
+
+## Advanced Exercises: CDC Salmonella
+
+Given the following code:
+
+```{r, eval=FALSE}
+# Go to the CDC "Reports of Active Salmonella Outbreak Investigations" page 
+# and get the "At A Glance" data for each outbreak.
+pacman::p_load(dplyr, tidyr, rvest)
+url <- 'https://www.cdc.gov/salmonella/outbreaks-active.html'
+links <- read_html(url) %>% html_nodes("div.syndicate") %>% 
+  html_nodes("ul") %>% html_nodes("a") %>% html_attr("href")
+lst <- lapply(links, function(x) { 
+  read_html(paste('https://www.cdc.gov', x, sep = '/')) %>% 
+    html_nodes(xpath = "//div[contains(@class, 'card')]//ul//li") %>% 
+    html_text() %>% grep(': \\d+$', ., value = TRUE)})
+df <- stack(setNames(lst, gsub('^/salmonella/(.*)/index.html$', '\\1', links)))
+df %>% mutate(values = gsub('Case Count', 'Reported Cases', values)) %>% 
+  separate(values, c('key', 'value'), sep=": ") %>% spread(key, value)
+```
+
+1. Modify this code to get the table of "Ill People" per state for each
+   recent outbreak. Example: https://www.cdc.gov/salmonella/uganda-06-19/map.html
+   Combine these into a single dataset with the outbreak identifier as a variable.
+2. Summarize your results by outbreak to compare with the values for "Reported 
+   Cases" and "States" obtained by using the code provided above. Do they match?
