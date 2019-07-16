@@ -38,7 +38,7 @@ lst <- lapply(links, function(x) {
 df <- stack(setNames(lst, gsub('^/salmonella/(.*)/index.html$', '\\1', links)))
 df <- df %>% mutate(values = gsub('Case Count', 'Reported Cases', values)) %>% 
   separate(values, c('key', 'value'), sep=": ") %>% spread(key, value) %>% 
-  mutate_at(vars(-ind), as.integer) %>% as_tibble()
+  mutate_at(vars(-ind), as.integer) %>% mutate(ind = as.character(ind))
 
 # Get the links to the "map" pages for each outbreak, if link is present.
 
@@ -64,7 +64,7 @@ df.states <- bind_rows(lapply(1:length(links.states), function(x) {
   lst.states[[x]]}))
 
 
-# ---  -- Summarize Data ------
+# ------- Summarize Data ------
 
 # Summarize the state totals to compare with "At A Glace" stats.
 
@@ -74,9 +74,8 @@ df.states.summ <- df.states %>% filter(State != "Total") %>% group_by(ind) %>%
 
 # Clean up the "At a Glance" stats to be comparable with stats from "maps".
 
-df.summ <- df %>% mutate(ind = as.character(ind)) %>% arrange(ind) %>% 
-  select(ind, `Reported Cases`, States) %>%  
-  filter(States %in% df.states.summ$States)
+df.summ <- df %>% arrange(ind) %>% select(ind, `Reported Cases`, States) %>%  
+  filter(States %in% df.states.summ$States) %>% as_tibble()
 
 
 # ------- Check Results -------
