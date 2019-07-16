@@ -57,10 +57,12 @@ lst.states <- lapply(links.states, function(x) {
 })
 
 # Convert list to a dataframe, including the outbreak ID as a variable.
+# Get the outbreak ID ("ind") from the 3rd element of the split link path.
+# Note: "ind" could also be extracted from the links using gsub().
 
-states <- gsub('^/salmonella/(.*)/map.html$', '\\1', links.states)
+ind <- sapply(strsplit(links.states, '/'), "[[", 3)
 df.states <- bind_rows(lapply(1:length(links.states), function(x) { 
-  lst.states[[x]]$ind <- states[x]
+  lst.states[[x]]$ind <- ind[x]
   lst.states[[x]]}))
 
 
