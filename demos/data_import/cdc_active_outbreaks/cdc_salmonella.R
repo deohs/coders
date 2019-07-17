@@ -41,6 +41,7 @@ df <- df %>% mutate(values = gsub('Case Count', 'Reported Cases', values)) %>%
   mutate_at(vars(-ind), as.integer) %>% mutate(ind = as.character(ind))
 
 # Get the links to the "map" pages for each outbreak, if link is present.
+# This assumes all have map links: links.states <- gsub('index', 'map', links)
 
 links.states <- unlist(lapply(links, function(x) { 
   read_html(paste('https://www.cdc.gov', x, sep = '/')) %>% 
@@ -49,11 +50,12 @@ links.states <- unlist(lapply(links, function(x) {
 
 # Get table from "map" page showing state totals for the most recent outbreak.
 # Use "html_node" function to only get first table of data (i.e., most recent).
+# Use "try" so that a broken link will not prevent processing other links.
 
 lst.states <- lapply(links.states, function(x) {
-  read_html(paste('https://www.cdc.gov', x, sep = '/')) %>% 
+  try(read_html(paste('https://www.cdc.gov', x, sep = '/')) %>% 
     html_node(xpath = "//div[contains(@class, 'card')]//table") %>%
-    html_table()
+    html_table())
 })
 
 # Convert list to a dataframe, including the outbreak ID as a variable.
@@ -62,8 +64,9 @@ lst.states <- lapply(links.states, function(x) {
 
 ind <- sapply(strsplit(links.states, '/'), "[[", 3)
 df.states <- bind_rows(lapply(1:length(links.states), function(x) { 
-  lst.states[[x]]$ind <- ind[x]
-  lst.states[[x]]}))
+  if (class(lst.states[[x]]) == "data.frame") {
+    lst.states[[x]] %>% mutate(ind = ind[x]) %>% filter(!is.na(State)) %>% 
+      select(1:3)}}))
 
 
 # ------- Summarize Data ------
