@@ -1,7 +1,7 @@
 ---
 title: 'Automated Data Extraction: WA WQI'
 author: "Brian High"
-date: "16 July, 2019"
+date: "17 July, 2019"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -67,6 +67,32 @@ if (! suppressPackageStartupMessages(require(pacman))) {
   install.packages('pacman', repos = 'http://cran.us.r-project.org')
 }
 pacman::p_load(dplyr, tidyr, rvest, mgsub, readr, purrr, ggmap)
+```
+
+```
+## Installing package into 'H:/My Documents/R/win-library/3.6'
+## (as 'lib' is unspecified)
+```
+
+```
+## Warning: unable to access index for repository http://www.stats.ox.ac.uk/pub/RWin/bin/windows/contrib/3.6:
+##   cannot open URL 'http://www.stats.ox.ac.uk/pub/RWin/bin/windows/contrib/3.6/PACKAGES'
+```
+
+```
+## package 'mgsub' successfully unpacked and MD5 sums checked
+## 
+## The downloaded binary packages are in
+## 	C:\Users\high.DEOHS.008\AppData\Local\Temp\4\RtmpwJ8rsd\downloaded_packages
+```
+
+```
+## 
+## mgsub installed
+```
+
+```
+## Warning: package 'mgsub' was built under R version 3.6.1
 ```
 
 We are loading:
@@ -534,11 +560,11 @@ head(station_details, 4)
 ## # A tibble: 4 x 23
 ##   type  Ben.Use uwa   ecoregion county contact   lat   lon LLID 
 ##   <chr> <chr>   <chr> <chr>     <chr>  <chr>   <dbl> <dbl> <chr>
-## 1 long… core/p… 790 … Puget Lo… Whatc… Clishe   48.8 -123. 1225…
-## 2 long… core/p… 596 … Puget Lo… Whatc… Christ…  48.8 -122. 1225…
-## 3 basin core/p… <NA>  Puget Lo… Whatc… Christ…  48.8 -122. 1222…
-## 4 basin core/p… <NA>  Puget Lo… Whatc… Christ…  48.9 -123. 1225…
-## # … with 14 more variables: Route.Measure <dbl>, river.mile <dbl>,
+## 1 long~ core/p~ 790 ~ Puget Lo~ Whatc~ Clishe   48.8 -123. 1225~
+## 2 long~ core/p~ 596 ~ Puget Lo~ Whatc~ Christ~  48.8 -122. 1225~
+## 3 basin core/p~ <NA>  Puget Lo~ Whatc~ Christ~  48.8 -122. 1222~
+## 4 basin core/p~ <NA>  Puget Lo~ Whatc~ Christ~  48.9 -123. 1225~
+## # ... with 14 more variables: Route.Measure <dbl>, river.mile <dbl>,
 ## #   substrate <chr>, flow <chr>, gaging <chr>, mixing <chr>,
 ## #   elevation <chr>, surrounding <chr>, waterbody.id <chr>,
 ## #   location.type <chr>, overall.quality <chr>, quality.level <chr>,
@@ -562,13 +588,13 @@ head(wa_wqi, 4)
 
 ```
 ## # A tibble: 4 x 12
-##    year fecal.coliform.… oxygen    pH suspended.solids temperature
+##    year fecal.coliform.~ oxygen    pH suspended.solids temperature
 ##   <dbl>            <dbl>  <dbl> <dbl>            <dbl>       <dbl>
 ## 1  1994               75     82    96               67          76
 ## 2  1995               75     80    96               29          73
 ## 3  1996               66     80    96               54          71
 ## 4  1997               63     73    93               36          82
-## # … with 6 more variables: total.persulf.nitrogen <dbl>,
+## # ... with 6 more variables: total.persulf.nitrogen <dbl>,
 ## #   total.phosphorus <dbl>, turbidity <dbl>, overall.WQI <dbl>,
 ## #   adjusted.for.flow <dbl>, Station <chr>
 ```
@@ -618,14 +644,14 @@ Given the following code:
 # and get the "At A Glance" data for each outbreak.
 pacman::p_load(dplyr, tidyr, rvest)
 url <- 'https://www.cdc.gov/salmonella/outbreaks-active.html'
-links <- read_html(url) %>% html_nodes("div.syndicate") %>% 
-  html_nodes("ul") %>% html_nodes("a") %>% html_attr("href")
+links <- read_html(url) %>% 
+  html_nodes(xpath = "//div[@class='syndicate']/ul/li/a") %>% html_attr("href")
 lst <- lapply(links, function(x) { 
   read_html(paste('https://www.cdc.gov', x, sep = '/')) %>% 
-    html_nodes(xpath = "//div[contains(@class, 'card')]//ul//li") %>% 
+    html_nodes(xpath = "//div[contains(@class, 'card')]/ul/li") %>% 
     html_text() %>% grep(': \\d+$', ., value = TRUE)})
 df <- stack(setNames(lst, gsub('^/salmonella/(.*)/index.html$', '\\1', links)))
-df %>% mutate(values = gsub('Case Count', 'Reported Cases', values)) %>% 
+df <- df %>% mutate(values = gsub('Case Count', 'Reported Cases', values)) %>% 
   separate(values, c('key', 'value'), sep=": ") %>% spread(key, value)
 ```
 

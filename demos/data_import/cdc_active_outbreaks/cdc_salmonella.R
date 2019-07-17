@@ -29,11 +29,11 @@ pacman::p_load(dplyr, tidyr, rvest)
 # and get the "At A Glance" data for each outbreak.
 
 url <- 'https://www.cdc.gov/salmonella/outbreaks-active.html'
-links <- read_html(url) %>% html_nodes("div.syndicate") %>% 
-  html_nodes("ul") %>% html_nodes("a") %>% html_attr("href")
+links <- read_html(url) %>% 
+  html_nodes(xpath = "//div[@class='syndicate']/ul/li/a") %>% html_attr("href")
 lst <- lapply(links, function(x) { 
   read_html(paste('https://www.cdc.gov', x, sep = '/')) %>% 
-    html_nodes(xpath = "//div[contains(@class, 'card')]//ul//li") %>% 
+    html_nodes(xpath = "//div[contains(@class, 'card')]/ul/li") %>% 
     html_text() %>% grep(': \\d+$', ., value = TRUE)})
 df <- stack(setNames(lst, gsub('^/salmonella/(.*)/index.html$', '\\1', links)))
 df <- df %>% mutate(values = gsub('Case Count', 'Reported Cases', values)) %>% 
