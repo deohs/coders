@@ -1,7 +1,7 @@
 ---
 title: 'Automated Data Extraction: WA WQI'
 author: "Brian High"
-date: "17 July, 2019"
+date: "18 July, 2019"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -67,32 +67,6 @@ if (! suppressPackageStartupMessages(require(pacman))) {
   install.packages('pacman', repos = 'http://cran.us.r-project.org')
 }
 pacman::p_load(dplyr, tidyr, rvest, mgsub, readr, purrr, ggmap)
-```
-
-```
-## Installing package into 'H:/My Documents/R/win-library/3.6'
-## (as 'lib' is unspecified)
-```
-
-```
-## Warning: unable to access index for repository http://www.stats.ox.ac.uk/pub/RWin/bin/windows/contrib/3.6:
-##   cannot open URL 'http://www.stats.ox.ac.uk/pub/RWin/bin/windows/contrib/3.6/PACKAGES'
-```
-
-```
-## package 'mgsub' successfully unpacked and MD5 sums checked
-## 
-## The downloaded binary packages are in
-## 	C:\Users\high.DEOHS.008\AppData\Local\Temp\4\RtmpwJ8rsd\downloaded_packages
-```
-
-```
-## 
-## mgsub installed
-```
-
-```
-## Warning: package 'mgsub' was built under R version 3.6.1
 ```
 
 We are loading:
