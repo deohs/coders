@@ -513,7 +513,14 @@ if (!is.null(g)) print(g)
    stations which have data values which are not the same in all three datasets?
    Which dataset includes the most and least stations? Which has errors? What 
    might be the source of these errors?
-2. What is the most recent year of WA WQI data in this dataset? Is there more 
+2. This document uses a simplified function to get the station list which does
+   not include extraction of the links to the station pages. Instead the links 
+   to the station pages are formed using an assumption that all of the links 
+   can be constructed using a standard convention. This will not be as 
+   flexible to changes in the website as it would if we extracted the links 
+   as provided and followed them to get station details and WQI data. Modify 
+   the code in the document to use this alternative method.
+3. What is the most recent year of WA WQI data in this dataset? Is there more 
    recent data to be found online? How would you import it into R?
 
 ## Advanced Exercises: CDC Salmonella
