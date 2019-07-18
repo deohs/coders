@@ -534,11 +534,11 @@ head(station_details, 4)
 ## # A tibble: 4 x 23
 ##   type  Ben.Use uwa   ecoregion county contact   lat   lon LLID 
 ##   <chr> <chr>   <chr> <chr>     <chr>  <chr>   <dbl> <dbl> <chr>
-## 1 long~ core/p~ 790 ~ Puget Lo~ Whatc~ Clishe   48.8 -123. 1225~
-## 2 long~ core/p~ 596 ~ Puget Lo~ Whatc~ Christ~  48.8 -122. 1225~
-## 3 basin core/p~ <NA>  Puget Lo~ Whatc~ Christ~  48.8 -122. 1222~
-## 4 basin core/p~ <NA>  Puget Lo~ Whatc~ Christ~  48.9 -123. 1225~
-## # ... with 14 more variables: Route.Measure <dbl>, river.mile <dbl>,
+## 1 long… core/p… 790 … Puget Lo… Whatc… Clishe   48.8 -123. 1225…
+## 2 long… core/p… 596 … Puget Lo… Whatc… Christ…  48.8 -122. 1225…
+## 3 basin core/p… <NA>  Puget Lo… Whatc… Christ…  48.8 -122. 1222…
+## 4 basin core/p… <NA>  Puget Lo… Whatc… Christ…  48.9 -123. 1225…
+## # … with 14 more variables: Route.Measure <dbl>, river.mile <dbl>,
 ## #   substrate <chr>, flow <chr>, gaging <chr>, mixing <chr>,
 ## #   elevation <chr>, surrounding <chr>, waterbody.id <chr>,
 ## #   location.type <chr>, overall.quality <chr>, quality.level <chr>,
@@ -562,13 +562,13 @@ head(wa_wqi, 4)
 
 ```
 ## # A tibble: 4 x 12
-##    year fecal.coliform.~ oxygen    pH suspended.solids temperature
+##    year fecal.coliform.… oxygen    pH suspended.solids temperature
 ##   <dbl>            <dbl>  <dbl> <dbl>            <dbl>       <dbl>
 ## 1  1994               75     82    96               67          76
 ## 2  1995               75     80    96               29          73
 ## 3  1996               66     80    96               54          71
 ## 4  1997               63     73    93               36          82
-## # ... with 6 more variables: total.persulf.nitrogen <dbl>,
+## # … with 6 more variables: total.persulf.nitrogen <dbl>,
 ## #   total.phosphorus <dbl>, turbidity <dbl>, overall.WQI <dbl>,
 ## #   adjusted.for.flow <dbl>, Station <chr>
 ```
