@@ -46,7 +46,14 @@ The code and this presentation are free to share and modify according to the
 ## Get data from EPA AQI
 
 Get the current Air Quality Index (AQI) from EPA's "Airnow" site (airnow.gov). 
-Append the data to a file so we can accumulate data over time. This can be setup 
+
+From the [AQI website](https://airnow.gov/index.cfm?action=aqibasics.aqi):
+
+"The higher the AQI value, the greater the level of air pollution and the 
+greater the health concern."
+
+We will look at current AQI values, but want to use our code to accumulate data 
+over time. Do do so, we will append the data to a file. This can be setup 
 as a scheduled task to automate data collection at an interval of your choosing.
 
 ## Setup
@@ -188,7 +195,7 @@ if (! file.exists(aqi_data_path)) {
 
 ## View the results
 
-List the top 15 cities having the highest AQI.
+List the top 15 Washington cities having the highest AQI (greater pollution level).
 
 
 ```r
@@ -200,21 +207,21 @@ df %>% filter(state == "Washington") %>% mutate(aqi = as.numeric(aqi)) %>%
 ## # A tibble: 15 x 2
 ##    location                                         aqi
 ##    <chr>                                          <dbl>
-##  1 Spokane                                           39
-##  2 Kennewick                                         35
-##  3 Ellensburg                                        32
-##  4 Cascade foothills of east King-Pierce counties    30
+##  1 Ellensburg                                        52
+##  2 Spokane                                           48
+##  3 Kennewick                                         34
+##  4 Cascade foothills of east King-Pierce counties    29
 ##  5 Vancouver                                         29
-##  6 Bellingham                                        26
-##  7 Cascade foothills of King County                  26
-##  8 Shelton                                           26
-##  9 Anacortes                                         25
-## 10 Seattle-Bellevue-Kent Valley                      25
-## 11 Port Angeles                                      23
-## 12 Cheeka Peak                                       19
-## 13 Sunnyside                                         19
-## 14 Port Townsend                                     18
-## 15 Tacoma-Puyallup                                   18
+##  6 Bellingham                                        27
+##  7 Seattle-Bellevue-Kent Valley                      27
+##  8 Shelton                                           27
+##  9 Cascade foothills of King County                  26
+## 10 Anacortes                                         25
+## 11 Port Angeles                                      22
+## 12 Sunnyside                                         20
+## 13 Cheeka Peak                                       19
+## 14 Port Townsend                                     19
+## 15 Tacoma-Puyallup                                   17
 ```
 
 ## Automated data collection

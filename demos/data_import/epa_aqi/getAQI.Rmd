@@ -66,7 +66,14 @@ The code and this presentation are free to share and modify according to the
 ## Get data from EPA AQI
 
 Get the current Air Quality Index (AQI) from EPA's "Airnow" site (airnow.gov). 
-Append the data to a file so we can accumulate data over time. This can be setup 
+
+From the [AQI website](https://airnow.gov/index.cfm?action=aqibasics.aqi):
+
+"The higher the AQI value, the greater the level of air pollution and the 
+greater the health concern."
+
+We will look at current AQI values, but want to use our code to accumulate data 
+over time. Do do so, we will append the data to a file. This can be setup 
 as a scheduled task to automate data collection at an interval of your choosing.
 
 ## Setup
@@ -192,7 +199,7 @@ if (! file.exists(aqi_data_path)) {
 
 ## View the results
 
-List the top 15 cities having the highest AQI.
+List the top 15 Washington cities having the highest AQI (greater pollution level).
 
 ```{r}
 df %>% filter(state == "Washington") %>% mutate(aqi = as.numeric(aqi)) %>% 
