@@ -600,7 +600,7 @@ g <- create_wqi_map(df, map_year)
 
 ## Exercises
 
-1. Run the code in [compare_stations_2013_wa_wqi.R](compare_stations_2013_wa_wqi.R) 
+1. Run the code in [compare_wa_wqi_datasets.R](compare_wa_wqi_datasets.R) 
    to compare the three data sources we found for WA WQI 2013. Are there any 
    stations which have data values which are not the same in all three datasets?
    Which dataset includes the most and least stations? Which has errors? What 
