@@ -112,7 +112,7 @@ web-scrape the page to get the choices in the state pick list. This pick list
 is located in the top-right of the web page in an HTML form. 
 
 In an HTML form, a pick list will be implemented using the `<select>` tag. 
-This one has a class of "stateid". The choices will be listed using the 
+This one has a ID of "stateid". The choices will be listed using the 
 `<option>` tag. The state IDs are found in the "value" attribute and the state 
 names are the tag's "text".
 
@@ -185,7 +185,7 @@ tail(states)
 
 ## Get AQI Data
 
-Now that we have the state IDs, we can get the page for each city in the state
+Now that we have the state IDs, we can get the page for the cities in the state
 of Washington.
 
 ```{r}
@@ -254,7 +254,9 @@ found here: [Washington_aqi.csv](data/Washington_aqi.csv)
    such as wildfires? (Do an internet search to find such events as reported 
    in the [news](https://www.seattlepi.com/washington-wildfires/), 
    [etc.](https://wasmoke.blogspot.com/))
-4. Find another website that has related real-time data such as 
+4. Modify the code provided to get data for all states, not just one (Washington). 
+   You will need a looping structure like a "for-loop" or use `lapply()`, etc.
+5. Find another website that has related real-time data such as 
    [Washington's Air Monitoring Network](https://fortress.wa.gov/ecy/enviwa/).
    Write code to harvest the data and accumulate it. Set up a scheduled task to 
    run this code daily or hourly. Compare the results with the EPA AQI data.

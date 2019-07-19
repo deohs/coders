@@ -93,7 +93,7 @@ web-scrape the page to get the choices in the state pick list. This pick list
 is located in the top-right of the web page in an HTML form. 
 
 In an HTML form, a pick list will be implemented using the `<select>` tag. 
-This one has a class of "stateid". The choices will be listed using the 
+This one has a ID of "stateid". The choices will be listed using the 
 `<option>` tag. The state IDs are found in the "value" attribute and the state 
 names are the tag's "text".
 
@@ -180,7 +180,7 @@ tail(states)
 
 ## Get AQI Data
 
-Now that we have the state IDs, we can get the page for each city in the state
+Now that we have the state IDs, we can get the page for the cities in the state
 of Washington.
 
 
@@ -219,21 +219,21 @@ df %>% filter(state == "Washington") %>% mutate(aqi = as.numeric(aqi)) %>%
 ## # A tibble: 15 x 2
 ##    location                                         aqi
 ##    <chr>                                          <dbl>
-##  1 Ellensburg                                        52
-##  2 Spokane                                           48
-##  3 Kennewick                                         34
+##  1 Ellensburg                                        53
+##  2 Spokane                                           44
+##  3 Kennewick                                         35
 ##  4 Cascade foothills of east King-Pierce counties    29
 ##  5 Vancouver                                         29
-##  6 Bellingham                                        27
-##  7 Seattle-Bellevue-Kent Valley                      27
-##  8 Shelton                                           27
-##  9 Cascade foothills of King County                  26
+##  6 Seattle-Bellevue-Kent Valley                      28
+##  7 Bellingham                                        27
+##  8 Cascade foothills of King County                  27
+##  9 Shelton                                           27
 ## 10 Anacortes                                         25
-## 11 Port Angeles                                      22
-## 12 Sunnyside                                         20
+## 11 Port Angeles                                      21
+## 12 Sunnyside                                         21
 ## 13 Cheeka Peak                                       19
 ## 14 Port Townsend                                     19
-## 15 Tacoma-Puyallup                                   17
+## 15 Raymond                                           18
 ```
 
 ## Automated data collection
@@ -274,7 +274,9 @@ found here: [Washington_aqi.csv](data/Washington_aqi.csv)
    such as wildfires? (Do an internet search to find such events as reported 
    in the [news](https://www.seattlepi.com/washington-wildfires/), 
    [etc.](https://wasmoke.blogspot.com/))
-4. Find another website that has related real-time data such as 
+4. Modify the code provided to get data for all states, not just one (Washington). 
+   You will need a looping structure like a "for-loop" or use `lapply()`, etc.
+5. Find another website that has related real-time data such as 
    [Washington's Air Monitoring Network](https://fortress.wa.gov/ecy/enviwa/).
    Write code to harvest the data and accumulate it. Set up a scheduled task to 
    run this code daily or hourly. Compare the results with the EPA AQI data.
