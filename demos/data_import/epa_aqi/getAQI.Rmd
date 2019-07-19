@@ -1,5 +1,5 @@
 ---
-title: 'Automated Data Extraction: EPA AQI'
+title: 'Collecting Real-time Data: EPA Air Quality Index (AQI)'
 author: "Brian High"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -242,13 +242,11 @@ harvested data to the same data file.
 A copy of this file with data collected hourly for at least one month can be 
 found here: [Washington_aqi.csv](data/Washington_aqi.csv)
 
-## Exercises
+## Exercises I
 
-1. Load the data of accumunlated historical data from the Github page linked 
-   in the previous slide: [Washington_aqi.csv](data/Washington_aqi.csv).
-2. Do some exploratory data analysis on this dataset. Find maximum and minimum 
-   values, means, etc. to try and gain insights. What did you discover? Any 
-   patterns or trends?
+1. Load the data of accumulated historical data from the Github page linked 
+   above in the previous section: [Washington_aqi.csv](data/Washington_aqi.csv).
+2. Do some exploratory data analysis on this dataset. What did you discover?
 3. Plot the data for a city in Washington over time and find the peaks in AQI. 
    Do those correspond with known air quality events near or upwind of this city,
    such as wildfires? (Do an internet search to find such events as reported 
@@ -256,14 +254,46 @@ found here: [Washington_aqi.csv](data/Washington_aqi.csv)
    [etc.](https://wasmoke.blogspot.com/))
 4. Modify the code provided to get data for all states, not just one (Washington). 
    You will need a looping structure like a "for-loop" or use `lapply()`, etc.
-5. Find another website that has related real-time data such as 
-   [Washington's Air Monitoring Network](https://fortress.wa.gov/ecy/enviwa/).
-   Write code to harvest the data and accumulate it. Set up a scheduled task to 
-   run this code daily or hourly. Compare the results with the EPA AQI data.
-   Here is some code to get you started:
+
+## Exercises II
+
+Given the following code which extracts real-time data PM 2.5 data from 
+[Washington's Air Monitoring Network](https://fortress.wa.gov/ecy/enviwa/):
 
 ```{r, eval=FALSE}
-pacman::p_load(rvest)
-url <- 'https://fortress.wa.gov/ecy/enviwa/DynamicTable.aspx?G_ID=75'
-read_html(url) %>% html_node("table#C1WebGrid1") %>% html_table(fill = TRUE)
+pacman::p_load(rvest, purrr, con2aqi)
+
+data_dir <- 'data'
+time_format <- '%m/%d/%Y %H:%M %p'
+tz <- 'America/Los_Angeles'
+
+# Get PM 2.5 "most recent data" from Washington's Air Monitoring Network. 
+# Combine the tables: Western PM 2.5, Eastern PM 2.5, and Central PM 2.5.
+df <- bind_rows(lapply(c('81', '109', '110'), function(x) {
+  url <- paste0('https://fortress.wa.gov/ecy/enviwa/DynamicTable.aspx?G_ID=', x)
+  df <- read_html(url) %>% html_node("table#C1WebGrid1") %>% html_table() %>% 
+    .[-(1:2),] %>% mutate_at(-(1:2), as.numeric)
+  df %>% mutate(pm25 = rowSums(df[, 3:ncol(df)], na.rm = TRUE)) %>% 
+    select(X1, X2, pm25) %>% set_names(c('site', 'timestamp', 'pm25')) %>% 
+    mutate(timestamp = as.POSIXct(timestamp, format=time_format, tz = tz)) %>% 
+    mutate(aqi = con2aqi('pm25', pm25))
+}))
+
+dir.create(data_dir, showWarnings = FALSE)
+write.csv(df, file.path(data_dir, 'enviwa_pm25_aqi.csv'), row.names = FALSE)
 ```
+
+## Exercises III
+
+5. Compare the results you found using the code above with the EPA AQI data. You 
+   will need to find a way to combine some locations from the "enviwa" dataset 
+   to match locations in the EPA AQI dataset. You will also need a way to match 
+   the timestamps. Are the two data sources in agreement?
+6. Modify the code to append new data to the output file as shown in the EPA 
+   AQI example within this document ("Get AQI Data"). Set up a scheduled task to 
+   run this code daily or hourly using the `cron` utility or similar. You can 
+   find help for using `cron` [online](https://opensource.com/article/17/11/how-use-cron-linux).
+   You can run `cron` from a Linux, Mac, or Unix computer. Since our server 
+   `plasmid` runs Linux, you can setup a "cron job" there. Please test the cron 
+   job to make sure it is working properly and remember to disable it when you 
+   no longer need it.
