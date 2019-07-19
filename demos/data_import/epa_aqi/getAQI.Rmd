@@ -65,16 +65,27 @@ The code and this presentation are free to share and modify according to the
 
 ## Get data from EPA AQI
 
-Get the current Air Quality Index (AQI) from EPA's "Airnow" site (airnow.gov). 
+This demo is an example of how to automate real-time data collection from the 
+web and accumulate it over time in a file.
 
-From the [AQI website](https://airnow.gov/index.cfm?action=aqibasics.aqi):
+As the summer progresses, we would expect air quality in our state to 
+decrease as wildfires will fill the air with smoke. To see these changes over 
+time, we can accumulate this real-time AQI data with the code in this demo.
+
+We will get the current Air Quality Index (AQI) from EPA's "Airnow" site: 
+[airnow.gov](https://airnow.gov/index.cfm). 
+
+From the ["AQI Basics" page](https://airnow.gov/index.cfm?action=aqibasics.aqi):
 
 "The higher the AQI value, the greater the level of air pollution and the 
 greater the health concern."
 
-We will look at current AQI values, but want to use our code to accumulate data 
-over time. Do do so, we will append the data to a file. This can be setup 
-as a scheduled task to automate data collection at an interval of your choosing.
+We will extract current AQI values from the web and append the data to a file 
+to accumulate data over time. 
+
+This can be setup as a scheduled task to automate data collection at an 
+interval of your choosing. You will see one way to do this toward the end of 
+this demo.
 
 ## Setup
 
@@ -90,19 +101,20 @@ pacman::p_load(dplyr, rvest, httr, readr)
 
 We are loading:
 
-* `dplyr` (several functions) and for data cleanup
+* `dplyr` (`mutate()`, `select()`, `filter()`, etc.) for data cleanup
 * `rvest` (and `xml2`) for web-scraping with `read_html()`, `html_nodes()`, etc.
-* `httr` for `GET()`, an alternative to `rvest::read_html()`
+* `httr` for `GET()`, which can be used in conjunction with `rvest::read_html()`
 
 ## Function: get_states
 
 We need a list of states and their state IDs. We will use `rvest` functions to 
 web-scrape the page to get the choices in the state pick list. This pick list 
-is located in the top-right of the web page. 
+is located in the top-right of the web page in an HTML form. 
 
-In an HTML form, a pick list will be implmented using the `<select>` tag. 
-This one has  class of "stateid". The choices will be listed using the `<option>` 
-tag. The state IDs are the "value" and the state names are the "text".
+In an HTML form, a pick list will be implemented using the `<select>` tag. 
+This one has a class of "stateid". The choices will be listed using the 
+`<option>` tag. The state IDs are found in the "value" attribute and the state 
+names are the tag's "text".
 
 ```{r}
 # Get a table of states and their stateid to facilitate lookup.
@@ -119,7 +131,7 @@ get_states <- function() {
 
 ## Function: get_AQI
 
-Use `GET()` from the `httr` package as an alternative to `read_html()` from the
+Use `GET()` from the `httr` package and pipe the output to `read_html()` from the
 `rvest` package. `GET()` allows you to send the query parameters as an R "list".
 
 ```{r}
@@ -230,3 +242,20 @@ harvested data to the same data file.
 A copy of this file with data collected hourly for at least one month can be 
 found here: [Washington_aqi.csv](data/Washington_aqi.csv)
 
+## Exercises
+
+1. Load the data of accumunlated historical data from the Github page linked 
+   in the previous slide: [Washington_aqi.csv](data/Washington_aqi.csv).
+2. Do some exploratory data analysis on this dataset. Find maximum and minimum 
+   values, means, etc. to try and gain insights. What did you discover? Any 
+   patterns or trends?
+3. Plot the data for a city in Washington over time and find the peaks in AQI. 
+   Do those correspond with known air quality events near or upwind of this city,
+   such as wildfires? (Do an internet search to find such events as reported 
+   in the [news](https://www.seattlepi.com/washington-wildfires/), 
+   [etc.](https://wasmoke.blogspot.com/))
+4. Find another website that has related real-time data such as 
+   [Washington's Air Monitoring Network](https://fortress.wa.gov/ecy/enviwa/).
+   Write code to harvest the data and accumulate it. Set up a scheduled task to 
+   run this code daily or hourly. Compare the results with the EPA AQI data.
+   
