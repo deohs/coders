@@ -278,4 +278,11 @@ found here: [Washington_aqi.csv](data/Washington_aqi.csv)
    [Washington's Air Monitoring Network](https://fortress.wa.gov/ecy/enviwa/).
    Write code to harvest the data and accumulate it. Set up a scheduled task to 
    run this code daily or hourly. Compare the results with the EPA AQI data.
-   
+   Here is some code to get you started:
+
+
+```r
+pacman::p_load(rvest)
+url <- 'https://fortress.wa.gov/ecy/enviwa/DynamicTable.aspx?G_ID=75'
+read_html(url) %>% html_node("table#C1WebGrid1") %>% html_table(fill = TRUE)
+```
