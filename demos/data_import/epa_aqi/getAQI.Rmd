@@ -255,13 +255,13 @@ found here: [Washington_aqi.csv](data/Washington_aqi.csv)
 4. Modify the code provided to get data for all states, not just one (Washington). 
    You will need a looping structure like a "for-loop" or use `lapply()`, etc.
 
-## Exercises II
+## Exercises II (Sample Code)
 
-Given the following code which extracts real-time data PM 2.5 data from 
+Given the following code which extracts (near) real-time PM 2.5 data from 
 [Washington's Air Monitoring Network](https://fortress.wa.gov/ecy/enviwa/):
 
 ```{r, eval=FALSE}
-pacman::p_load(rvest, purrr, con2aqi)
+pacman::p_load(dplyr, rvest, purrr, con2aqi)
 
 data_dir <- 'data'
 time_format <- '%m/%d/%Y %H:%M %p'
@@ -283,13 +283,9 @@ dir.create(data_dir, showWarnings = FALSE)
 write.csv(df, file.path(data_dir, 'enviwa_pm25_aqi.csv'), row.names = FALSE)
 ```
 
-## Exercises III
+## Exercises II
 
-5. Compare the results you found using the code above with the EPA AQI data. You 
-   will need to find a way to combine some locations from the "enviwa" dataset 
-   to match locations in the EPA AQI dataset. You will also need a way to match 
-   the timestamps. Are the two data sources in agreement?
-6. Modify the code to append new data to the output file as shown in the EPA 
+1. Modify the code above to append new data to the output file as shown in the EPA 
    AQI example within this document ("Get AQI Data"). Set up a scheduled task to 
    run this code daily or hourly using the `cron` utility or similar. You can 
    find help for using `cron` [online](https://opensource.com/article/17/11/how-use-cron-linux).
@@ -297,3 +293,16 @@ write.csv(df, file.path(data_dir, 'enviwa_pm25_aqi.csv'), row.names = FALSE)
    `plasmid` runs Linux, you can setup a "cron job" there. Please test the cron 
    job to make sure it is working properly and remember to disable it when you 
    no longer need it.
+2. Compare the results you found using the code above with the EPA AQI data. You 
+   will need to find a way to combine some locations from the "enviwa" dataset 
+   to match locations in the EPA AQI dataset. You will also need a way to match 
+   the timestamps. Are the two data sources in agreement?
+3. The EPA Airnow site says their AQI is derived from "Combined PM and O3". Modify
+   your "enviwa" code to get Ozone data from the "enviwa" site. The page "G_ID" 
+   for Ozone is 22. Merge this dataset with the PM 2.5 dataset matching on time 
+   and site. Then, for those locations for which Ozone data is available, 
+   modify your AQI calculation to use both Ozone and PM 2.5 to better replicate 
+   the results from the EPA Airnow AQI website. Do you get better agreement with 
+   the EPA Airnow AQI values now that Ozone has been included?
+
+   
