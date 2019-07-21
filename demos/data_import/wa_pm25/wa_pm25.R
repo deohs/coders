@@ -8,7 +8,7 @@
 # Append to a file so data can be accumnulated over time.
 # * See: https://fortress.wa.gov/ecy/enviwa/
 
-# ---------- Setup --------------
+# ---------- Setup ------------
 
 # Clear workspace of all objects and unload all extra (non-base) packages.
 rm(list = ls(all = TRUE))
@@ -32,6 +32,8 @@ tz <- 'America/Los_Angeles'
 # Create data folder if it does not exist.
 dir.create(data_dir, showWarnings = FALSE)
 
+# ------- Get Data -----------
+
 # Extract PM 2.5 data from web pages, calculate AQI and combine datasets.
 df.pm25 <- bind_rows(lapply(c('81', '109', '110'), function(x) {
   url <- paste0('https://fortress.wa.gov/ecy/enviwa/DynamicTable.aspx?G_ID=', x)
@@ -39,7 +41,7 @@ df.pm25 <- bind_rows(lapply(c('81', '109', '110'), function(x) {
     .[-(1:2),] %>% mutate_at(-(1:2), as.numeric)
   df %>% mutate(pm25 = rowSums(df[, 3:ncol(df)], na.rm = TRUE)) %>% 
     select(X1, X2, pm25) %>% set_names(c('site', 'timestamp', 'pm25')) %>% 
-    mutate(timestamp = as.POSIXct(timestamp, format=time_format, tz = tz)) %>% 
+    mutate(timestamp = as.POSIXct(timestamp, format = time_format, tz = tz)) %>% 
     mutate(aqi_pm25 = con2aqi('pm25', pm25))
 }))
 
@@ -50,13 +52,15 @@ df.o3 <-
   html_node("table#C1WebGrid1") %>% html_table() %>% 
   .[-(1:2),] %>% mutate_at(-(1:2), as.numeric) %>% 
   select(X1, X2, X3) %>% set_names(c('site', 'timestamp', 'o3')) %>% 
-  mutate(timestamp = as.POSIXct(timestamp, format=time_format, tz = tz)) %>% 
+  mutate(timestamp = as.POSIXct(timestamp, format = time_format, tz = tz)) %>% 
   tidyr::drop_na() %>% mutate(aqi_o3 = con2aqi('o3', o3, '1h'))
   
 
 # Merge PM 25 and Ozone datasets.
 df <- left_join(df.pm25, df.o3, by = c('site', 'timestamp'))
-  
+
+# ------- Save Data -----------
+
 # Append the data to a file to accumulate results over time.
 wa_aqi_data_path <- file.path(data_dir, 'enviwa_aqi.csv')
 
