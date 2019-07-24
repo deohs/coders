@@ -148,6 +148,9 @@ get_AQI <- function(stateid = '49') {
 }
 ```
 
+With this website, you could also substitute `POST()` in place of `GET()`. In 
+other cases, one may work better than the other.
+
 ## Define variables
 
 Before getting the data, we will define variables used to specify what data we

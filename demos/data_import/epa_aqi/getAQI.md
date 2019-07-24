@@ -1,7 +1,7 @@
 ---
 title: 'Collecting Real-time Data: EPA Air Quality Index (AQI)'
 author: "Brian High"
-date: "19 July, 2019"
+date: "23 July, 2019"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -131,6 +131,9 @@ get_AQI <- function(stateid = '49') {
 }
 ```
 
+With this website, you could also substitute `POST()` in place of `GET()`. In 
+other cases, one may work better than the other.
+
 ## Define variables
 
 Before getting the data, we will define variables used to specify what data we
@@ -219,21 +222,21 @@ df %>% filter(state == "Washington") %>% mutate(aqi = as.numeric(aqi)) %>%
 ## # A tibble: 15 x 2
 ##    location                                         aqi
 ##    <chr>                                          <dbl>
-##  1 Clarkston                                         33
-##  2 Kennewick                                         31
-##  3 Anacortes                                         29
-##  4 Spokane                                           29
-##  5 Seattle-Bellevue-Kent Valley                      27
-##  6 Vancouver                                         27
-##  7 Shelton                                           26
-##  8 Bellingham                                        23
-##  9 Cascade foothills of east King-Pierce counties    23
-## 10 Cascade foothills of King County                  22
-## 11 Colville                                          22
-## 12 Chehalis                                          21
-## 13 Bremerton-Silverdale-Bainbridge Island            20
-## 14 Port Angeles                                      20
-## 15 Everett-Marysville-Lynnwood                       19
+##  1 Spokane                                           67
+##  2 Kennewick                                         42
+##  3 Clarkston                                         39
+##  4 Seattle-Bellevue-Kent Valley                      33
+##  5 Sunnyside                                         33
+##  6 Omak                                              31
+##  7 Chelan                                            28
+##  8 Wenatchee                                         28
+##  9 Colville                                          27
+## 10 Twisp                                             27
+## 11 Confederated Tribes & Bands of Yakama Nations     26
+## 12 Cascade foothills of east King-Pierce counties    25
+## 13 Mt. Rainier                                       25
+## 14 Spokane Tribe of Spokane Reservation              25
+## 15 Tacoma-Puyallup                                   25
 ```
 
 ## Automated data collection
