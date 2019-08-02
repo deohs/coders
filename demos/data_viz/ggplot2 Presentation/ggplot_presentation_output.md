@@ -1,7 +1,7 @@
 ---
 title: "ggplot2 Introduction"
 author: "Hank Flury"
-date: "July 11, 2019"
+date: "August 02, 2019"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -15,31 +15,47 @@ output:
 
 
 ## Getting Started
+-We need to install "ggplot2" in order to use ggplot
+
+-We will also be useing "dplyr" for some data manipulation
 
 ```r
 if(! "ggplot2" %in% row.names(installed.packages())){
   install.packages("ggplot2")
 }
+if(! "dplyr" %in% row.names(installed.packages())){
+  install.packages("dplyr")
+}
 library(ggplot2)
+library(dplyr)
 ```
 
--We will use the "diamonds" dataset that comes with ggplot2
+## Data
+-We will use the dataset "avgs" which contains earthquake events in the PNW.
+
+-"quakes" will be used for excercises
 
 
 ```r
-head(diamonds)
+quakes <- read.csv("earthquakes_ggplot_demo.csv", stringsAsFactors = FALSE) %>% 
+  mutate(magGroup = as.factor((mag > 3) + (mag > 4))) %>% 
+  mutate(date = as.Date(regmatches(time, regexpr("\\d{4}-\\d{2}-\\d{2}", time)))) %>% 
+  arrange(magGroup) %>% select(date, latitude, longitude, depth, mag, mag, nst, gap,
+    horizontalError, depthError, magError, magGroup)
+avgs <- quakes %>% 
+  select(depth, mag, depthError, magGroup) %>% 
+  group_by(magGroup) %>% summarize_if(is.numeric, list(~mean(., na.rm = TRUE))) %>% 
+  arrange(magGroup)
+head(avgs)
 ```
 
 ```
-## # A tibble: 6 x 10
-##   carat cut       color clarity depth table price     x     y     z
-##   <dbl> <ord>     <ord> <ord>   <dbl> <dbl> <int> <dbl> <dbl> <dbl>
-## 1 0.23  Ideal     E     SI2      61.5    55   326  3.95  3.98  2.43
-## 2 0.21  Premium   E     SI1      59.8    61   326  3.89  3.84  2.31
-## 3 0.23  Good      E     VS1      56.9    65   327  4.05  4.07  2.31
-## 4 0.290 Premium   I     VS2      62.4    58   334  4.2   4.23  2.63
-## 5 0.31  Good      J     SI2      63.3    58   335  4.34  4.35  2.75
-## 6 0.24  Very Good J     VVS2     62.8    57   336  3.94  3.96  2.48
+## # A tibble: 3 x 4
+##   magGroup depth   mag depthError
+##   <fct>    <dbl> <dbl>      <dbl>
+## 1 0         15.2  2.70      4.26 
+## 2 1         19.7  3.34      1.47 
+## 3 2         15.2  4.27      0.893
 ```
 
 ## Advantages to ggplot
@@ -93,8 +109,8 @@ ggplot()
 
 ```r
 ggplot() +
-  geom_histogram() +
-  geom_density()
+  geom_bar() +
+  geom_errorbar()
 ```
 
 ![](ggplot_presentation_output_files/figure-html/geoms-1.png)<!-- -->
@@ -117,8 +133,9 @@ ggplot() +
 
 ```r
 ggplot() +
-  geom_histogram(aes(x = diamonds$carat, y = ..density..)) +
-  geom_density(aes(x = diamonds$carat))
+  geom_bar(aes(x = avgs$magGroup, y = avgs$depth), stat = "identity") +
+  geom_errorbar(aes(x = avgs$magGroup, ymin = avgs$depth - avgs$depthError, 
+                    ymax = avgs$depth + avgs$depthError))
 ```
 
 ![](ggplot_presentation_output_files/figure-html/aesth-1-1.png)<!-- -->
@@ -128,33 +145,33 @@ ggplot() +
 -There's a better way to write this!
 
 ```r
-ggplot(data = diamonds, aes(x = carat)) +
-  geom_histogram(aes(y = ..density..)) +
-  geom_density()
+ggplot(data = avgs, aes(x = magGroup)) +
+  geom_bar(aes(y = depth), stat = "identity") +
+  geom_errorbar(aes(ymin = depth - depthError, ymax = depth + depthError))
 ```
 
 ![](ggplot_presentation_output_files/figure-html/aesth-2-1.png)<!-- -->
 
-
-
 ## Non-Essential Aesthetics
 
 - Aesthetics that vary based on the data go inside aes()
-    - aes(x = diamonds$carat, y = ..density.., fill = ..density..)
+    - aes(x = magGroup, y = depth, fill = magGroup)
 - Static aesthetics go inside the geom, but outside the aes().
-    - geom_histogram(aes(x = diamonds$carat, y = ..density), fill = "red")
+    - geom_histogram(aes(x = magGroup, y = depth), fill = "red")
 - Easiest way to add axis labels or a title is through labs()
     - Add labs as if it were another geom
-    -labs(x = "Carat", y = "Density", main = "Density of Diamond Carats")
+    - labs(x = "Magnitude Group", y = "Depth", main = "Depth vs. Magnitude Group")
   
 ## Non-Essential Aesthetics
 
 ```r
-ggplot(data = diamonds, aes(x = carrat)) +
-  geom_histogram(aes(x = carat, y = ..density..), 
-                 fill = "purple", col = "black") +
-  geom_density(aes(x = carat), size = 1, col = "blue") +
-  labs(x = "Carat", y = "Density", title = "Density of Diamonds' Carats") +
+ggplot(data = avgs, aes(x = magGroup)) +
+  geom_bar(aes(y = depth), stat = "identity", fill = "skyblue", color = "black") +
+  geom_errorbar(aes(ymin = depth - depthError, ymax = depth + depthError), 
+                width = .4, color = "orange", size = 1.5) +
+  scale_x_discrete(labels = c("Low Magnitude", "Medium Magnitude", "High Magnitude")) +
+  labs(x = "Magnitude Group", y = "Depth (km)") + 
+  ggtitle("Average Depth by Magnitude Group") +
   theme_bw()
 ```
 
@@ -162,17 +179,31 @@ ggplot(data = diamonds, aes(x = carrat)) +
 
 ## Exercises
 
-1. Create a scatterplot of price against carat. Make it look nice, that is, create a title, axis labels and assign a new color.
+1. Using the "quakes" dataset, create a scatterplot of magnitude against depth. Create a title, axis labels and assign a new color to the points.
 
 
 
-2. Modify the scatterplot such that the color of the points is linked to the cut. If you can, modify the legend labels so that they look a little nicer than the default.
+2. On the same graph, vary a point's color base on its Magnitude Group. Be sure to also modify the legend.
 
 
 
-3. There seems to be a little problem with overplotting; change the opacity of the points so that we can get a better idea of where the major point clusters are located.
+3. Suppose we want to emphasize the point for which we are most confident about the magnitude accuracy. Make the opacity of the point proportional to the magnitude error. If you can, make it so there is not a legend for opacity.
 
 
 
-4. **Challenge** Adjust the color scheme of the points, to something you prefer more than the current one.
+4. *Challenge* Recreate the \"lollipop\" graph from the beginning of the presentation. Make the color the magnitude group, and come up with your own variable for the shape. Note: the y axis must be in the range [2,8], the title should include the date range of included earthquakes
 
+
+
+```r
+head(quakes, n = 2)
+```
+
+```
+##         date latitude longitude depth  mag nst gap horizontalError
+## 1 2018-12-23 44.82633 -123.7868 48.58 2.53  25 123            0.37
+## 2 2018-11-23 45.36230 -116.1946 10.00 3.00  NA  65            3.40
+##   depthError   magError magGroup
+## 1       0.69 0.09799848        0
+## 2       2.00 0.04800000        0
+```

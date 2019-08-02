@@ -17,17 +17,36 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ## Getting Started
+-We need to install "ggplot2" in order to use ggplot
+
+-We will also be useing "dplyr" for some data manipulation
 ```{r, message=FALSE,echo=TRUE}
 if(! "ggplot2" %in% row.names(installed.packages())){
   install.packages("ggplot2")
 }
+if(! "dplyr" %in% row.names(installed.packages())){
+  install.packages("dplyr")
+}
 library(ggplot2)
+library(dplyr)
 ```
 
--We will use the "diamonds" dataset that comes with ggplot2
+## Data
+-We will use the dataset "avgs" which contains earthquake events in the PNW.
+
+-"quakes" will be used for excercises
 
 ```{r, echo = TRUE}
-head(diamonds)
+quakes <- read.csv("earthquakes_ggplot_demo.csv", stringsAsFactors = FALSE) %>% 
+  mutate(magGroup = as.factor((mag > 3) + (mag > 4))) %>% 
+  mutate(date = as.Date(regmatches(time, regexpr("\\d{4}-\\d{2}-\\d{2}", time)))) %>% 
+  arrange(magGroup) %>% select(date, latitude, longitude, depth, mag, mag, nst, gap,
+    horizontalError, depthError, magError, magGroup)
+avgs <- quakes %>% 
+  select(depth, mag, depthError, magGroup) %>% 
+  group_by(magGroup) %>% summarize_if(is.numeric, list(~mean(., na.rm = TRUE))) %>% 
+  arrange(magGroup)
+head(avgs)
 ```
 
 ## Advantages to ggplot
@@ -79,8 +98,8 @@ ggplot()
 ## geoms
 ```{r geoms, echo = TRUE}
 ggplot() +
-  geom_histogram() +
-  geom_density()
+  geom_bar() +
+  geom_errorbar()
 ```
 
 -Our plot is still blank since we have not given it any data
@@ -100,71 +119,88 @@ ggplot() +
 ## Aesthetics
 ```{r aesth-1, message=FALSE, echo = TRUE}
 ggplot() +
-  geom_histogram(aes(x = diamonds$carat, y = ..density..)) +
-  geom_density(aes(x = diamonds$carat))
+  geom_bar(aes(x = avgs$magGroup, y = avgs$depth), stat = "identity") +
+  geom_errorbar(aes(x = avgs$magGroup, ymin = avgs$depth - avgs$depthError, 
+                    ymax = avgs$depth + avgs$depthError))
 ```
 
 ## Aesthetics
 
 -There's a better way to write this!
 ```{r aesth-2, message = FALSE, echo=TRUE}
-ggplot(data = diamonds, aes(x = carat)) +
-  geom_histogram(aes(y = ..density..)) +
-  geom_density()
+ggplot(data = avgs, aes(x = magGroup)) +
+  geom_bar(aes(y = depth), stat = "identity") +
+  geom_errorbar(aes(ymin = depth - depthError, ymax = depth + depthError))
 ```
-
-
 
 ## Non-Essential Aesthetics
 
 - Aesthetics that vary based on the data go inside aes()
-    - aes(x = diamonds$carat, y = ..density.., fill = ..density..)
+    - aes(x = magGroup, y = depth, fill = magGroup)
 - Static aesthetics go inside the geom, but outside the aes().
-    - geom_histogram(aes(x = diamonds$carat, y = ..density), fill = "red")
+    - geom_histogram(aes(x = magGroup, y = depth), fill = "red")
 - Easiest way to add axis labels or a title is through labs()
     - Add labs as if it were another geom
-    -labs(x = "Carat", y = "Density", main = "Density of Diamond Carats")
+    - labs(x = "Magnitude Group", y = "Depth", main = "Depth vs. Magnitude Group")
   
 ## Non-Essential Aesthetics
 ```{r non-ess-aesth, message=FALSE, echo=TRUE}
-ggplot(data = diamonds, aes(x = carrat)) +
-  geom_histogram(aes(x = carat, y = ..density..), 
-                 fill = "purple", col = "black") +
-  geom_density(aes(x = carat), size = 1, col = "blue") +
-  labs(x = "Carat", y = "Density", title = "Density of Diamonds' Carats") +
+ggplot(data = avgs, aes(x = magGroup)) +
+  geom_bar(aes(y = depth), stat = "identity", fill = "skyblue", color = "black") +
+  geom_errorbar(aes(ymin = depth - depthError, ymax = depth + depthError), 
+                width = .4, color = "orange", size = 1.5) +
+  scale_x_discrete(labels = c("Low Magnitude", "Medium Magnitude", "High Magnitude")) +
+  labs(x = "Magnitude Group", y = "Depth (km)") + 
+  ggtitle("Average Depth by Magnitude Group") +
   theme_bw()
 ```
 
 ## Exercises
 
-1. Create a scatterplot of price against carat. Make it look nice, that is, create a title, axis labels and assign a new color.
+1. Using the "quakes" dataset, create a scatterplot of magnitude against depth. Create a title, axis labels and assign a new color to the points.
 
 ```{r e1, message = FALSE, include = FALSE}
-ggplot(data = diamonds, aes(x = carat, y = price)) +
+ggplot(data = quakes, aes(x = mag, y = depth)) +
   geom_point(col = "blue") +
-  labs(x = "Carat", y = "Price", title = "Diamond Price vs Carat")
+  labs(x = "Magnitude", y = "Depth (km)", title = "PNW Earthquakes Magnitude vs. Depth") +
+  theme_bw()
 ```
 
-2. Modify the scatterplot such that the color of the points is linked to the cut. If you can, modify the legend labels so that they look a little nicer than the default.
+2. On the same graph, vary a point's color base on its Magnitude Group. Be sure to also modify the legend.
 
 ```{r e2, message= FALSE,  include = FALSE}
-ggplot(data = diamonds, aes(x = carat, y = price)) +
-  geom_point(aes(col = cut)) +
-  labs(x = "Carat", y = "Price (USD)", title = "Diamond Price vs Carat", col = "Cut")
+ggplot(data = quakes, aes(x = mag, y = depth, col = magGroup)) +
+  geom_point() +
+  labs(x = "Magnitude", y = "Depth (km)", title = "PNW Earthquakes Magnitude vs. Depth", col = "Magnitude Group") +
+  scale_color_discrete(labels = c("Low Magnitude", "Medium Magnitude", "High Magnitude")) +
+  theme_bw()
 ```
 
-3. There seems to be a little problem with overplotting; change the opacity of the points so that we can get a better idea of where the major point clusters are located.
+3. Suppose we want to emphasize the point for which we are most confident about the magnitude accuracy. Make the opacity of the point proportional to the magnitude error. If you can, remove the legend for opacity.
 
 ```{r e3, message = FALSE, include = FALSE}
-ggplot(data = diamonds, aes(x = carat, y = price)) +
-  geom_point(aes(col = cut), alpha = .01) +
-  labs(x = "Carat", y = "Price (USD)", title = "Diamond Price vs Carat", col = "Cut")
+ggplot(data = quakes, aes(x = mag, y = depth, col = magGroup, alpha = 1 - (magError / max(magError, na.rm = TRUE)))) +
+  geom_point() +
+  labs(x = "Magnitude", y = "Depth (km)", title = "PNW Earthquakes Magnitude vs. Depth", col = "Magnitude Group") +
+  scale_color_discrete(labels = c("Low Magnitude", "Medium Magnitude", "High Magnitude")) +
+  scale_alpha(guide = "none") +
+  theme_bw()
 ```
 
-4. **Challenge** Adjust the color scheme of the points, to something you prefer more than the current one.
+4. *Challenge* Recreate the \"lollipop\" graph from the beginning of the presentation. Make the color the magnitude group, and come up with your own variable for the shape. Note: the y axis must be in the range [2,8], the title should include the date range of included earthquakes
 ```{r e4, message = FALSE, include = FALSE}
-ggplot(data = diamonds, aes(x = carat, y = price)) +
-  geom_point(aes(col = cut), alpha = .01) +
-  labs(x = "Carat", y = "Price (USD)", title = "Diamond Price vs Carat", col = "Cut") +
-  scale_color_manual(values = c("red", "orange", "green", "blue", "purple"))
+#Note, I chose the color to represent a latitude >= or < -122. 
+ggplot(data = quakes, aes(x = date, y = mag)) +
+  geom_point(aes(col = magGroup, shape = longitude >= -122), size = 5) +
+  scale_shape_manual(values = c("*", "+")) +
+  geom_segment(aes(xend = date, y = 2, yend = mag), linetype = "dotted") +
+  ylim(2, 8) +
+  labs(x = "Date", y = "Magnitude", color = "Magnitude Group", shape = "Longitude >= -121") +
+  ggtitle(paste0("Time Series of Earthquake Magnitudes\nbetween ",  min(quakes$date)," and ", max(quakes$date))) +
+  scale_color_discrete(labels = c("Low Magnitude", "Medium Magnitude", "High Magnitude")) +
+  theme_bw()
+```
+
+```{r eExtra, echo=TRUE}
+head(quakes, n = 2)
 ```
