@@ -36,7 +36,8 @@ wa_coverage <- read_csv(data_fn)
 wa_coverage <- wa_coverage %>% 
   rename('lat' = 'Latitude', 'lon' = 'Longitude') %>% 
   select(`School Name`, `School District`, Enrollment, Percent, lat, lon) %>%
-  mutate(Percent = as.numeric(gsub('%', '', Percent))) %>% drop_na()
+  mutate(Percent = as.numeric(gsub('%', '', Percent))) %>% drop_na() %>% 
+  filter(Enrollment > 0)
 
 # Create popup.
 wa_coverage <- wa_coverage %>% 
