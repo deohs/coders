@@ -1,0 +1,81 @@
+﻿ACH Name,ACH,Total Geogs,exemptVSincomplete,EnrolAdjust,Count,Data Suppressed,Enrolled,Enrolled_Text,Geography,Geometry,Grade,Groups,Measure,Grouped,Intptlat10,Intptlon10,Lower,Name10,Namelsad10,Name,Number of Records,Percent,Pcnt,Reliable,School Year,State,Upper
+,,40,exempt,569977.5,54640,,1139955,1139955,County,,K-12,Status,Exempt,Status,,,4.8%,,,State,1,4.8%,4.8%,Yes,2018-19,,4.8%
+,,40,exempt,569977.5,1011735,,1139955,1139955,County,,K-12,Status,Complete,Status,,,88.7%,,,State,1,88.8%,88.8%,Yes,2018-19,,88.8%
+King,6,40,exempt,172341,12427,No,344682,344682,County,POLYGON,K-12,Status,Exempt,Status,47.4935537,-121.8323748,3.6%,King,King County,King,1,3.6%,3.6%,Yes,2018-19,Washington,3.6%
+King,6,40,exempt,172341,307524,No,344682,344682,County,POLYGON,K-12,Status,Complete,Status,47.4935537,-121.8323748,89.2%,King,King County,King,1,89.2%,89.2%,Yes,2018-19,Washington,89.3%
+Pierce,5,40,exempt,65501,5234,No,131002,131002,County,POLYGON,K-12,Status,Exempt,Status,47.0407155,-122.144709,3.9%,Pierce,Pierce County,Pierce,1,4.0%,4.0%,Yes,2018-19,Washington,4.0%
+Pierce,5,40,exempt,65501,120283,No,131002,131002,County,POLYGON,K-12,Status,Complete,Status,47.0407155,-122.144709,91.7%,Pierce,Pierce County,Pierce,1,91.8%,91.8%,Yes,2018-19,Washington,91.9%
+North Sound,1,40,exempt,54990.5,6433,No,109981,109981,County,POLYGON,K-12,Status,Exempt,Status,48.054913,-121.7664118,5.8%,Snohomish,Snohomish County,Snohomish,1,5.8%,5.8%,Yes,2018-19,Washington,5.9%
+North Sound,1,40,exempt,54990.5,97827,No,109981,109981,County,POLYGON,K-12,Status,Complete,Status,48.054913,-121.7664118,88.9%,Snohomish,Snohomish County,Snohomish,1,88.9%,88.9%,Yes,2018-19,Washington,89.0%
+Region4,4,40,exempt,40865.5,6106,No,81731,81731,County,POLYGON,K-12,Status,Exempt,Status,45.7716737,-122.4859027,7.4%,Clark,Clark County,Clark,1,7.5%,7.5%,Yes,2018-19,Washington,7.6%
+Region4,4,40,exempt,40865.5,65596,No,81731,81731,County,POLYGON,K-12,Status,Complete,Status,45.7716737,-122.4859027,80.1%,Clark,Clark County,Clark,1,80.3%,80.3%,Yes,2018-19,Washington,80.4%
+Better Health Together,9,40,exempt,34187,5782,No,68374,68374,County,POLYGON,K-12,Status,Exempt,Status,47.6203793,-117.4043916,8.4%,Spokane,Spokane County,Spokane,1,8.5%,8.5%,Yes,2018-19,Washington,8.6%
+Better Health Together,9,40,exempt,34187,59076,No,68374,68374,County,POLYGON,K-12,Status,Complete,Status,47.6203793,-117.4043916,86.3%,Spokane,Spokane County,Spokane,1,86.4%,86.4%,Yes,2018-19,Washington,86.5%
+Greater Columbia,8,40,exempt,25205,697,No,50410,50410,County,POLYGON,K-12,Status,Exempt,Status,46.4565581,-120.7401446,1.3%,Yakima,Yakima County,Yakima,1,1.4%,1.4%,Yes,2018-19,Washington,1.4%
+Greater Columbia,8,40,exempt,25205,47691,No,50410,50410,County,POLYGON,K-12,Status,Complete,Status,46.4565581,-120.7401446,94.5%,Yakima,Yakima County,Yakima,1,94.6%,94.6%,Yes,2018-19,Washington,94.7%
+Cascade Pacific Action Alliance,3,40,exempt,22728,2765,No,45456,45456,County,POLYGON,K-12,Status,Exempt,Status,46.9325978,-122.8294407,6.0%,Thurston,Thurston County,Thurston,1,6.1%,6.1%,Yes,2018-19,Washington,6.2%
+Cascade Pacific Action Alliance,3,40,exempt,22728,37558,No,45456,45456,County,POLYGON,K-12,Status,Complete,Status,46.9325978,-122.8294407,82.4%,Thurston,Thurston County,Thurston,1,82.6%,82.6%,Yes,2018-19,Washington,82.8%
+Greater Columbia,8,40,exempt,18681.5,1192,No,37363,37363,County,POLYGON,K-12,Status,Exempt,Status,46.228072,-119.5168636,3.1%,Benton,Benton County,Benton,1,3.2%,3.2%,Yes,2018-19,Washington,3.3%
+Greater Columbia,8,40,exempt,18681.5,34265,No,37363,37363,County,POLYGON,K-12,Status,Complete,Status,46.228072,-119.5168636,91.6%,Benton,Benton County,Benton,1,91.7%,91.7%,Yes,2018-19,Washington,91.9%
+Olympic,2,40,exempt,18266,1729,No,36532,36532,County,POLYGON,K-12,Status,Exempt,Status,47.6396874,-122.6496358,4.6%,Kitsap,Kitsap County,Kitsap,1,4.7%,4.7%,Yes,2018-19,Washington,4.8%
+Olympic,2,40,exempt,18266,33234,No,36532,36532,County,POLYGON,K-12,Status,Complete,Status,47.6396874,-122.6496358,90.8%,Kitsap,Kitsap County,Kitsap,1,91.0%,91.0%,Yes,2018-19,Washington,91.1%
+North Sound,1,40,exempt,14424.5,2411,No,28849,28849,County,POLYGON,K-12,Status,Exempt,Status,48.8426531,-121.8364325,8.2%,Whatcom,Whatcom County,Whatcom,1,8.4%,8.4%,Yes,2018-19,Washington,8.5%
+North Sound,1,40,exempt,14424.5,25198,No,28849,28849,County,POLYGON,K-12,Status,Complete,Status,48.8426531,-121.8364325,87.1%,Whatcom,Whatcom County,Whatcom,1,87.3%,87.3%,Yes,2018-19,Washington,87.5%
+Greater Columbia,8,40,exempt,10125,324,No,20250,20250,County,POLYGON,K-12,Status,Exempt,Status,46.5345799,-118.9069436,1.5%,Franklin,Franklin County,Franklin,1,1.6%,1.6%,Yes,2018-19,Washington,1.7%
+Greater Columbia,8,40,exempt,10125,18997,No,20250,20250,County,POLYGON,K-12,Status,Complete,Status,46.5345799,-118.9069436,93.6%,Franklin,Franklin County,Franklin,1,93.8%,93.8%,Yes,2018-19,Washington,94.0%
+North Sound,1,40,exempt,9945.5,1299,No,19891,19891,County,POLYGON,K-12,Status,Exempt,Status,48.4930662,-121.8162777,6.4%,Skagit,Skagit County,Skagit,1,6.5%,6.5%,Yes,2018-19,Washington,6.7%
+North Sound,1,40,exempt,9945.5,17288,No,19891,19891,County,POLYGON,K-12,Status,Complete,Status,48.4930662,-121.8162777,86.7%,Skagit,Skagit County,Skagit,1,86.9%,86.9%,Yes,2018-19,Washington,87.2%
+Cascade Pacific Action Alliance,3,40,exempt,8326,759,No,16652,16652,County,POLYGON,K-12,Status,Exempt,Status,46.1859234,-122.6586822,4.4%,Cowlitz,Cowlitz County,Cowlitz,1,4.6%,4.6%,Yes,2018-19,Washington,4.7%
+Cascade Pacific Action Alliance,3,40,exempt,8326,15456,No,16652,16652,County,POLYGON,K-12,Status,Complete,Status,46.1859234,-122.6586822,92.6%,Cowlitz,Cowlitz County,Cowlitz,1,92.8%,92.8%,Yes,2018-19,Washington,93.0%
+North Central,7,40,exempt,8129.5,504,No,16259,16259,County,POLYGON,K-12,Status,Exempt,Status,47.2136328,-119.467788,3.0%,Grant,Grant County,Grant,1,3.1%,3.1%,Yes,2018-19,Washington,3.2%
+North Central,7,40,exempt,8129.5,14855,No,16259,16259,County,POLYGON,K-12,Status,Complete,Status,47.2136328,-119.467788,91.1%,Grant,Grant County,Grant,1,91.4%,91.4%,Yes,2018-19,Washington,91.6%
+Cascade Pacific Action Alliance,3,40,exempt,7753.5,547,No,15507,15507,County,POLYGON,K-12,Status,Exempt,Status,46.5800714,-122.3774443,3.4%,Lewis,Lewis County,Lewis,1,3.5%,3.5%,Yes,2018-19,Washington,3.7%
+Cascade Pacific Action Alliance,3,40,exempt,7753.5,14062,No,15507,15507,County,POLYGON,K-12,Status,Complete,Status,46.5800714,-122.3774443,90.4%,Lewis,Lewis County,Lewis,1,90.7%,90.7%,Yes,2018-19,Washington,90.9%
+North Central,7,40,exempt,7132.5,580,No,14265,14265,County,POLYGON,K-12,Status,Exempt,Status,47.8598915,-120.6185425,3.9%,Chelan,Chelan County,Chelan,1,4.1%,4.1%,Yes,2018-19,Washington,4.2%
+North Central,7,40,exempt,7132.5,13497,No,14265,14265,County,POLYGON,K-12,Status,Complete,Status,47.8598915,-120.6185425,94.4%,Chelan,Chelan County,Chelan,1,94.6%,94.6%,Yes,2018-19,Washington,94.8%
+Cascade Pacific Action Alliance,3,40,exempt,6163,398,No,12326,12326,County,POLYGON,K-12,Status,Exempt,Status,47.3541257,-123.1738498,3.1%,Mason,Mason County,Mason,1,3.2%,3.2%,Yes,2018-19,Washington,3.4%
+Cascade Pacific Action Alliance,3,40,exempt,6163,10476,No,12326,12326,County,POLYGON,K-12,Status,Complete,Status,47.3541257,-123.1738498,84.7%,Mason,Mason County,Mason,1,85.0%,85.0%,Yes,2018-19,Washington,85.3%
+Cascade Pacific Action Alliance,3,40,exempt,5317,370,No,10634,10634,County,POLYGON,K-12,Status,Exempt,Status,47.1427856,-123.8270425,3.3%,Grays Harbor,Grays Harbor County,Grays Harbor,1,3.5%,3.5%,Yes,2018-19,Washington,3.7%
+Cascade Pacific Action Alliance,3,40,exempt,5317,9273,No,10634,10634,County,POLYGON,K-12,Status,Complete,Status,47.1427856,-123.8270425,86.9%,Grays Harbor,Grays Harbor County,Grays Harbor,1,87.2%,87.2%,Yes,2018-19,Washington,87.5%
+North Sound,1,40,exempt,4510.5,624,No,9021,9021,County,POLYGON,K-12,Status,Exempt,Status,48.1584361,-122.6705032,6.7%,Island,Island County,Island,1,6.9%,6.9%,Yes,2018-19,Washington,7.2%
+North Sound,1,40,exempt,4510.5,8151,No,9021,9021,County,POLYGON,K-12,Status,Complete,Status,48.1584361,-122.6705032,90.0%,Island,Island County,Island,1,90.4%,90.4%,Yes,2018-19,Washington,90.7%
+Olympic,2,40,exempt,4306.5,769,No,8613,8613,County,POLYGON,K-12,Status,Exempt,Status,48.1130086,-123.9306111,8.6%,Clallam,Clallam County,Clallam,1,8.9%,8.9%,Yes,2018-19,Washington,9.2%
+Olympic,2,40,exempt,4306.5,7290,No,8613,8613,County,POLYGON,K-12,Status,Complete,Status,48.1130086,-123.9306111,84.3%,Clallam,Clallam County,Clallam,1,84.6%,84.6%,Yes,2018-19,Washington,85.0%
+North Sound,1,40,exempt,1309,1699,No,2618,2618,County,POLYGON,K-12,Status,Complete,Status,48.5088615,-123.1006162,64.0%,San Juan,San Juan County,San Juan,1,64.9%,64.9%,Yes,2018-19,Washington,65.8%
+North Sound,1,40,exempt,1309,244,No,2618,2618,County,POLYGON,K-12,Status,Exempt,Status,48.5088615,-123.1006162,8.8%,San Juan,San Juan County,San Juan,1,9.3%,9.3%,Yes,2018-19,Washington,9.9%
+Olympic,2,40,exempt,1368.5,2100,No,2737,2737,County,POLYGON,K-12,Status,Complete,Status,47.8026411,-123.5218104,75.9%,Jefferson,Jefferson County,Jefferson,1,76.7%,76.7%,Yes,2018-19,Washington,77.5%
+Olympic,2,40,exempt,1368.5,352,No,2737,2737,County,POLYGON,K-12,Status,Exempt,Status,47.8026411,-123.5218104,12.2%,Jefferson,Jefferson County,Jefferson,1,12.9%,12.9%,Yes,2018-19,Washington,13.5%
+Cascade Pacific Action Alliance,3,40,exempt,1407.5,2440,No,2815,2815,County,POLYGON,K-12,Status,Complete,Status,46.5565866,-123.7824193,86.0%,Pacific,Pacific County,Pacific,1,86.7%,86.7%,Yes,2018-19,Washington,87.3%
+Cascade Pacific Action Alliance,3,40,exempt,259,434,No,518,518,County,POLYGON,K-12,Status,Complete,Status,46.2946377,-123.4244583,82.2%,Wahkiakum,Wahkiakum County,Wahkiakum,1,83.8%,83.8%,Yes,2018-19,Washington,85.4%
+Cascade Pacific Action Alliance,3,40,exempt,1407.5,148,No,2815,2815,County,POLYGON,K-12,Status,Exempt,Status,46.5565866,-123.7824193,4.8%,Pacific,Pacific County,Pacific,1,5.3%,5.3%,Yes,2018-19,Washington,5.7%
+Cascade Pacific Action Alliance,3,40,exempt,259,53,No,518,518,County,POLYGON,K-12,Status,Exempt,Status,46.2946377,-123.4244583,8.9%,Wahkiakum,Wahkiakum County,Wahkiakum,1,10.2%,10.2%,Yes,2018-19,Washington,11.6%
+Region4,4,40,exempt,1378,2272,No,2756,2756,County,POLYGON,K-12,Status,Complete,Status,45.8695091,-120.7801171,81.7%,Klickitat,Klickitat County,Klickitat,1,82.4%,82.4%,Yes,2018-19,Washington,83.2%
+Region4,4,40,exempt,368.5,637,No,737,737,County,POLYGON,K-12,Status,Complete,Status,46.0247815,-121.9532269,85.2%,Skamania,Skamania County,Skamania,1,86.4%,86.4%,Yes,2018-19,Washington,87.7%
+Region4,4,40,exempt,1378,282,No,2756,2756,County,POLYGON,K-12,Status,Exempt,Status,45.8695091,-120.7801171,9.7%,Klickitat,Klickitat County,Klickitat,1,10.2%,10.2%,Yes,2018-19,Washington,10.8%
+Region4,4,40,exempt,368.5,59,No,737,737,County,POLYGON,K-12,Status,Exempt,Status,46.0247815,-121.9532269,7.0%,Skamania,Skamania County,Skamania,1,8.0%,8.0%,Yes,2018-19,Washington,9.0%
+North Central,7,40,exempt,3298.5,6406,No,6597,6597,County,POLYGON,K-12,Status,Complete,Status,47.7358661,-119.6958798,96.9%,Douglas,Douglas County,Douglas,1,97.1%,97.1%,Yes,2018-19,Washington,97.3%
+North Central,7,40,exempt,3677.5,6428,No,7355,7355,County,POLYGON,K-12,Status,Complete,Status,48.5509709,-119.6910346,87.0%,Okanogan,Okanogan County,Okanogan,1,87.4%,87.4%,Yes,2018-19,Washington,87.8%
+North Central,7,40,exempt,3298.5,116,No,6597,6597,County,POLYGON,K-12,Status,Exempt,Status,47.7358661,-119.6958798,1.6%,Douglas,Douglas County,Douglas,1,1.8%,1.8%,Yes,2018-19,Washington,1.9%
+North Central,7,40,exempt,3677.5,472,No,7355,7355,County,POLYGON,K-12,Status,Exempt,Status,48.5509709,-119.6910346,6.1%,Okanogan,Okanogan County,Okanogan,1,6.4%,6.4%,Yes,2018-19,Washington,6.7%
+Greater Columbia,8,40,exempt,359,644,No,718,718,County,POLYGON,K-12,Status,Complete,Status,46.1818612,-117.2277813,88.6%,Asotin,Asotin County,Asotin,1,89.7%,89.7%,Yes,2018-19,Washington,90.8%
+Greater Columbia,8,40,exempt,207.5,366,No,415,415,County,POLYGON,K-12,Status,Complete,Status,46.2928505,-117.9116345,86.6%,Columbia,Columbia County,Columbia,1,88.2%,88.2%,Yes,2018-19,Washington,89.8%
+Greater Columbia,8,40,exempt,158.5,304,No,317,317,County,POLYGON,K-12,Status,Complete,Status,46.4294742,-117.5367145,94.8%,Garfield,Garfield County,Garfield,1,95.9%,95.9%,Yes,2018-19,Washington,97.0%
+Greater Columbia,8,40,exempt,2867.5,4983,No,5735,5735,County,POLYGON,K-12,Status,Complete,Status,47.1244443,-120.6767136,86.4%,Kittitas,Kittitas County,Kittitas,1,86.9%,86.9%,Yes,2018-19,Washington,87.3%
+Greater Columbia,8,40,exempt,3852,7286,No,7704,7704,County,POLYGON,K-12,Status,Complete,Status,46.2546061,-118.4803741,94.3%,Walla Walla,Walla Walla County,Walla Walla,1,94.6%,94.6%,Yes,2018-19,Washington,94.8%
+Greater Columbia,8,40,exempt,2749,5106,No,5498,5498,County,POLYGON,K-12,Status,Complete,Status,46.9033216,-117.5229619,92.5%,Whitman,Whitman County,Whitman,1,92.9%,92.9%,Yes,2018-19,Washington,93.2%
+Greater Columbia,8,40,exempt,359,44,No,718,718,County,POLYGON,K-12,Status,Exempt,Status,46.1818612,-117.2277813,5.2%,Asotin,Asotin County,Asotin,1,6.1%,6.1%,Yes,2018-19,Washington,7.0%
+Greater Columbia,8,40,exempt,207.5,22,No,415,415,County,POLYGON,K-12,Status,Exempt,Status,46.2928505,-117.9116345,4.2%,Columbia,Columbia County,Columbia,1,5.3%,5.3%,Yes,2018-19,Washington,6.4%
+Greater Columbia,8,40,exempt,158.5,8,No,317,317,County,POLYGON,K-12,Status,Exempt,Status,46.4294742,-117.5367145,1.6%,Garfield,Garfield County,Garfield,1,2.5%,2.5%,Yes,2018-19,Washington,3.4%
+Greater Columbia,8,40,exempt,2867.5,284,No,5735,5735,County,POLYGON,K-12,Status,Exempt,Status,47.1244443,-120.6767136,4.7%,Kittitas,Kittitas County,Kittitas,1,5.0%,5.0%,Yes,2018-19,Washington,5.2%
+Greater Columbia,8,40,exempt,3852,299,No,7704,7704,County,POLYGON,K-12,Status,Exempt,Status,46.2546061,-118.4803741,3.7%,Walla Walla,Walla Walla County,Walla Walla,1,3.9%,3.9%,Yes,2018-19,Washington,4.1%
+Greater Columbia,8,40,exempt,2749,227,No,5498,5498,County,POLYGON,K-12,Status,Exempt,Status,46.9033216,-117.5229619,3.9%,Whitman,Whitman County,Whitman,1,4.1%,4.1%,Yes,2018-19,Washington,4.4%
+Better Health Together,9,40,exempt,2523.5,4785,No,5047,5047,County,POLYGON,K-12,Status,Complete,Status,47.0048395,-118.5333078,94.5%,Adams,Adams County,Adams,1,94.8%,94.8%,Yes,2018-19,Washington,95.1%
+Better Health Together,9,40,exempt,396.5,594,No,793,793,County,POLYGON,K-12,Status,Complete,Status,48.4372459,-118.5170739,73.4%,Ferry,Ferry County,Ferry,1,74.9%,74.9%,Yes,2018-19,Washington,76.4%
+Better Health Together,9,40,exempt,1023.5,1720,No,2047,2047,County,POLYGON,K-12,Status,Complete,Status,47.5827176,-118.4176675,83.2%,Lincoln,Lincoln County,Lincoln,1,84.0%,84.0%,Yes,2018-19,Washington,84.8%
+Better Health Together,9,40,exempt,763.5,1162,No,1527,1527,County,POLYGON,K-12,Status,Complete,Status,48.5438774,-117.2321828,75.0%,Pend Oreille,Pend Oreille County,Pend Oreille,1,76.1%,76.1%,Yes,2018-19,Washington,77.2%
+Better Health Together,9,40,exempt,3111.5,4772,No,6223,6223,County,POLYGON,K-12,Status,Complete,Status,48.3906475,-117.8548968,76.1%,Stevens,Stevens County,Stevens,1,76.7%,76.7%,Yes,2018-19,Washington,77.2%
+Better Health Together,9,40,exempt,2523.5,119,No,5047,5047,County,POLYGON,K-12,Status,Exempt,Status,47.0048395,-118.5333078,2.1%,Adams,Adams County,Adams,1,2.4%,2.4%,Yes,2018-19,Washington,2.6%
+Better Health Together,9,40,exempt,396.5,119,No,793,793,County,POLYGON,K-12,Status,Exempt,Status,48.4372459,-118.5170739,13.7%,Ferry,Ferry County,Ferry,1,15.0%,15.0%,Yes,2018-19,Washington,16.3%
+Better Health Together,9,40,exempt,1023.5,156,No,2047,2047,County,POLYGON,K-12,Status,Exempt,Status,47.5827176,-118.4176675,7.0%,Lincoln,Lincoln County,Lincoln,1,7.6%,7.6%,Yes,2018-19,Washington,8.2%
+Better Health Together,9,40,exempt,763.5,123,No,1527,1527,County,POLYGON,K-12,Status,Exempt,Status,48.5438774,-117.2321828,7.4%,Pend Oreille,Pend Oreille County,Pend Oreille,1,8.1%,8.1%,Yes,2018-19,Washington,8.8%
+Better Health Together,9,40,exempt,3111.5,563,No,6223,6223,County,POLYGON,K-12,Status,Exempt,Status,48.3906475,-117.8548968,8.7%,Stevens,Stevens County,Stevens,1,9.0%,9.0%,Yes,2018-19,Washington,9.4%
