@@ -109,7 +109,7 @@ tag.map.title <- tags$style(HTML("
                                  "))
 title <- tags$div(
   tag.map.title, HTML(paste("Immunization Coverage Rates for Washington Schools,", 
-                            "percent complete for all students, K-12"))
+                            "percent complete for all students, K-12, 2016-2017"))
 ) 
 
 # Make the map.
