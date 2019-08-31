@@ -322,7 +322,7 @@ wa_coverage <- wa_coverage %>%
   select(`School Name`, `School District`, 
          Enrollment, Percent, Exempt, lat, lon) %>%
   mutate(Percent = as.numeric(gsub('%', '', Percent))) %>% 
-  filter(Enrollment > 0)
+  filter(Enrollment > 0) %>% drop_na(lat, lon)
 ```
 
 ## Prepare variables for plotting

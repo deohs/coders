@@ -28,16 +28,25 @@ if (!suppressPackageStartupMessages(require(pacman))) {
 pacman::p_load(dplyr, tidyr, readr, leaflet, htmlwidgets, htmltools)
 
 # Get data.
-# Data file downloaded as CSV export from:
+# Data files downloaded as CSV export from:
 # https://www.doh.wa.gov/DataandStatisticalReports/HealthDataVisualization/SchoolImmunization/SchoolBuildingImmunization
-data_fn <- 'wa_state_schools_k-12_immunization_status_data_2018-2019.csv'
-wa_coverage <- read_csv(data_fn)
+data_fn <- 
+  file.path('wa_state_schools_k-12_immunization_status_data_2018-2019.csv')
+wa_coverage <- read.csv(data_fn, stringsAsFactors = FALSE, check.names = FALSE)
+
+ex_data_fn <- 
+  file.path('wa_state_schools_k-12_immunization_exemption_data_2018-2019.csv')
+wa_ex <- read.csv(ex_data_fn, stringsAsFactors = FALSE, check.names = FALSE)
+wa_ex <- wa_ex %>% mutate(Exempt = as.numeric(gsub('%', '', Percent))) %>% 
+  filter(Enrollment > 0) %>% select(`School Name`, `Bldg No`, Exempt)
 
 wa_coverage <- wa_coverage %>% 
+  left_join(wa_ex, by = c('School Name', 'Bldg No')) %>%
   rename('lat' = 'Latitude', 'lon' = 'Longitude') %>% 
-  select(`School Name`, `School District`, Enrollment, Percent, lat, lon) %>%
-  mutate(Percent = as.numeric(gsub('%', '', Percent))) %>% drop_na() %>% 
-  filter(Enrollment > 0)
+  select(`School Name`, `School District`, 
+         Enrollment, Percent, Exempt, lat, lon) %>%
+  mutate(Percent = as.numeric(gsub('%', '', Percent))) %>% 
+  filter(Enrollment > 0) %>% drop_na(lat, lon)
 
 # Create popup.
 wa_coverage <- wa_coverage %>% 
@@ -49,7 +58,9 @@ wa_coverage <- wa_coverage %>%
     '<dt>K-12 Enrollment</dt>', 
     '<dd>', Enrollment, '</dd>',
     '<dt>Percent Complete</dt>', 
-    '<dd>', Percent, '</dd>', '</dl>'))
+    '<dd>', Percent, '</dd>',
+    '<dt>Percent Exempt</dt>', 
+    '<dd>', Exempt, '</dd></dl>'))
 
 # Cut the continuous variable "Percent complete" into bins making factor levels.
 wa_coverage$Percent_complete_fct <- 
