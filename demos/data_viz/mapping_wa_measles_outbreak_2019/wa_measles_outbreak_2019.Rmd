@@ -334,7 +334,7 @@ wa_coverage <- wa_coverage %>%
   mutate(Popup = paste0(
     '<dl><dt>School Name</dt>', 
     '<dd>', `School Name`, '</dd>',
-    '<dt>School_District</td>', 
+    '<dt>School District</td>', 
     '<dd>', `School District`, '</dd>',
     '<dt>K-12 Enrollment</dt>', 
     '<dd>', Enrollment, '</dd>',
@@ -415,3 +415,111 @@ saveWidget(g, file = "wa_immunization_coverage_leaflet_map.html")
 ```
 
 This has been published on a [UW staff](https://staff.washington.edu/high/wa_immunization_coverage_leaflet_map.html) page.
+
+## Exercise 1: Choropleth with `ggplot2`
+
+Create a choropleth map of K-12 Immunization Rates for Oregon Counties for the 
+2018-2019 school year.
+
+You can download a [PDF](https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/VACCINESIMMUNIZATION/Documents/RatesK12ImmandExmptbyCounty.pdf) containing the necessary data.
+
+This PDF is linked from the [Oregon School Immunization Data](https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/VACCINESIMMUNIZATION/Pages/researchschool.aspx) page.
+
+Use the "Complete for All Required Immunizations (%)" values for plotting, or 
+perhaps the "1 Dose Measles, Mumps and Rubella" and "2 Doses Measles Vaccine" 
+values, whichever you prefer.
+
+To extract the data from the tables in the PDF, you may wish to use the 
+`tabulizer` package.
+
+An example of using this package can be found in this script:
+
+* [WA Counties HepC Choropleth](../mapping_with_ggplot2/wa_counties_hepc_choropleth.R)
+
+Alternatively, Adobe Acrobat Pro can export to Excel. Or you can copy/paste from 
+Adobe Acrobat Reader DC to MS Excel, a text editor, or any other application 
+that works for you. Using `tablulizer` (or equivalent) is preferred as it is a 
+more automated and reproducible approach.
+
+## Exercise 2: `ggmap`
+
+Create a map with `ggmap` which plots the points of either of these two sets 
+of exposure locations. (Choose to do either A. or B. or both.)
+
+A. Pierce County, WA
+
+There were two confirmed cases of measles in the Tacoma / Pierce County area 
+in May, 2019.
+
+The points of the exposure locations are provided at this link: [Pierce County Measles Investigation](https://www.tpchd.org/healthy-people/diseases/measles/pierce-county-measles-investigation)
+
+B. Oregon
+
+The Multomah Health Officer published a list of [exposure locations](https://multco.us/health-officer/measles-outbreak-winter-2019-oregon-exposures) for the Winter 2019 measles outbreak.
+
+This PDF is linked from the [Oregon School Immunization Data](https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/VACCINESIMMUNIZATION/Pages/researchschool.aspx) page.
+
+## Exercise 2: `ggmap`, cont.
+
+Notes:
+
+You can either use the `geocode()` function in `ggmap` to get the coordinate 
+points for those locations or you can use whichever web sites, etc., you need 
+to. Since there are only a few of them, this can be done manually without too 
+much effort, but automating with an R function is preferred. 
+
+You can use any basemap you like, but try to choose one which will not obscure 
+the points marking the exposure locations.
+
+For reference, see the following script which maps the King County exposure 
+locations: 
+
+* [King County Measles Exposure Sites](../mapping_wth_ggmap/king_co_measles_exposure_sites_map.R)
+
+## Exercise 3: `leaflet`
+
+The state of Oregon has published an [Excel data file](https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/VACCINESIMMUNIZATION/GETTINGIMMUNIZED/Documents/SchK-12.xls) with the immunization 
+rates for all K-12 schools in the state.
+
+This XLS file is linked from the [Oregon School Immunization Coverage](https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/VACCINESIMMUNIZATION/GETTINGIMMUNIZED/Pages/SchRateMap.aspx) page.
+
+Create a `leaflet` map plotting these locations using the same method as 
+was used for Washington the example earlier in this presentation. That is,
+make the size of the points indicate school enrollment and make the color 
+indicate the percent immunization coverage.
+
+A modified data file with geolocations for (most of) these schools has been 
+provided for you:
+
+* [or_k12_immunization_coverage.csv](../mapping_with_leaflet/or_k12_immunization_coverage.csv)
+
+The code which generated this file is in the next section of this document.
+
+## Exercise 3: `leaflet`, cont.
+
+```{r, eval=FALSE}
+# Geocode the Oregon K-12 school locations
+pacman::p_load(readxl, ggmap)
+data_dir <- file.path('..', 'mapping_with_leaflet')
+data_fn <- file.path(data_dir, "or_k12_immunization_coverage.csv")
+if (!file.exists(data_fn)) {
+  xls_fn <- file.path(data_dir, 'or_coverage.xls')
+  if (!file.exists(xls_fn)) {
+    download.file(paste0('https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/',
+                         'VACCINESIMMUNIZATION/GETTINGIMMUNIZED/Documents/',
+                         'SchK-12.xls'), xls_fn)}
+  or_coverage <- read_xls(xls_fn) %>% 
+    mutate(site = paste(SiteName, paste(County, 'County'), 'OR', sep = ', '))
+  or_k12_site <- unique(or_coverage$site)
+  
+  register_google(key = readLines('~/google_api.key'))
+  locations <- geocode(location = or_k12_site)
+  locations$site <- or_k12_site
+  locations <- locations %>% drop_na() %>% 
+    filter(lat < 47, lat > 41, lon < -116, lon > -125)
+  
+  or_coverage <- or_coverage %>% left_join(locations, by = 'site')
+  names(or_coverage) <- gsub('[:\n]+', ' ', names(or_coverage))
+  write.csv(or_coverage, data_fn, row.names = FALSE)
+} else { or_coverage <- read_csv(data_fn) }
+```
