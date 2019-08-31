@@ -204,15 +204,14 @@ Load packages with `pacman` to auto-install any missing packages.
 if (!suppressPackageStartupMessages(require(pacman))) {
   install.packages("pacman", repos = "http://cran.us.r-project.org")
 }
-pacman::p_load(rvest, dplyr, tidyr, maps, ggmap)
+pacman::p_load(rvest, dplyr, tidyr, ggmap)
 ```
 
 We are loading:
 
 * `rvest` for web scraping
 * `dplyr` and `tidyr` for data management
-* `maps` for geocoding
-* `ggmap` for creating the map with a detailed basemap
+* `ggmap` for geocoding and creating the map
 
 ## Get data
 
