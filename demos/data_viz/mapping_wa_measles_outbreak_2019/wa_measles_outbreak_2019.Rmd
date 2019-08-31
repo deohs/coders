@@ -6,7 +6,7 @@ output:
   ioslides_presentation:
     fig_caption: yes
     fig_retina: 1
-    keep_md: yes
+    keep_md: no
     smaller: yes
     template: ../../../templates/ioslides_template.html
 html_document:
@@ -398,3 +398,12 @@ g <- leaflet(data = wa_coverage) %>% addTiles() %>%
 g
 ```
 
+## Publishing `leaflet` maps on the web
+
+Since `leaflet` maps are made for the web, they can be published as web pages.
+
+```{r}
+saveWidget(g, file = "wa_immunization_coverage_leaflet_map.html")
+```
+
+This has been published on a [UW staff](https://staff.washington.edu/high/wa_immunization_coverage_leaflet_map.html) page.
