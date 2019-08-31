@@ -300,21 +300,28 @@ We are loading:
 * `leaflet` to create the map visualization
 * `htmlwidgets` and `htmltools` to place the title on the map
 
-## Load packages and get data
+## Get data
 
-We had to download the file manually from the [WA DoH website](https://www.doh.wa.gov/DataandStatisticalReports/HealthDataVisualization/SchoolImmunization/SchoolBuildingImmunization) 
+We have to download the data files manually from the [WA DoH website](https://www.doh.wa.gov/DataandStatisticalReports/HealthDataVisualization/SchoolImmunization/SchoolBuildingImmunization) 
 since their site does not support automated downloads from R.
 
 ```{r}
-# Data file downloaded as CSV export
 data_fn <- file.path('..', 'mapping_with_leaflet',
       'wa_state_schools_k-12_immunization_status_data_2018-2019.csv')
 wa_coverage <- read.csv(data_fn, stringsAsFactors = FALSE, check.names = FALSE)
 
+ex_data_fn <- file.path('..', 'mapping_with_leaflet',
+      'wa_state_schools_k-12_immunization_exemption_data_2018-2019.csv')
+wa_ex <- read.csv(ex_data_fn, stringsAsFactors = FALSE, check.names = FALSE)
+wa_ex <- wa_ex %>% mutate(Exempt = as.numeric(gsub('%', '', Percent))) %>% 
+  filter(Enrollment > 0) %>% select(`School Name`, `Bldg No`, Exempt)
+
 wa_coverage <- wa_coverage %>% 
+  left_join(wa_ex, by = c('School Name', 'Bldg No')) %>%
   rename('lat' = 'Latitude', 'lon' = 'Longitude') %>% 
-  select(`School Name`, `School District`, Enrollment, Percent, lat, lon) %>%
-  mutate(Percent = as.numeric(gsub('%', '', Percent))) %>% drop_na() %>% 
+  select(`School Name`, `School District`, 
+         Enrollment, Percent, Exempt, lat, lon) %>%
+  mutate(Percent = as.numeric(gsub('%', '', Percent))) %>% 
   filter(Enrollment > 0)
 ```
 
@@ -333,7 +340,9 @@ wa_coverage <- wa_coverage %>%
     '<dt>K-12 Enrollment</dt>', 
     '<dd>', Enrollment, '</dd>',
     '<dt>Percent Complete</dt>', 
-    '<dd>', Percent, '</dd></dl>'))
+    '<dd>', Percent, '</dd>',
+    '<dt>Percent Exempt</dt>', 
+    '<dd>', Exempt, '</dd></dl>'))
 ```
 
 Cut the continuous variable "Percent complete" into bins making factor levels.
