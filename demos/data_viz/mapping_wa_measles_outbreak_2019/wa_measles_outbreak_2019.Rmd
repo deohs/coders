@@ -15,7 +15,7 @@ editor_options:
   chunk_output_type: console
 ---
   
-  ```{r header, include=FALSE}
+```{r header, include=FALSE}
 # Filename: wa_measles_outbreak_2019.Rmd
 # Copyright (c) University of Washington
 # License: MIT https://opensource.org/licenses/MIT (See LICENSE file.)
@@ -396,14 +396,45 @@ g <- leaflet(data = wa_coverage) %>% addTiles() %>%
                    radius = ~sqrt(Enrollment) * .3) %>% 
   addLegend("bottomright", pal = completeCol, values = ~Percent_complete_fct,
             title = "Immunization<br>Coverage<br>Percent<br>Complete",
-            opacity = 1) %>% 
-  addControl(title, position = "topleft", className="map-title")
+            opacity = 1)
+g1 <- g %>% addControl(title, position = "topleft", className="map-title")
 ```
 
 ## Immunization Coverage in Washington
 
 ```{r show_leaflet, echo=FALSE}
-g
+g1
+```
+
+## Adding exposure sites
+
+We can also add markers for the Clark County measles outbreak exposure sites.
+
+```{r, add_markers}
+locations <- unique(locations)
+locations$popup <- paste(
+  '<dl><dt>2019 Measles Exposure Site</dt><dd>', locations$site, '</dd></dl>')
+
+icon.fa <- makeAwesomeIcon(icon = "fa-exclamation-triangle ", 
+                           markerColor = "orange", library = "fa",
+                           iconColor = "black")
+
+title <- tags$div(
+  tag.map.title, 
+  HTML(paste("Clark County 2019 Measles Outbreak Exposure Sites<br>",
+             "and K-12 Immunization Coverage, SY 2018-2019"))
+)
+
+g2 <- g %>% addAwesomeMarkers(data = locations, ~lon, ~lat, 
+                    popup = ~popup, icon = icon.fa) %>% 
+  setView(-122.5487, 45.65366, zoom = 11) %>% 
+  addControl(title, position = "topleft", className="map-title")
+```
+
+## Clark County Measles Outbreak and Immunization Coverage
+
+```{r show_leaflet_add_markers, echo=FALSE}
+g2
 ```
 
 ## Publishing `leaflet` maps on the web
@@ -411,7 +442,7 @@ g
 Since `leaflet` maps are made for the web, they can be published as web pages.
 
 ```{r}
-saveWidget(g, file = "wa_immunization_coverage_leaflet_map.html")
+saveWidget(g1, file = "wa_immunization_coverage_leaflet_map.html")
 ```
 
 This has been published on a [UW staff](https://staff.washington.edu/high/wa_immunization_coverage_leaflet_map.html) page.
@@ -489,11 +520,11 @@ make the size of the points indicate school enrollment and make the color
 indicate the percent immunization coverage.
 
 A modified data file with geolocations for (most of) these schools has been 
-provided for you:
-
-* [or_k12_immunization_coverage.csv](../mapping_with_leaflet/or_k12_immunization_coverage.csv)
+provided for you: [or_k12_immunization_coverage.csv](../mapping_with_leaflet/or_k12_immunization_coverage.csv).
 
 The code which generated this file is in the next section of this document.
+
+Bonus points if you add markers for the exposure sites from Exercise 2-B.
 
 ## Exercise 3: `leaflet`, cont.
 
