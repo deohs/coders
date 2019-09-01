@@ -450,45 +450,76 @@ This has been published on a [UW staff](https://staff.washington.edu/high/wa_imm
 ## Exercise 1: Choropleth with `ggplot2`
 
 Create a choropleth map of K-12 Immunization Rates for Oregon Counties for the 
-2018-2019 school year.
+2018-2019 school year. You can download a [PDF](https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/VACCINESIMMUNIZATION/Documents/RatesK12ImmandExmptbyCounty.pdf) containing the necessary data. This PDF is linked from the [Oregon School Immunization Data](https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/VACCINESIMMUNIZATION/Pages/researchschool.aspx) page.
 
-You can download a [PDF](https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/VACCINESIMMUNIZATION/Documents/RatesK12ImmandExmptbyCounty.pdf) containing the necessary data.
+Use the "Complete for All Required Immunizations (%)" values for the county 
+"fill" colors. To extract the data from the tables in the PDF, you may wish to 
+use the `tabulizer` package:
 
-This PDF is linked from the [Oregon School Immunization Data](https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/VACCINESIMMUNIZATION/Pages/researchschool.aspx) page.
-
-Use the "Complete for All Required Immunizations (%)" values for plotting, or 
-perhaps the "1 Dose Measles, Mumps and Rubella" and "2 Doses Measles Vaccine" 
-values, whichever you prefer.
-
-To extract the data from the tables in the PDF, you may wish to use the 
-`tabulizer` package.
-
-An example of using this package can be found in this script:
-
-* [WA Counties HepC Choropleth](../mapping_with_ggplot2/wa_counties_hepc_choropleth.R)
-
-Alternatively, Adobe Acrobat Pro can export to Excel. Or you can copy/paste from 
-Adobe Acrobat Reader DC to MS Excel, a text editor, or any other application 
-that works for you. Using `tablulizer` (or equivalent) is preferred as it is a 
-more automated and reproducible approach.
+```{r, eval=FALSE}
+library(dplyr)
+library(tabulizer)
+url <- paste0('https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/', 
+              'VACCINESIMMUNIZATION/Documents/RatesK12ImmandExmptbyCounty.pdf')
+mat <- do.call('cbind', extract_tables(file = url))
+mat <- mat[, -c(2, 3, 21, 22)]
+mat[1, 1] <- 'County'
+tmat <- t(mat)
+col_names <- tmat[1, ]
+df <- as_tibble(tmat[2:nrow(tmat),], .name_repair = 'unique')
+names(df) <- col_names
+char_percent_to_numeric <- function(x) as.numeric(gsub('%', '', x))
+df <- df %>% mutate_at(.vars = col_names[3:length(col_names)], 
+                       .funs = char_percent_to_numeric)
+```
 
 ## Exercise 2: `ggmap`
 
-Create a map with `ggmap` which plots the points of either of these two sets 
-of exposure locations. (Choose to do either A. or B. or both.)
+There are two parts: A and B. Choose to do either A or B or both.
 
 A. Pierce County, WA
 
 There were two confirmed cases of measles in the Tacoma / Pierce County area 
 in May, 2019.
 
-The points of the exposure locations are provided at this link: [Pierce County Measles Investigation](https://www.tpchd.org/healthy-people/diseases/measles/pierce-county-measles-investigation)
+The points of the exposure locations are provided at this link: [Pierce County Measles Investigation](https://www.tpchd.org/healthy-people/diseases/measles/pierce-county-measles-investigation). Create a map with `ggmap` which plots the points of these locations.
+
+Here is code you can use to get the location names (and some addresses):
+
+```{r, eval=FALSE}
+library(dplyr)
+library(rvest)
+
+url <- paste0('https://www.tpchd.org/healthy-people/diseases/measles/', 
+              'pierce-county-measles-investigation')
+locations <- read_html(url) %>% html_nodes(xpath ="//table[2]") %>% 
+  html_table(header = TRUE) %>% .[[1]] %>% as_tibble()
+```
+
+## Exercise 2: `ggmap`, cont.
 
 B. Oregon
 
-The Multomah Health Officer published a list of [exposure locations](https://multco.us/health-officer/measles-outbreak-winter-2019-oregon-exposures) for the Winter 2019 measles outbreak.
+The Multomah Health Officer published a list of [exposure locations](https://multco.us/health-officer/measles-outbreak-winter-2019-oregon-exposures) for the Winter 2019 measles outbreak. Create a map with `ggmap` which plots the points 
+of these locations.
 
-This PDF is linked from the [Oregon School Immunization Data](https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/VACCINESIMMUNIZATION/Pages/researchschool.aspx) page.
+Here is code you can use to extract the locations from that page:
+
+```{r, eval=FALSE}
+library(dplyr)
+library(rvest)
+
+url <- paste0('https://multco.us/health-officer/', 
+              'measles-outbreak-winter-2019-oregon-exposures')
+pg <- read_html(url)
+site <- pg %>% html_nodes(xpath = '//p/strong') %>% 
+  html_text() %>% grep('UPDATED', .,value = TRUE, invert = TRUE)
+address <- pg %>% html_nodes('p[style="margin-left:40px"]') %>% 
+  html_text() %>% grep('^Date: |Update: |^$', ., value = TRUE, invert = TRUE)
+address <- append(address, '7000 NE Airport Way, Portland', 9)
+address <- append(address, '2207 NE Broadway Ste 200, Portland', 17)
+locations <- tibble(site = site, address = paste(address, 'OR', sep = ', '))
+```
 
 ## Exercise 2: `ggmap`, cont.
 
@@ -554,3 +585,19 @@ if (!file.exists(data_fn)) {
   write.csv(or_coverage, data_fn, row.names = FALSE)
 } else { or_coverage <- read_csv(data_fn) }
 ```
+
+## Want more?
+
+<img style="float: right; height:400px;" src="https://bookdown.org/robinlovelace/geocompr/images/cover.png" alt="Geocomputation with R"/>
+
+There is a book on this topic published online (2019) for free and also on paper.
+
+* [https://geocompr.robinlovelace.net/](https://geocompr.robinlovelace.net/)
+
+Note: This book was written using R Markdown and Bookdown. The source is 
+maintained in [Github](https://github.com/Robinlovelace/geocompr).
+
+A similar, but slightly older book (2016-2019) is also available for free online:
+
+* [Spatial Data Science with R](https://www.rspatial.org/index.html)
+
