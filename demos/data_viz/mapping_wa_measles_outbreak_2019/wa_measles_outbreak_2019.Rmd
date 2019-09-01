@@ -523,8 +523,7 @@ address <- pg %>% html_nodes('p[style="margin-left:40px"]') %>%
 address <- append(address, '7000 NE Airport Way, Portland', 9)
 address <- append(address, '2207 NE Broadway Ste 200, Portland', 17)
 locations <- tibble(site = site, address = paste(address, 'OR', sep = ', '))
-data_fn <- file.path('..', 'mapping_with_ggmap', 
-                     'oregon_measles_locations.csv')
+data_fn <- file.path('..', 'mapping_with_ggmap', 'oregon_measles_locations.csv')
 write.csv(locations, data_fn, row.names = FALSE)
 ```
 
@@ -569,7 +568,9 @@ Bonus points if you add markers for the exposure sites from Exercise 2-B.
 
 ```{r, eval=FALSE}
 # Geocode the Oregon K-12 school locations
-pacman::p_load(readxl, ggmap)
+library(readxl)
+library(ggmap)
+
 data_dir <- file.path('..', 'mapping_with_leaflet')
 data_fn <- file.path(data_dir, "or_k12_immunization_coverage.csv")
 if (!file.exists(data_fn)) {
@@ -581,13 +582,11 @@ if (!file.exists(data_fn)) {
   or_coverage <- read_xls(xls_fn) %>% 
     mutate(site = paste(SiteName, paste(County, 'County'), 'OR', sep = ', '))
   or_k12_site <- unique(or_coverage$site)
-  
   register_google(key = readLines('~/google_api.key'))
   locations <- geocode(location = or_k12_site)
   locations$site <- or_k12_site
   locations <- locations %>% drop_na() %>% 
     filter(lat < 47, lat > 41, lon < -116, lon > -125)
-  
   or_coverage <- or_coverage %>% left_join(locations, by = 'site')
   names(or_coverage) <- gsub('[:\n]+', ' ', names(or_coverage))
   write.csv(or_coverage, data_fn, row.names = FALSE)
