@@ -180,7 +180,7 @@ g
 
 ## Mapping with `ggmap`
 
-<img style="float: right; height:500px;" src="../mapping_with_ggmap/clark_co_measles_map.jpg" alt="Clark County"/>
+<img style="float: right; height:500px;" src="https://github.com/deohs/coders/raw/master/demos/data_viz/mapping_with_ggmap/clark_co_measles_map.jpg" alt="Clark County"/>
 
 We will use the `ggmap` package to create maps with detailed basemaps.
 
@@ -273,7 +273,7 @@ g
 `leaflet` is a Javascript library for making interactive maps. It can be used 
 from various programming languages, including R.
 
-<img style="float: right; height:400px;" src="../mapping_with_leaflet/clark_county_leaflet_screen_shot.png" alt="Clark County"/>
+<img style="float: right; height:400px;" src="https://github.com/deohs/coders/raw/master/demos/data_viz/mapping_with_leaflet/clark_county_leaflet_screen_shot.png" alt="Clark County"/>
 
 We will make a leaflet map showing the location of all of the K-12 schools in 
 the state. 
