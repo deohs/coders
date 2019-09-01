@@ -450,9 +450,7 @@ This has been published on a [UW staff](https://staff.washington.edu/high/wa_imm
 ## Exercise 1: Choropleth with `ggplot2`
 
 Create a choropleth map of K-12 Immunization Rates for Oregon Counties for the 
-2018-2019 school year. You can download a [PDF](https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/VACCINESIMMUNIZATION/Documents/RatesK12ImmandExmptbyCounty.pdf) containing the necessary data. This PDF is linked from the [Oregon School Immunization Data](https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/VACCINESIMMUNIZATION/Pages/researchschool.aspx) page.
-
-Use the "Complete for All Required Immunizations (%)" values for the county 
+2018-2019 school year. You can download a [PDF](https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/VACCINESIMMUNIZATION/Documents/RatesK12ImmandExmptbyCounty.pdf) containing the necessary data. This PDF is linked from the [Oregon School Immunization Data](https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/VACCINESIMMUNIZATION/Pages/researchschool.aspx) page. Use the "Complete for All Required Immunizations (%)" values for the county 
 "fill" colors. To extract the data from the tables in the PDF, you may wish to 
 use the `tabulizer` package:
 
@@ -471,6 +469,9 @@ names(df) <- col_names
 char_percent_to_numeric <- function(x) as.numeric(gsub('%', '', x))
 df <- df %>% mutate_at(.vars = col_names[3:length(col_names)], 
                        .funs = char_percent_to_numeric)
+data_fn <- file.path('..', 'mapping_with_ggplot2', 
+                     'or_counties_k-12_immunization_status_2018-2019.csv')
+write.csv(df, data_fn, row.names = FALSE)
 ```
 
 ## Exercise 2: `ggmap`
@@ -494,6 +495,9 @@ url <- paste0('https://www.tpchd.org/healthy-people/diseases/measles/',
               'pierce-county-measles-investigation')
 locations <- read_html(url) %>% html_nodes(xpath ="//table[2]") %>% 
   html_table(header = TRUE) %>% .[[1]] %>% as_tibble()
+data_fn <- file.path('..', 'mapping_with_ggmap', 
+                     'pierce_co_measles_locations.csv')
+write.csv(locations, data_fn, row.names = FALSE)
 ```
 
 ## Exercise 2: `ggmap`, cont.
@@ -519,6 +523,9 @@ address <- pg %>% html_nodes('p[style="margin-left:40px"]') %>%
 address <- append(address, '7000 NE Airport Way, Portland', 9)
 address <- append(address, '2207 NE Broadway Ste 200, Portland', 17)
 locations <- tibble(site = site, address = paste(address, 'OR', sep = ', '))
+data_fn <- file.path('..', 'mapping_with_ggmap', 
+                     'oregon_measles_locations.csv')
+write.csv(locations, data_fn, row.names = FALSE)
 ```
 
 ## Exercise 2: `ggmap`, cont.
