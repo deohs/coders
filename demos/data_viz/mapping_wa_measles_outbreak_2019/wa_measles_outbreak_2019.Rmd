@@ -554,7 +554,7 @@ rates for all K-12 schools in the state.
 This XLS file is linked from the [Oregon School Immunization Coverage](https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/VACCINESIMMUNIZATION/GETTINGIMMUNIZED/Pages/SchRateMap.aspx) page.
 
 Create a `leaflet` map plotting these locations using the same method as 
-was used for Washington the example earlier in this presentation. That is,
+was used for the Washington example earlier in this presentation. That is,
 make the size of the points indicate school enrollment and make the color 
 indicate the percent immunization coverage.
 
