@@ -504,8 +504,9 @@ write.csv(locations, data_fn, row.names = FALSE)
 
 B. Oregon
 
-The Multomah Health Officer published a list of [exposure locations](https://multco.us/health-officer/measles-outbreak-winter-2019-oregon-exposures) for the Winter 2019 measles outbreak. Create a map with `ggmap` which plots the points 
-of these locations.
+The Multnomah Health Officer published a list of [exposure locations](https://multco.us/health-officer/measles-outbreak-winter-2019-oregon-exposures) 
+for the Winter 2019 measles outbreak. Create a map with `ggmap` which plots the 
+points of these locations.
 
 Here is code you can use to extract the locations from that page:
 
