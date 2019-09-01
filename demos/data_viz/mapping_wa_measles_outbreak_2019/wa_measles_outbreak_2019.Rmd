@@ -534,7 +534,8 @@ Notes:
 
 You can either use the `geocode()` function in `ggmap` to get the coordinate 
 points for those locations or you can use whichever web sites, etc., you need 
-to. Since there are only a few of them, this can be done manually without too 
+to (such as [https://www.latlong.net/](https://www.latlong.net/)). Since there 
+are only a few locations, this can be done manually without too 
 much effort, but automating with an R function is preferred. 
 
 You can use any basemap you like, but try to choose one which will not obscure 
