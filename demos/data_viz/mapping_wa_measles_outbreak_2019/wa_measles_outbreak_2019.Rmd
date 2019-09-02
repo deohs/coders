@@ -494,7 +494,7 @@ wa_coverage_by_dist$Pct <-
       labels = c('<50%', '50-69%', '70-79%', '80-89%', '90-93%', '94-96%', 
                  '97-100%'), ordered_result = TRUE)
 
-# Filter to include only Clarke County school districts.
+# Filter to include only Clark County school districts.
 wa_coverage_by_dist_clark <- wa_coverage_by_dist %>% filter(County == 'Clark')
 shapeData$NAME <- gsub(' School District| Public Schools| Community Schools', 
                        '', shapeData$NAME)
