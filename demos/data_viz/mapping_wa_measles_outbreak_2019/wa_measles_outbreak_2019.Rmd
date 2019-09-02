@@ -14,7 +14,7 @@ html_document:
 editor_options: 
   chunk_output_type: console
 ---
-  
+
 ```{r header, include=FALSE}
 # Filename: wa_measles_outbreak_2019.Rmd
 # Copyright (c) University of Washington
@@ -318,7 +318,7 @@ wa_ex <- wa_ex %>% mutate(Exempt = as.numeric(gsub('%', '', Percent))) %>%
 wa_coverage <- wa_coverage %>% 
   left_join(wa_ex, by = c('School Name', 'Bldg No')) %>%
   rename('lat' = 'Latitude', 'lon' = 'Longitude') %>% 
-  select(`School Name`, `School District`, 
+  select(`School Name`, `School District`, County, 
          Enrollment, Percent, Exempt, lat, lon) %>%
   mutate(Percent = as.numeric(gsub('%', '', Percent))) %>% 
   filter(Enrollment > 0) %>% drop_na(lat, lon)
@@ -336,7 +336,7 @@ wa_coverage <- wa_coverage %>%
     '<dd>', `School Name`, '</dd>',
     '<dt>School District</td>', 
     '<dd>', `School District`, '</dd>',
-    '<dt>K-12 Enrollment</dt>', 
+    '<dt>Enrollment</dt>', 
     '<dd>', Enrollment, '</dd>',
     '<dt>Percent Complete</dt>', 
     '<dd>', Percent, '</dd>',
@@ -347,7 +347,7 @@ wa_coverage <- wa_coverage %>%
 Cut the continuous variable "Percent complete" into bins making factor levels.
 
 ```{r}
-wa_coverage$Percent_complete_fct <- 
+wa_coverage$Pct <- 
   cut(wa_coverage$Percent, 
       c(0, 25, 50, 60, 70, 80, 85, 90, 95, 100), include.lowest = TRUE, 
       labels = c('<25', '25-50', '50-60', '60-70', '70-80', 
@@ -384,17 +384,17 @@ title <- tags$div(
 
 ```{r}
 # Assign a palette to this using colorFactor.
-completeCol <-
+pal <-
   colorFactor(palette = colorRamp(c("red", "green3"), interpolate = "spline"),
-  wa_coverage$Percent_complete_fct)
+  wa_coverage$Pct)
 
 # Create the leaflet visualization.
 g <- leaflet(data = wa_coverage) %>% addTiles() %>% 
   addCircleMarkers(lng = ~lon, lat = ~lat,
-                   color = ~completeCol(Percent_complete_fct), 
+                   color = ~pal(Pct), 
                    popup = ~Popup,
                    radius = ~sqrt(Enrollment) * .3) %>% 
-  addLegend("bottomright", pal = completeCol, values = ~Percent_complete_fct,
+  addLegend("bottomright", pal = pal, values = ~Pct,
             title = "Immunization<br>Coverage<br>Percent<br>Complete",
             opacity = 1)
 g1 <- g %>% addControl(title, position = "topleft", className="map-title")
@@ -406,7 +406,7 @@ g1 <- g %>% addControl(title, position = "topleft", className="map-title")
 g1
 ```
 
-## Adding exposure sites
+## Add exposure sites
 
 We can also add markers for the Clark County measles outbreak exposure sites.
 
@@ -431,10 +431,113 @@ g2 <- g %>% addAwesomeMarkers(data = locations, ~lon, ~lat,
   addControl(title, position = "topleft", className="map-title")
 ```
 
-## Clark County Measles Outbreak and Immunization Coverage
+## Clark County Measles Outbreak
 
 ```{r show_leaflet_add_markers, echo=FALSE}
 g2
+```
+
+## Coverage by school district
+
+It looks like many of the large, red circles are clustered together. This same 
+region is where many of the exposure locations are. Let's look at immunization 
+coverage by school district to see if there are any districts which stand out.
+
+```{r}
+# Create a dataframe for districts.
+wa_coverage_by_dist <- wa_coverage %>% 
+  mutate(`School District` = gsub('\\s+', ' ', `School District`)) %>% 
+  group_by(County, `School District`) %>% 
+  summarise(
+    Percent = round(100 * (sum(0.01 * Percent * Enrollment)/sum(Enrollment)), 1))
+```
+
+We view the results on the next slide.
+
+## Coverage by school district
+
+```{r}
+knitr::kable(wa_coverage_by_dist %>% filter(County == 'Clark') %>% arrange(Percent))
+```
+
+## Get school district polygons
+
+We can import a shapefile from [data.gov](https://catalog.data.gov/dataset/tiger-line-shapefile-2013-state-washington-current-unified-school-districts-) to see which schools are in what district.
+
+```{r}
+# Load packages.
+pacman::p_load(rgdal, rgeos)
+
+# Get and import shapefile.
+shp_fn <- 'tl_2013_53_unsd.zip'
+if (!file.exists(shp_fn)) {
+  url <- 'http://www2.census.gov/geo/tiger/TIGER2013/UNSD/tl_2013_53_unsd.zip'
+  download.file(url, destfile = 'tl_2013_53_unsd.zip')
+}
+unzip(shp_fn, exdir = "gis")
+shapeData <- readOGR("gis")
+shapeData <- spTransform(shapeData, CRS("+proj=longlat +datum=WGS84 +no_defs"))
+```
+
+## Prepare data for plotting
+
+```{r}
+# Make a factor to use for fill color of polygons.
+wa_coverage_by_dist$Pct <- 
+  cut(wa_coverage_by_dist$Percent, 
+      c(0, 25, 50, 60, 70, 80, 85, 90, 95, 100), include.lowest = TRUE, 
+      labels = c('<25', '25-50', '50-60', '60-70', '70-80', 
+                 '80-85', '85-90', '90-95', '95-100'), ordered_result = TRUE)
+
+# Filter to include only Clarke County school districts.
+wa_coverage_by_dist_clark <- wa_coverage_by_dist %>% filter(County == 'Clark')
+shapeData$NAME <- gsub(' School District| Public Schools| Community Schools', 
+                       '', shapeData$NAME)
+shapeData_clark <- shapeData[
+  shapeData$NAME %in% wa_coverage_by_dist_clark$`School District`, 'NAME']
+
+# Add coverage percent and factor for color bins.
+shapeData_clark$Percent <- wa_coverage_by_dist_clark$Percent 
+shapeData_clark$Pct <- wa_coverage_by_dist_clark$Pct
+
+# Create district center labels and popup
+centers <- data.frame(gCentroid(shapeData_clark, byid = TRUE))
+centers$NAME <- shapeData_clark$NAME
+shapeData_clark$popup <- paste(
+  "<dl><dt>District:</dt?<dd>", shapeData_clark$NAME, "</dd>",
+  "<dt>Percent Complete:</dt><dd>", shapeData_clark$Percent, "</dd></dl>")
+```
+
+## Add school district polygons to map
+
+```{r}
+# Create map as before, but add polygons and labels before other elements.
+g3 <- leaflet(data = wa_coverage) %>% setView(-122.5487, 45.65366, zoom = 11) %>% 
+  addControl(title, position = "topleft", className ="map-title") %>% 
+  addTiles(group = "tiles") %>% 
+  addLegend("bottomright", pal = pal, values = ~Pct,
+    title = "Immunization<br>Coverage<br>Percent<br>Complete",
+    opacity = 1, group = "legend") %>% 
+  addPolygons(group = "districts", data = shapeData_clark, weight = 4,
+    color = 'gray', opacity = 0.4,stroke = TRUE, smoothFactor = 0.2, 
+    popup = ~popup, fillOpacity = 0.3, fillColor = pal(shapeData_clark$Pct)) %>% 
+  addLabelOnlyMarkers(data = centers, lng = ~x, lat = ~y, label = ~NAME, 
+    labelOptions = labelOptions(textsize='15px', opacity = 0.6,
+      noHide = TRUE, direction = 'top', textOnly = FALSE)) %>% 
+  addCircleMarkers(lng = ~lon, lat = ~lat, 
+    color = ~pal(Pct), popup = ~Popup, 
+    radius = ~sqrt(Enrollment) * .3, group = "schools") %>% 
+  addAwesomeMarkers(data = locations, ~lon, ~lat, 
+    popup = ~popup, icon = icon.fa, group = "exposure") %>% 
+  addLayersControl(baseGroups = c("tiles"), 
+    overlayGroups = c("legend", "districts", "schools", "exposure"),
+    options = layersControlOptions(collapsed = TRUE))
+```
+
+## Clark County Measles Outbreak
+
+```{r show_leaflet_add_polygons, echo=FALSE}
+g3
 ```
 
 ## Publishing `leaflet` maps on the web
@@ -443,6 +546,7 @@ Since `leaflet` maps are made for the web, they can be published as web pages.
 
 ```{r}
 saveWidget(g1, file = "wa_immunization_coverage_leaflet_map.html")
+saveWidget(g3, file = "clark_co_measles_outbreak_leaflet_map.html")
 ```
 
 This has been published on a [UW staff](https://staff.washington.edu/high/wa_immunization_coverage_leaflet_map.html) page.
