@@ -670,7 +670,8 @@ provided for you: [or_k12_immunization_coverage.csv](../mapping_with_leaflet/or_
 
 The code which generated this file is in the next section of this document.
 
-Bonus points if you add markers for the exposure sites from Exercise 2-B.
+Bonus points if you add markers for the exposure sites from Exercise 2-B and 
+add polygons for the Oregon school [districts](https://spatialdata.oregonexplorer.info/geoportal/details;id=1270fe6e833f4d0eabacc71300069738).
 
 ## Exercise 3: `leaflet`, cont.
 
