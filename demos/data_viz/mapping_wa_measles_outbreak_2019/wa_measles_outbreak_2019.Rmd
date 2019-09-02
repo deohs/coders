@@ -322,6 +322,10 @@ wa_coverage <- wa_coverage %>%
          Enrollment, Percent, Exempt, lat, lon) %>%
   mutate(Percent = as.numeric(gsub('%', '', Percent))) %>% 
   filter(Enrollment > 0) %>% drop_na(lat, lon)
+
+# Manually set coordinates for school records with errors.
+wa_coverage[grepl('Tukes Valley Middle School', wa_coverage$`School Name`), 
+            c('lat', 'lon')] <- c(45.772453, -122.495864)
 ```
 
 ## Prepare variables for plotting
@@ -331,17 +335,13 @@ show some details about the school.
 
 ```{r}
 wa_coverage <- wa_coverage %>% 
-  mutate(Popup = paste0(
-    '<dl><dt>School Name</dt>', 
-    '<dd>', `School Name`, '</dd>',
-    '<dt>School District</td>', 
-    '<dd>', `School District`, '</dd>',
-    '<dt>Enrollment</dt>', 
-    '<dd>', Enrollment, '</dd>',
-    '<dt>Percent Complete</dt>', 
-    '<dd>', Percent, '</dd>',
-    '<dt>Percent Exempt</dt>', 
-    '<dd>', Exempt, '</dd></dl>'))
+  mutate(Popup = paste0('<dl>', 
+    '<dt>', 'School Name',      '</dt><dd>', `School Name`,     '</dd>',
+    '<dt>', 'School District',  '</dt><dd>', `School District`, '</dd>',
+    '<dt>', 'Enrollment',       '</dt><dd>', `Enrollment`,      '</dd>',
+    '<dt>', 'Percent Complete', '</dt><dd>', `Percent`,         '</dd>',
+    '<dt>', 'Percent Exempt',   '</dt><dd>', `Exempt`,          '</dd>', 
+    '</dl>'))
 ```
 
 Cut the continuous variable "Percent complete" into bins making factor levels.
