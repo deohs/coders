@@ -456,7 +456,7 @@ We view the results on the next slide.
 
 ## Coverage by school district
 
-```{r}
+```{r, echo=FALSE}
 knitr::kable(wa_coverage_by_dist %>% filter(County == 'Clark') %>% arrange(Percent))
 ```
 
@@ -464,18 +464,23 @@ knitr::kable(wa_coverage_by_dist %>% filter(County == 'Clark') %>% arrange(Perce
 
 We can import a shapefile from [data.gov](https://catalog.data.gov/dataset/tiger-line-shapefile-2013-state-washington-current-unified-school-districts-) to see which schools are in what district.
 
-```{r}
+```{r, message=FALSE}
 # Load packages.
 pacman::p_load(rgdal, rgeos)
 
-# Get and import shapefile.
+# Get compressed shapefile archive and etract to the "gis" folder.
 shp_fn <- 'tl_2013_53_unsd.zip'
 if (!file.exists(shp_fn)) {
   url <- 'http://www2.census.gov/geo/tiger/TIGER2013/UNSD/tl_2013_53_unsd.zip'
   download.file(url, destfile = 'tl_2013_53_unsd.zip')
 }
-unzip(shp_fn, exdir = "gis")
-shapeData <- readOGR("gis")
+
+# Import shapefile from the "gis" folder and view the projection string.
+shapeData <- readOGR("gis", verbose = FALSE)
+CRSargs(shapeData@proj4string)
+
+# Transform shape data to the projection of the map (from NAD83 to WGS84).
+# See: https://rstudio.github.io/leaflet/projections.html
 shapeData <- spTransform(shapeData, CRS("+proj=longlat +datum=WGS84 +no_defs"))
 ```
 
@@ -500,19 +505,17 @@ shapeData_clark <- shapeData[
 shapeData_clark$Percent <- wa_coverage_by_dist_clark$Percent 
 shapeData_clark$Pct <- wa_coverage_by_dist_clark$Pct
 
-# Create district center labels and popup
+# Create district center labels and popups.
 centers <- data.frame(gCentroid(shapeData_clark, byid = TRUE))
-centers$NAME <- shapeData_clark$NAME
-shapeData_clark$popup <- paste(
-  "<dl><dt>District:</dt?<dd>", shapeData_clark$NAME, "</dd>",
-  "<dt>Percent Complete:</dt><dd>", shapeData_clark$Percent, "</dd></dl>")
+centers$NAME <- paste0(shapeData_clark$NAME, ': ', shapeData_clark$Percent, '%')
 ```
 
 ## Add school district polygons to map
 
 ```{r}
 # Create map as before, but add polygons and labels before other elements.
-g3 <- leaflet(data = wa_coverage) %>% setView(-122.5487, 45.65366, zoom = 11) %>% 
+g3 <- leaflet(data = wa_coverage) %>% 
+  setView(-122.5487, 45.65366, zoom = 11) %>% 
   addControl(title, position = "topleft", className ="map-title") %>% 
   addTiles(group = "tiles") %>% 
   addLegend("bottomright", pal = pal, values = ~Pct,
@@ -520,13 +523,13 @@ g3 <- leaflet(data = wa_coverage) %>% setView(-122.5487, 45.65366, zoom = 11) %>
     opacity = 1, group = "legend") %>% 
   addPolygons(group = "districts", data = shapeData_clark, weight = 4,
     color = 'gray', opacity = 0.4,stroke = TRUE, smoothFactor = 0.2, 
-    popup = ~popup, fillOpacity = 0.3, fillColor = pal(shapeData_clark$Pct)) %>% 
+    fillOpacity = 0.3, fillColor = pal(shapeData_clark$Pct)) %>% 
   addLabelOnlyMarkers(data = centers, lng = ~x, lat = ~y, label = ~NAME, 
     labelOptions = labelOptions(textsize='15px', opacity = 0.6,
       noHide = TRUE, direction = 'top', textOnly = FALSE)) %>% 
-  addCircleMarkers(lng = ~lon, lat = ~lat, 
+  addCircleMarkers(group = "schools", lng = ~lon, lat = ~lat, 
     color = ~pal(Pct), popup = ~Popup, 
-    radius = ~sqrt(Enrollment) * .3, group = "schools") %>% 
+    radius = ~sqrt(Enrollment) * .3) %>% 
   addAwesomeMarkers(data = locations, ~lon, ~lat, 
     popup = ~popup, icon = icon.fa, group = "exposure") %>% 
   addLayersControl(baseGroups = c("tiles"), 
