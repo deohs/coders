@@ -110,7 +110,7 @@ wa_coverage <- read.csv(data_path, stringsAsFactors = FALSE) %>%
             .funs = ~as.numeric(sub('%', '', .)))
 ```
 
-## Prepare data for mapping
+## Prepare variables for plotting
 
 Convert immunization percent complete variable to a factor with 5 bins. This 
 will allow us to limit the number of colors showing on the map and control 
@@ -121,8 +121,8 @@ for better differentiation.
 ```{r}
 wa_coverage$Complete_fct <- factor(
   cut(x = wa_coverage$Complete, 
-      breaks = c(0, 75, 85, 90, 95, 100), 
-      labels = c("<75%", "75%-85%", "85%-90%", "90%-95%", "95%-100%"),
+      breaks = c(0, 75, 85, 90, 95, 100), include.lowest = TRUE, 
+      labels = c("<75%", "75-84%", "85-89%", "90-94%", "95-100%"),
       ordered_result = TRUE))
 ```
 
@@ -278,8 +278,8 @@ from various programming languages, including R.
 We will make a leaflet map showing the location of all of the K-12 schools in 
 the state. 
 
-We will plot these as circles where the color indicates the relative 
-enrollment in the school and the color indicates the immunization rate.
+We will plot these as circles where the size indicates the student enrollment 
+and the color indicates the immunization coverage rate.
 
 ## Setup
 
@@ -349,9 +349,9 @@ Cut the continuous variable "Percent complete" into bins making factor levels.
 ```{r}
 wa_coverage$Pct <- 
   cut(wa_coverage$Percent, 
-      c(0, 25, 50, 60, 70, 80, 85, 90, 95, 100), include.lowest = TRUE, 
-      labels = c('<25', '25-50', '50-60', '60-70', '70-80', 
-                 '80-85', '85-90', '90-95', '95-100'), ordered_result = TRUE)
+      c(0, 50, 70, 80, 90, 94, 97, 100), include.lowest = TRUE, 
+      labels = c('<50%', '50-69%', '70-79%', '80-89%', '90-93%', '94-96%', 
+                 '97-100%'), ordered_result = TRUE)
 ```
 
 ## Make a map title
@@ -484,15 +484,15 @@ CRSargs(shapeData@proj4string)
 shapeData <- spTransform(shapeData, CRS("+proj=longlat +datum=WGS84 +no_defs"))
 ```
 
-## Prepare data for plotting
+## Prepare variables for plotting
 
 ```{r}
 # Make a factor to use for fill color of polygons.
 wa_coverage_by_dist$Pct <- 
   cut(wa_coverage_by_dist$Percent, 
-      c(0, 25, 50, 60, 70, 80, 85, 90, 95, 100), include.lowest = TRUE, 
-      labels = c('<25', '25-50', '50-60', '60-70', '70-80', 
-                 '80-85', '85-90', '90-95', '95-100'), ordered_result = TRUE)
+      c(0, 50, 70, 80, 90, 94, 97, 100), include.lowest = TRUE, 
+      labels = c('<50%', '50-69%', '70-79%', '80-89%', '90-93%', '94-96%', 
+                 '97-100%'), ordered_result = TRUE)
 
 # Filter to include only Clarke County school districts.
 wa_coverage_by_dist_clark <- wa_coverage_by_dist %>% filter(County == 'Clark')
@@ -552,7 +552,13 @@ saveWidget(g1, file = "wa_immunization_coverage_leaflet_map.html")
 saveWidget(g3, file = "clark_co_measles_outbreak_leaflet_map.html")
 ```
 
-This has been published on a [UW staff](https://staff.washington.edu/high/wa_immunization_coverage_leaflet_map.html) page.
+To publish, you simply need to copy the HTML output file to a web server and 
+configure the file to be accessible, as you would for any static HTML web page.
+
+The following interactive maps from the presentation have been published on the web:
+
+* [WA Immunization Coverage Map](https://staff.washington.edu/high/wa_immunization_coverage_leaflet_map.html)
+* [Clark County Measles Outbreak 2019 Map](https://staff.washington.edu/high/clark_co_measles_outbreak_leaflet_map.html)
 
 ## Exercise 1: Choropleth with `ggplot2`
 
@@ -651,7 +657,7 @@ the points marking the exposure locations.
 For reference, see the following script which maps the King County exposure 
 locations: 
 
-* [King County Measles Exposure Sites](../mapping_wth_ggmap/king_co_measles_exposure_sites_map.R)
+* [King County Measles Exposure Sites](https://github.com/deohs/coders/blob/master/demos/data_viz/mapping_with_ggmap/king_co_measles_exposure_sites_map.R)
 
 ## Exercise 3: `leaflet`
 
@@ -666,7 +672,7 @@ make the size of the points indicate school enrollment and make the color
 indicate the percent immunization coverage.
 
 A modified data file with geolocations for (most of) these schools has been 
-provided for you: [or_k12_immunization_coverage.csv](../mapping_with_leaflet/or_k12_immunization_coverage.csv).
+provided for you: [or_k12_immunization_coverage.csv](https://github.com/deohs/coders/blob/master/demos/data_viz/mapping_with_leaflet/or_k12_immunization_coverage.csv).
 
 The code which generated this file is in the next section of this document.
 
