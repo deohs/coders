@@ -220,7 +220,7 @@ g
 
 We will use the `ggmap` package to create maps with detailed basemaps.
 
-`ggmap` allows us to a few different sources for the basemap tiles.
+`ggmap` offers a selection of sources and styles of basemap tiles.
 
 Our first map will use the "toner-lite" tiles from the "stamen" source.
 
@@ -411,8 +411,8 @@ tag.map.title <- tags$style(HTML("
                                  font-size: 20px;
                                  }
                                  "))
-title <- tags$div(
-  tag.map.title, 
+
+title <- tags$div(tag.map.title, 
   HTML(paste("Immunization Coverage Rates for Washington Schools,<br>", 
              "Percent Complete for All Students, K-12, SY 2018-2019"))
 ) 
@@ -450,23 +450,20 @@ g1
 We can also add markers for the Clark County measles outbreak exposure sites.
 
 ```{r, add_markers}
-locations <- unique(locations)
-locations$popup <- paste(
-  '<dl><dt>2019 Measles Exposure Site</dt><dd>', 
-  htmlEscape(locations$site), '</dd></dl>')
-
-icon.fa <- makeAwesomeIcon(icon = "fa-exclamation-triangle ", 
-                           markerColor = "orange", library = "fa",
-                           iconColor = "black")
-
-title <- tags$div(
-  tag.map.title, 
+title <- tags$div(tag.map.title, 
   HTML(paste("Clark County 2019 Measles Outbreak Exposure Sites<br>",
              "and K-12 Immunization Coverage, SY 2018-2019"))
 )
 
-g2 <- g %>% addAwesomeMarkers(data = locations, ~lon, ~lat, 
-                    popup = ~popup, icon = icon.fa) %>% 
+locations <- unique(locations) %>% mutate(site = htmlEscape(site)) %>% 
+  mutate(label = gsub('^([^,]*),.*$', '<b>Exposure Site:</b> \\1', site))
+
+g2 <- g %>% addMarkers(~lon, ~lat, data = locations, group = "exposure", 
+                       icon = list(iconUrl = 'biohazard.svg', 
+                                   iconSize = c(20, 20)), 
+                       label = ~lapply(label, HTML), 
+                       labelOptions = labelOptions(
+                         style = list('background-color' = 'yellow'))) %>% 
   setView(-122.5487, 45.65366, zoom = 11) %>% 
   addControl(title, position = "topleft", className="map-title")
 ```
@@ -505,7 +502,8 @@ knitr::kable(wa_coverage_by_dist %>%
 ## Get school district polygons
 
 We can import a shapefile from [census.gov](https://www2.census.gov/geo/tiger/TIGER2019/UNSD/) 
-to see which schools are in what district.
+to see which schools are in each district. We must transform the map projection 
+from [NAD83](https://gisgeography.com/geodetic-datums-nad27-nad83-wgs84/) to [WGS84](https://gisgeography.com/wgs84-world-geodetic-system/) to match `leaflet`.
 
 ```{r, message=FALSE}
 # Get compressed shapefile archive and etract to the "gis" folder.
@@ -572,8 +570,10 @@ g3 <- leaflet(data = wa_coverage) %>%
   addCircleMarkers(group = "schools", lng = ~lon, lat = ~lat, 
     color = ~pal(Pct), popup = ~Popup, label = ~htmlEscape(`School Name`),
     radius = ~sqrt(Enrollment) * .3) %>% 
-  addAwesomeMarkers(data = locations, ~lon, ~lat, 
-    popup = ~popup, icon = icon.fa, group = "exposure") %>% 
+  addMarkers(~lon, ~lat, data = locations, group = "exposure", 
+    icon = list(iconUrl = 'biohazard.svg', iconSize = c(20, 20)), 
+    label = ~lapply(label, HTML), labelOptions = labelOptions(
+                         style = list('background-color' = 'yellow'))) %>% 
   addLayersControl(baseGroups = c("map-detail", "no-map-detail"), 
     overlayGroups = c("legend", "districts", "schools", "exposure"),
     options = layersControlOptions(collapsed = TRUE))
