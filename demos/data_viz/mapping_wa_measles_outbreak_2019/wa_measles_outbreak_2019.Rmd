@@ -372,25 +372,30 @@ wa_coverage[grepl('Tukes Valley Middle School', wa_coverage$`School Name`),
 ## Prepare variables for plotting
 
 When you click on a point (circle) in our `leaflet` map, we want a popup to 
-show some details about the school.
+show some details about the school. 
 
 ```{r}
-wa_coverage <- wa_coverage %>% 
-  mutate(Popup = paste0('<dl>', 
+wa_coverage <- wa_coverage %>% mutate(Popup = paste0('<dl>', 
     '<dt>', 'School Name', '</dt><dd>', htmlEscape(`School Name`), '</dd>',
     '<dt>', 'School District', '</dt><dd>', htmlEscape(`School District`), '</dd>',
     '<dt>', 'Enrollment', '</dt><dd>', htmlEscape(`Enrollment`), '</dd>',
     '<dt>', 'Percent Complete', '</dt><dd>', htmlEscape(`Percent`), '</dd>',
-    '<dt>', 'Percent Exempt', '</dt><dd>', htmlEscape(`Exempt`), '</dd>', 
-    '</dl>'))
+    '<dt>', 'Percent Exempt', '</dt><dd>', htmlEscape(`Exempt`), '</dd>', '</dl>'))
+```
+
+When you "hover" over a school circle, show a small popup "tooltip" with the 
+school name and immunization rate.
+
+```{r}
+wa_coverage <- wa_coverage %>% 
+  mutate(label = paste0(`School Name`, ': ', Percent, '%'))
 ```
 
 Cut the continuous variable "Percent complete" into bins making factor levels.
 
 ```{r}
 wa_coverage$Pct <- 
-  cut(wa_coverage$Percent, 
-      c(0, 50, 70, 80, 90, 94, 97, 100), include.lowest = TRUE, 
+  cut(wa_coverage$Percent, c(0, 50, 70, 80, 90, 94, 97, 100), include.lowest = TRUE, 
       labels = c('<50%', '50-69%', '70-79%', '80-89%', '90-93%', '94-96%', 
                  '97-100%'), ordered_result = TRUE)
 ```
@@ -412,8 +417,8 @@ tag.map.title <- tags$style(HTML("
                                  background: rgba(255,255,255,0.75);
                                  font-weight: bold;
                                  font-size: 20px;
-                                 }
-                                 "))
+                             }
+  "))
 
 title <- tags$div(tag.map.title, 
   HTML(paste("Immunization Coverage Rates for Washington Schools,<br>", 
@@ -432,7 +437,7 @@ pal <-
 # Create the leaflet visualization.
 g <- leaflet(data = wa_coverage) %>% addTiles() %>% 
   addCircleMarkers(lng = ~lon, lat = ~lat, 
-                   label = ~htmlEscape(`School Name`),
+                   label = ~htmlEscape(label),
                    color = ~pal(Pct), 
                    popup = ~Popup,
                    radius = ~sqrt(Enrollment) * .3) %>% 
@@ -540,7 +545,7 @@ shapeData_clark <- shapeData_clark[order(shapeData_clark$NAME), ]
 shapeData_clark$Percent <- wa_coverage_by_dist_clark$Percent 
 shapeData_clark$Pct <- wa_coverage_by_dist_clark$Pct
 
-# Create district center labels and popups.
+# Create labels and popups for school districts.
 centers <- data.frame(gCentroid(shapeData_clark, byid = TRUE))
 centers$NAME <- paste0(shapeData_clark$NAME, ': ', shapeData_clark$Percent, '%')
 ```
@@ -559,18 +564,17 @@ g3 <- leaflet(data = wa_coverage) %>%
   addPolygons(group = "districts", data = shapeData_clark, weight = 4, 
     color = 'gray', opacity = 0.4,stroke = TRUE, smoothFactor = 0.2, 
     fillOpacity = 0.3, fillColor = pal(shapeData_clark$Pct)) %>% 
-  addLabelOnlyMarkers(data = centers, lng = ~x, lat = ~y, label = ~NAME, 
-    labelOptions = labelOptions(textsize='15px', opacity = 0.6, noHide = TRUE, 
-      direction = 'top', textOnly = FALSE), group = "districts") %>% 
-  addCircleMarkers(group = "schools", lng = ~lon, lat = ~lat, 
-    color = ~pal(Pct), popup = ~Popup, label = ~htmlEscape(`School Name`),
-    radius = ~sqrt(Enrollment) * .3) %>% 
-  addMarkers(~lon, ~lat, data = locations, group = "exposure", 
+  addLabelOnlyMarkers(group = "dist-labels", data = centers, lng = ~x, lat = ~y,
+    labelOptions = labelOptions(textsize='12px', opacity = 0.8, noHide = TRUE, 
+      direction = 'top', textOnly = FALSE), label = htmlEscape(~NAME)) %>% 
+  addCircleMarkers(group = "schools", lng = ~lon, lat = ~lat, color = ~pal(Pct), 
+    radius = ~sqrt(Enrollment) * .3, popup = ~Popup, label = ~htmlEscape(label)) %>% 
+  addMarkers(lng = ~lon, lat = ~lat, data = locations, group = "exposure", 
     icon = list(iconUrl = 'biohazard.svg', iconSize = c(20, 20)), 
     label = ~lapply(label, HTML), labelOptions = labelOptions(
                          style = list('background-color' = 'yellow'))) %>% 
   addLayersControl(baseGroups = c("map-detail", "no-map-detail"), 
-    overlayGroups = c("legend", "districts", "schools", "exposure"),
+    overlayGroups = c("legend", "districts", "dist-labels", "schools", "exposure"),
     options = layersControlOptions(collapsed = TRUE))
 ```
 
