@@ -326,7 +326,8 @@ Load packages with `pacman` to auto-install any missing packages.
 if (!suppressPackageStartupMessages(require(pacman))) {
   install.packages("pacman", repos = "http://cran.us.r-project.org")
 }
-pacman::p_load(dplyr, tidyr, leaflet, htmlwidgets, htmltools, rgdal, rgeos)
+pacman::p_load(dplyr, tidyr, leaflet, htmlwidgets, htmltools, rgdal, rgeos, 
+               knitr, kableExtra)
 ```
 
 We are loading:
@@ -336,6 +337,8 @@ We are loading:
 * `htmlwidgets` and `htmltools` to add HTML titles and to sanitize data
 * `rgdal` for reading and manipulating shapefiles
 * `rgeos` for finding the center of a polygon
+* `knitr` for table formatting with `kable()`
+* `kableExtra` for specifying options for `kable()`
 
 ## Get data
 
@@ -487,16 +490,8 @@ wa_coverage_by_dist <- wa_coverage %>%
   group_by(County, `School District`) %>% 
   summarise(
     Percent = round(100 * (sum(0.01 * Percent * Enrollment)/sum(Enrollment)), 1))
-```
-
-We view the results on the next slide.
-
-## Coverage by school district
-
-```{r, echo=FALSE}
-knitr::kable(wa_coverage_by_dist %>% 
-               filter(County == 'Clark') %>% 
-               arrange(Percent))
+kable(wa_coverage_by_dist %>% filter(County == 'Clark') %>%  arrange(Percent)) %>% 
+  kable_styling(full_width = F) %>% row_spec(1, bold = T, color = "red")
 ```
 
 ## Get school district polygons
@@ -583,6 +578,20 @@ g3 <- leaflet(data = wa_coverage) %>%
 
 ```{r show_leaflet_add_polygons, echo=FALSE}
 g3
+```
+
+## Exposure locations per school district
+
+Count the number of exposure locations in Clark County per school district 
+using the `over()` function from the `sp` package.
+
+```{r}
+coordinates(locations) <- ~ lon + lat
+proj4string(locations) <- proj4string(shapeData_clark)
+over(locations, shapeData_clark) %>% drop_na() %>% group_by(NAME) %>% 
+  summarise(Count = n()) %>% arrange(desc(Count)) %>% 
+  kable() %>% kable_styling(full_width = F) %>% 
+  row_spec(1, bold = T, color = "red")
 ```
 
 ## Publishing `leaflet` maps on the web
