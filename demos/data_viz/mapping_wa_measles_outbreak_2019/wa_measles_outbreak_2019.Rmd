@@ -47,8 +47,9 @@ Today's example demonstrates these objectives:
 
 * Use various packages in R to create static and interactive maps.
 * Use an API key to use Google's geocoding API.
+* Use shapefiles to add features to maps.
+* Use web and PDF "scraping" techniques to extract data.
 * Use public datasets freely available on the web.
-* Use "web scraping" techniques to extract data.
 * Use "literate programming" to provide a reproducable report.
 * Use a consistent coding [style](https://google.github.io/styleguide/Rguide.xml).
 * Share code through a public [repository](https://github.com/deohs/coders) to 
@@ -57,13 +58,48 @@ facilitate collaboration.
 The code and this presentation are free to share and modify according to the 
 [MIT License](https://github.com/deohs/coders/blob/master/LICENSE).
 
-## Washington Measles Oubreak of 2019
+## Washington Measles Outbreak of 2019
 
-We will use public data to generate:
+In early 2019 there were a two [outbreaks](https://www.doh.wa.gov/YouandYourFamily/IllnessandDisease/Measles/Measles2019) of measles in Washington State:
 
-* A choropleth map showing K-12 immunization rates in WA counties.
-* A map showing exposure sites involved in the outbreak.
-* An interactive map showing immunization rates for all WA schools.
+* Outbreak #1: January through May with 72 confirmed cases.
+* Outbreak #2: May 9th through August 28th with 14 confirmed cases.
+
+There were also some notable responses by state and local governments:
+
+* Clark County declared a [local public health emergency](https://www.clark.wa.gov/public-health/county-declares-public-health-emergency-due-measles-outbreak) on Jan. 18.
+* The Washington governor declared a [state of emergency](https://www.governor.wa.gov/sites/default/files/proclamations/19-01%20State%20of%20Emergency.pdf) on Jan. 25.
+* In May, Washington passed a [bill](https://www.doh.wa.gov/CommunityandEnvironment/Schools/Immunization/ExemptionLawChange) to limit measles vaccination exemptions.
+  - Took effect on July 28th for public and private schools and daycare centers.
+  - Removed the personal and philosophical exemptions for the MMR vaccine.
+
+## Washington Measles Outbreak of 2019
+
+Here are some [details](https://www.doh.wa.gov/YouandYourFamily/IllnessandDisease/Measles/Measles2019) about the 86 confirmed cases in the outbreaks:
+
+* Most were in Clark County (71 cases) and King County (12 cases).
+* Most were in children ages 1 to 10 (52 cases) and 11 to 18 (17 cases).
+* Most had a vaccination status of "0 doses" (66) and "unknown" (11).
+
+Here are some questions we may have about these findings:
+
+* Were Clark County and King County especially susceptible?
+* Why were children aged 1 to 10 years infected the most?
+
+Can you think of other interesting questions? 
+
+How can data visualization, particularly mapping, help answer these?
+
+## Washington Measles Outbreak of 2019
+
+Using public data, we will use mapping techniques to visualize the status of 
+immunization in schools throughout the state and the outbreak exposure locations 
+associated with these events. 
+
+* A choropleth map showing school (K-12) immunization rates in WA counties.
+* A map showing exposure sites involved in the measles outbreak.
+* An interactive map showing immunization rates for all WA schools (K-12).
+* An interactive map showing school districts, schools, and exposure sites.
 
 ## Mapping with `ggplot2`
 
