@@ -462,17 +462,19 @@ knitr::kable(wa_coverage_by_dist %>% filter(County == 'Clark') %>% arrange(Perce
 
 ## Get school district polygons
 
-We can import a shapefile from [data.gov](https://catalog.data.gov/dataset/tiger-line-shapefile-2013-state-washington-current-unified-school-districts-) to see which schools are in what district.
+We can import a shapefile from [census.gov](https://www2.census.gov/geo/tiger/TIGER2019/UNSD/) 
+to see which schools are in what district.
 
 ```{r, message=FALSE}
 # Load packages.
 pacman::p_load(rgdal, rgeos)
 
 # Get compressed shapefile archive and etract to the "gis" folder.
-shp_fn <- 'tl_2013_53_unsd.zip'
+shp_fn <- 'tl_2019_53_unsd.zip'
 if (!file.exists(shp_fn)) {
-  url <- 'http://www2.census.gov/geo/tiger/TIGER2013/UNSD/tl_2013_53_unsd.zip'
-  download.file(url, destfile = 'tl_2013_53_unsd.zip')
+  url <- paste0('https://www2.census.gov/geo/tiger/TIGER2019/UNSD/', shp_fn)
+  download.file(url, destfile = shp_fn)
+  unzip(zipfile = shp_fn, exdir = "gis")
 }
 
 # Import shapefile from the "gis" folder and view the projection string.
@@ -677,7 +679,7 @@ provided for you: [or_k12_immunization_coverage.csv](https://github.com/deohs/co
 The code which generated this file is in the next section of this document.
 
 Bonus points if you add markers for the exposure sites from Exercise 2-B and 
-add polygons for the Oregon school [districts](https://spatialdata.oregonexplorer.info/geoportal/details;id=1270fe6e833f4d0eabacc71300069738).
+add polygons for the Oregon school districts.
 
 ## Exercise 3: `leaflet`, cont.
 
