@@ -45,11 +45,6 @@ if (!file.exists(data_fn)) {
   df <- get_kc_locations(url)
   exposure_site <- append(exposure_site, df$Location)
   
-  # April, 2019
-  url <- 'https://kingcounty.gov/depts/health/news/2019/May/04-measles.aspx'
-  df <- get_kc_locations(url)
-  exposure_site <- append(exposure_site, df$Location)
-  
   # May 4, 2019
   url <- 'https://kingcounty.gov/depts/health/news/2019/May/04-measles.aspx'
   df <- get_kc_locations(url)
