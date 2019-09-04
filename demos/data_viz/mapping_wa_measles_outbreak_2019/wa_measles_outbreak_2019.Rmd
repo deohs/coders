@@ -249,11 +249,35 @@ We are loading:
 * `dplyr` and `tidyr` for data management
 * `ggmap` for geocoding and creating the map
 
+## Using the Google Geocoding API
+
+We are using the Google Geocoding API to find geolocations for measles exposure 
+sites and schools. A geolocation is the pair of geographic coordinates (latitude 
+and longitude) for a particular location.
+
+If you would like to use the [Geocoding API](https://developers.google.com/maps/documentation/geocoding/start), 
+you will need an [API key](https://developers.google.com/maps/documentation/geocoding/get-api-key) from Google. 
+
+Google's Geocoding API key page says, "The API key is a unique identifier that 
+is used to authenticate requests associated with your project for usage and 
+billing purposes." You are given a [monthly credit](https://cloud.google.com/maps-platform/pricing/sheet/) worth several thousand lookups 
+per month, so the geocoding we do for this presentation should not incur charges.
+
+Your API key is a text string that you can store in a file. But you don't want to 
+put it in a script, as you might share the script and you don't want others to 
+see this key. It is better to store it in a more secure location.
+
+The code in this presentation will look for the API key in the file 
+`~/google_api.key`. So, you would need to create this as a "plain text" file 
+and paste the contents of your API key in it using a text editor.
+
 ## Get data
 
 We will get exposure sites from Clark County Public Health using "web scraping", 
 then get the geolocations for these sites with geocoding using the Google API. 
-To use the geocoding API, you need an API key from Google.
+
+If you have the data file which we have provided for you in the Github repository, 
+then the geocoding step will be skipped.
 
 ```{r}
 data_fn <- file.path("..", "mapping_with_ggmap", "clark_co_measles_locations.csv")
@@ -327,7 +351,7 @@ if (!suppressPackageStartupMessages(require(pacman))) {
   install.packages("pacman", repos = "http://cran.us.r-project.org")
 }
 pacman::p_load(dplyr, tidyr, leaflet, htmlwidgets, htmltools, rgdal, rgeos, 
-               knitr, kableExtra)
+               knitr, kableExtra, ggmap)
 ```
 
 We are loading:
@@ -339,6 +363,7 @@ We are loading:
 * `rgeos` for finding the center of a polygon
 * `knitr` for table formatting with `kable()`
 * `kableExtra` for specifying options for `kable()`
+* `ggmap` for `geocode()`
 
 ## Get data
 
@@ -363,10 +388,37 @@ wa_coverage <- wa_coverage %>%
          Enrollment, Percent, Exempt, lat, lon) %>%
   mutate(Percent = as.numeric(gsub('%', '', Percent))) %>% 
   filter(Enrollment > 0) %>% drop_na(lat, lon)
+```
 
-# Manually set coordinates for school records with errors.
-wa_coverage[grepl('Tukes Valley Middle School', wa_coverage$`School Name`), 
-            c('lat', 'lon')] <- c(45.772453, -122.495864)
+## Fix school locations
+
+Some school locations provided by WA DoH do not have the correct coordinates. 
+
+We can fix them by geocoding with the `geocode()` function. This code has been 
+structured so that if you don't have your key stored in the file 
+`~/google_api.key`, then the geocoding step will just be skipped.
+
+```{r, message=FALSE}
+schools_regex <- 'La Center|Tukes Valley Middle School'
+key_fn <- '~/google_api.key'
+if (file.exists(key_fn)) {
+  register_google(key = readLines(key_fn))
+  if (has_google_key()) {
+    new_locations <- wa_coverage %>% 
+      filter(grepl(schools_regex, `School Name`)) %>% pull(`School Name`) %>% 
+      geocode()
+    wa_coverage[grepl(schools_regex, 
+      wa_coverage$`School Name`), c('lon', 'lat')] <- new_locations
+  }
+}
+```
+
+Since some schools will have exactly the same coordinates, we will want to 
+separate those slightly.
+
+```{r}
+wa_coverage <- wa_coverage %>% 
+  mutate_at(.vars = vars(lat, lon), .funs = list(~jitter(., factor = 0.5)))
 ```
 
 ## Prepare variables for plotting
