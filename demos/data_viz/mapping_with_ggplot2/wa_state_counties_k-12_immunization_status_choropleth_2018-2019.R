@@ -23,6 +23,7 @@ if (!suppressPackageStartupMessages(require(pacman))) {
 pacman::p_load(readr, dplyr, tidyr, maps, ggplot2)
 
 # Get K-12 immunization coverage by county for Washington State.
+# See: https://www.doh.wa.gov/DataandStatisticalReports/HealthDataVisualization/SchoolImmunization/CountySchoolImmunization
 data_fn <-'wa_state_counties_k-12_immunization_status_data_2018-2019.csv'
 wa_coverage <- read_csv(data_fn) %>% 
   filter(State == "Washington") %>% 
@@ -31,7 +32,7 @@ wa_coverage <- read_csv(data_fn) %>%
   mutate_at(.vars = c('Complete', 'Exempt'), 
             .funs = ~as.numeric(sub('%', '', .)))
 
-# Convert income variable to a factor with 5 bins.
+# Convert immunization percent complete variable to a factor with 5 bins.
 wa_coverage$Complete_fct <- factor(
   cut(x = wa_coverage$Complete, 
       breaks = c(0, 75, 85, 90, 95, 100), 
