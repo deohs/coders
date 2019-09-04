@@ -90,7 +90,8 @@ if (!file.exists(data_fn)) {
     if (has_google_key()) {
       locations <- geocode(location = exposure_site)
       locations$site <- exposure_site
-      locations <- locations %>% drop_na() %>% filter(lon < -120, lat > 45)
+      locations <- locations %>% drop_na() %>% filter(lon < -120, lat > 45) %>% 
+        unique()
       write.csv(locations, data_fn, row.names = FALSE)
     }
   }
