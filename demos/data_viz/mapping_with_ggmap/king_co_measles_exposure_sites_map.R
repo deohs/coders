@@ -32,7 +32,8 @@ pacman::p_load(readr, rvest, dplyr, tidyr, maps, ggmap)
 # Define functions
 get_kc_locations <- function(url) {
   read_html(url) %>% html_nodes(xpath = '//div/table') %>% 
-    html_table(fill = TRUE) %>% .[[1]] %>% as_tibble()
+    html_table(fill = TRUE) %>% .[[1]] %>% as_tibble() %>% pull(3) %>% 
+    unique() %>% grep('Location', ., value = TRUE, invert = TRUE)
 }
 
 # Get exposure sites from King County.
@@ -42,44 +43,31 @@ if (!file.exists(data_fn)) {
   
   # Jan. 23, 2019
   url <- 'https://kingcounty.gov/depts/health/news/2019/January/23-measles.aspx'
-  df <- get_kc_locations(url)
-  exposure_site <- append(exposure_site, df$Location)
+  exposure_site <- append(exposure_site, get_kc_locations(url))
   
   # May 4, 2019
   url <- 'https://kingcounty.gov/depts/health/news/2019/May/04-measles.aspx'
-  df <- get_kc_locations(url)
-  exposure_site <- append(exposure_site, df$Location)
+  exposure_site <- append(exposure_site, get_kc_locations(url))
   
   # May 12, 2019
   url <- 'https://kingcounty.gov/depts/health/news/2019/May/12-measles.aspx'
-  df <- get_kc_locations(url)
-  exposure_site <- append(exposure_site, df$Location)
+  exposure_site <- append(exposure_site, get_kc_locations(url))
   
   # May 17, 2019
   url <- 'https://kingcounty.gov/depts/health/news/2019/May/17-measles.aspx'
-  df <- get_kc_locations(url)
-  exposure_site <- append(exposure_site, df$Location)
+  exposure_site <- append(exposure_site, get_kc_locations(url))
   
   # May 21, 2019
   url <- 'https://kingcounty.gov/depts/health/news/2019/May/21-measles.aspx'
-  df <- get_kc_locations(url)
-  names(df) <- as.character(df[1, ])
-  df <- df[2:nrow(df), ]
-  exposure_site <- append(exposure_site, df$Location)
+  exposure_site <- append(exposure_site, get_kc_locations(url))
   
   # June, 2019
   url <- 'https://kingcounty.gov/depts/health/news/2019/June/28-measles.aspx'
-  df <- get_kc_locations(url)
-  names(df) <- as.character(df[1, ])
-  df <- df[2:nrow(df), ]
-  exposure_site <- append(exposure_site, df$Location)
+  exposure_site <- append(exposure_site, get_kc_locations(url))
   
   # July, 2019
   url <- 'https://www.kingcounty.gov/measles/cases'
-  df <- get_kc_locations(url)
-  names(df) <- as.character(df[1, ])
-  df <- df[2:nrow(df), ]
-  exposure_site <- append(exposure_site, df$Location)
+  exposure_site <- append(exposure_site, get_kc_locations(url))
   
   # Geocode locations to get lat and lon for each site name.
   
