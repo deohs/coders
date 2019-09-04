@@ -494,8 +494,9 @@ wa_coverage_by_dist <- wa_coverage %>%
   mutate(`School District` = gsub('\\s+', ' ', `School District`)) %>% 
   group_by(County, `School District`) %>% 
   summarise(
-    Percent = round(100 * (sum(0.01 * Percent * Enrollment)/sum(Enrollment)), 1))
-kable(wa_coverage_by_dist %>% filter(County == 'Clark') %>%  arrange(Percent)) %>% 
+    Percent = round(100 * (sum(0.01 * Percent * Enrollment)/sum(Enrollment)), 1),
+    Exempt = round(100 * (sum(0.01 * Exempt * Enrollment)/sum(Enrollment)), 1))
+kable(wa_coverage_by_dist %>% filter(County == 'Clark') %>% arrange(Percent)) %>% 
   kable_styling(full_width = F) %>% row_spec(1, bold = T, color = "red")
 ```
 
@@ -594,8 +595,7 @@ coordinates(locations) <- ~ lon + lat
 proj4string(locations) <- proj4string(shapeData_clark)
 over(locations, shapeData_clark) %>% drop_na() %>% group_by(NAME) %>% 
   summarise(Count = n()) %>% arrange(desc(Count)) %>% 
-  kable() %>% kable_styling(full_width = F) %>% 
-  row_spec(1, bold = T, color = "red")
+  kable() %>% kable_styling(full_width = F) %>% row_spec(1, bold = T, color = "red")
 ```
 
 ## Publishing `leaflet` maps on the web
