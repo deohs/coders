@@ -60,7 +60,7 @@ The code and this presentation are free to share and modify according to the
 
 ## Washington Measles Outbreak of 2019
 
-In early 2019 there were a two [outbreaks](https://www.doh.wa.gov/YouandYourFamily/IllnessandDisease/Measles/Measles2019) of measles in Washington State:
+In early 2019 there were two [outbreaks](https://www.doh.wa.gov/YouandYourFamily/IllnessandDisease/Measles/Measles2019) of measles in Washington State:
 
 * Outbreak #1: January through May with 72 confirmed cases.
 * Outbreak #2: May 9th through August 28th with 14 confirmed cases.
