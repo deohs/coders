@@ -279,7 +279,7 @@ then get the geolocations for these sites with geocoding using the Google API.
 If you have the data file which we have provided for you in the Github repository, 
 then the geocoding step will be skipped.
 
-```{r}
+```{r, message=FALSE}
 data_fn <- file.path("..", "mapping_with_ggmap", "clark_co_measles_locations.csv")
 if (!file.exists(data_fn)) {
   url <- 'https://www.clark.wa.gov/public-health/measles-investigation'
@@ -394,9 +394,9 @@ wa_coverage <- wa_coverage %>%
 
 Some school locations provided by WA DoH do not have the correct coordinates. 
 
-We can fix them by geocoding with the `geocode()` function. This code has been 
-structured so that if you don't have your key stored in the file 
-`~/google_api.key`, then the geocoding step will just be skipped.
+We can fix them by geocoding with the `geocode()` function. If you don't have 
+your key stored in the file `~/google_api.key`, then the geocoding step will 
+be skipped.
 
 ```{r, message=FALSE}
 schools_regex <- 'La Center|Tukes Valley Middle School'
@@ -404,11 +404,10 @@ key_fn <- '~/google_api.key'
 if (file.exists(key_fn)) {
   register_google(key = readLines(key_fn))
   if (has_google_key()) {
-    new_locations <- wa_coverage %>% 
-      filter(grepl(schools_regex, `School Name`)) %>% pull(`School Name`) %>% 
-      geocode()
-    wa_coverage[grepl(schools_regex, 
-      wa_coverage$`School Name`), c('lon', 'lat')] <- new_locations
+    new_locations <- wa_coverage %>% filter(grepl(schools_regex, `School Name`)) %>%
+      pull(`School Name`) %>% geocode()
+    wa_coverage[grepl(schools_regex, wa_coverage$`School Name`), 
+                c('lon', 'lat')] <- new_locations
   }
 }
 ```
