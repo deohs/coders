@@ -335,17 +335,18 @@ g
 
 King County published the exposure sites in batches:
 
-* [Jan. 23, 2019](https://kingcounty.gov/depts/health/news/2019/January/23-measles.aspx) - 7 sites in Auburn, Kent, and Covington
-* [May 4, 2019](https://kingcounty.gov/depts/health/news/2019/May/04-measles.aspx) - 13 sites in Downtown Seattle and Capital Hill
-* [May 12, 2019](https://kingcounty.gov/depts/health/news/2019/May/12-measles.aspx) - 12 sites in SeaTac, Orting, and Bonney Lake
-* [May 17, 2019](https://kingcounty.gov/depts/health/news/2019/May/17-measles.aspx) - 6 sites in Auburn
-* [May 21, 2019](https://kingcounty.gov/depts/health/news/2019/May/21-measles.aspx) - 6 sites in SeaTac and Renton
-* [June 28, 2019](https://kingcounty.gov/depts/health/news/2019/June/28-measles.aspx) - 4 sites at Children's Hospital and Kent
-* [July, 2019](https://www.kingcounty.gov/measles/cases) - 25 sites mostly at SeaTac and Children's Hospital
+* [Jan. 23, 2019](https://kingcounty.gov/depts/health/news/2019/January/23-measles.aspx) - 5 sites in Auburn, Kent, and Covington
+* [May 4, 2019](https://kingcounty.gov/depts/health/news/2019/May/04-measles.aspx) - 11 sites in Downtown Seattle and Capital Hill
+* [May 12, 2019](https://kingcounty.gov/depts/health/news/2019/May/12-measles.aspx) - 8 sites in SeaTac, Orting, and Bonney Lake
+* [May 17, 2019](https://kingcounty.gov/depts/health/news/2019/May/17-measles.aspx) - 3 sites in Auburn
+* [May 21, 2019](https://kingcounty.gov/depts/health/news/2019/May/21-measles.aspx) - 2 sites in SeaTac and Renton
+* [June 28, 2019](https://kingcounty.gov/depts/health/news/2019/June/28-measles.aspx) - 2 sites at Children's Hospital and Kent
+* [July, 2019](https://www.kingcounty.gov/measles/cases) - 14 sites mostly at SeaTac and Children's Hospital
 
 From the press releases listed above, it appears these cases were mostly adults. 
-There were two infants and one teenager. Infection of the children was due to 
-household contact with previously diagnosed adults.
+Infection of the few children was due to household contact with previously 
+diagnosed adults. In this region, measles did not appear to be spreading at 
+schools or daycare centers.
 
 This map and the ones on the next slide were made with this script: [King County Measles Exposure Sites](https://github.com/deohs/coders/blob/master/demos/data_viz/mapping_with_ggmap/king_co_measles_exposure_sites_map.R)
 
