@@ -27,18 +27,64 @@ if (!is.null(sessionInfo()$otherPkgs)) {
 if (!suppressPackageStartupMessages(require(pacman))) {
   install.packages("pacman", repos = "http://cran.us.r-project.org")
 }
-pacman::p_load(readr, rvest, dplyr, tidyr, maps, ggmap, ggrepel)
+pacman::p_load(readr, rvest, dplyr, tidyr, maps, ggmap)
 
+# Define functions
+get_kc_locations <- function(url) {
+  read_html(url) %>% html_nodes(xpath = '//div/table') %>% 
+    html_table(fill = TRUE) %>% .[[1]] %>% as_tibble()
+}
 
 # Get exposure sites from King County.
 data_fn <- "king_co_measles_locations.csv"
 if (!file.exists(data_fn)) {
-  url <- 'https://www.kingcounty.gov/measles/cases'
-  df <- read_html(url) %>% html_nodes(xpath = '//div/table') %>% 
-    html_table(fill = TRUE) %>% .[[1]] %>% as_tibble()
+  exposure_site <- as.character(NULL)
+  
+  # Jan. 23, 2019
+  url <- 'https://kingcounty.gov/depts/health/news/2019/January/23-measles.aspx'
+  df <- get_kc_locations(url)
+  exposure_site <- append(exposure_site, df$Location)
+  
+  # April, 2019
+  url <- 'https://kingcounty.gov/depts/health/news/2019/May/04-measles.aspx'
+  df <- get_kc_locations(url)
+  exposure_site <- append(exposure_site, df$Location)
+  
+  # May 4, 2019
+  url <- 'https://kingcounty.gov/depts/health/news/2019/May/04-measles.aspx'
+  df <- get_kc_locations(url)
+  exposure_site <- append(exposure_site, df$Location)
+  
+  # May 12, 2019
+  url <- 'https://kingcounty.gov/depts/health/news/2019/May/12-measles.aspx'
+  df <- get_kc_locations(url)
+  exposure_site <- append(exposure_site, df$Location)
+  
+  # May 17, 2019
+  url <- 'https://kingcounty.gov/depts/health/news/2019/May/17-measles.aspx'
+  df <- get_kc_locations(url)
+  exposure_site <- append(exposure_site, df$Location)
+  
+  # May 21, 2019
+  url <- 'https://kingcounty.gov/depts/health/news/2019/May/21-measles.aspx'
+  df <- get_kc_locations(url)
   names(df) <- as.character(df[1, ])
   df <- df[2:nrow(df), ]
-  exposure_site <- df$Location
+  exposure_site <- append(exposure_site, df$Location)
+  
+  # June, 2019
+  url <- 'https://kingcounty.gov/depts/health/news/2019/June/28-measles.aspx'
+  df <- get_kc_locations(url)
+  names(df) <- as.character(df[1, ])
+  df <- df[2:nrow(df), ]
+  exposure_site <- append(exposure_site, df$Location)
+  
+  # July, 2019
+  url <- 'https://www.kingcounty.gov/measles/cases'
+  df <- get_kc_locations(url)
+  names(df) <- as.character(df[1, ])
+  df <- df[2:nrow(df), ]
+  exposure_site <- append(exposure_site, df$Location)
   
   # Geocode locations to get lat and lon for each site name.
   
@@ -57,80 +103,58 @@ if (!file.exists(data_fn)) {
   locations <- read_csv(data_fn)
 }
 
-
-# Make labels.
-site_label <- data.frame(site = c('SeaTac Airport', 
-                                  "Children's Hospital",
-                                  "Auburn Community Center",
-                                  "Kenmore Safeway"), 
-                         lon = c(-122.3009, -122.2831, -122.2170, -122.2476),
-                         lat = c(47.44269, 47.66234, 47.29993, 47.75889))
-
 # ------ Functions --------
 
 plot_map <- function(basemap, bbox) {
   # Plot the map using either a Google or Stamen basemap. Add site labels.
   #   Notes:
-  #   1. coord_fixed() is used to crop the Google basemap. It is not essential.
+  #   *  coord_fixed() is used to crop the Google basemap. It is not essential.
   #      coord_fixed() generates a warning that we can ignore.
   #      "Coordinate system already present. [...]"
-  #   2. geom_label_repel() has more features than geom_label() but both work.
-  #      geom_label_repel() generates warnings that we can ignore.
-  #      "In min(x) : no non-missing arguments to min; returning Inf [...]"
   ggmap(basemap) + 
     coord_fixed(xlim = c(bbox['left'], bbox['right']),
                 ylim = c(bbox['bottom'], bbox['top']), 
                 ratio = 1/cos(pi*41.39/180)) +
     geom_point(mapping = aes(x = lon, y = lat), 
                data = locations, color = 'darkred', size = 1, alpha = 0.4) + 
-    geom_label_repel(data = site_label, mapping = aes(label = site),
-                     box.padding   = 0.1, 
-                     point.padding = 0.1,
-                     label.padding = 0.1,
-                     segment.color = 'darkred',
-                     size = 1,
-                     color = 'darkred',
-                     nudge_x = 0.01,
-                     nudge_y = -0.01) +
     theme_void() +
     labs(x = NULL, y = NULL, fill = NULL, 
          title = "2019 King County Measles Outbreak", 
-         subtitle = "Exposure Sites in the Seattle Area", 
+         subtitle = "Exposure Sites in the Seattle/Tacoma Area", 
          caption = "Source: https://www.kingcounty.gov/measles/cases") + 
-    theme(plot.title = element_text(size = 6),
-          plot.subtitle = element_text(size = 5),
-          plot.caption = element_text(face = "italic", size = 4))
+    theme(plot.title = element_text(size = 3.5),
+          plot.subtitle = element_text(size = 3),
+          plot.caption = element_text(face = "italic", size = 2.5))
 }
-
 
 # ------ Stamen Basemap --------
 
 # Create bounding box.
 center_lat <- mean(range(locations$lat))
 center_lon <- mean(range(locations$lon))
-bbox.df <- data.frame(lat = c(center_lat - 0.15, center_lat, center_lat + 0.15), 
-                      lon = c(center_lon - 0.15, center_lon, center_lon + 0.15))
+bbox.df <- data.frame(lat = c(center_lat - 0.25, center_lat, center_lat + 0.25), 
+                      lon = c(center_lon - 0.13, center_lon, center_lon + 0.13))
 bbox <- make_bbox(lon, lat, bbox.df, f = .3)
 
 # Get "terrain" basemap.
-stamen_basemap <- get_stamenmap(bbox, zoom = 11, maptype = "terrain")
+stamen_basemap <- get_stamenmap(bbox, zoom = 10, maptype = "terrain")
 
 # Plot map.
 plot_map(stamen_basemap, bbox)
 
 # Save the map as a JPG file.
 image_fn <- "king_co_measles_map_stamen_terrain.jpg"
-ggsave(filename = image_fn, width = 3, height = 4.5, units = "in", scale = 0.5)
+ggsave(filename = image_fn, width = 1.85, height = 4.5, units = "in", scale = 0.5)
 
 # Get "toner-lite" basemap.
-stamen_basemap <- get_stamenmap(bbox, zoom = 11, maptype = "toner-lite")
+stamen_basemap <- get_stamenmap(bbox, zoom = 10, maptype = "toner-lite")
 
 # Plot map.
 plot_map(stamen_basemap, bbox)
 
 # Save the map as a JPG file.
 image_fn <- "king_co_measles_map_stamen_toner.jpg"
-ggsave(filename = image_fn, width = 3, height = 4.5, units = "in", scale = 0.5)
+ggsave(filename = image_fn, width = 1.85, height = 4.5, units = "in", scale = 0.5)
 
 # ------ Google Basemap --------
 
@@ -140,16 +164,14 @@ if (file.exists(key_fn)) {
   register_google(key = readLines(key_fn))
   if (has_google_key()) {
     # Get basemap. Center map at White Center so as to include Bothell and Auburn.
-    google_basemap <- get_map("White Center, WA", zoom = 10, maptype = "terrain")
+    google_basemap <- get_map("White Center, WA", zoom = 9, maptype = "terrain")
     
     # Plot map.
     plot_map(google_basemap, bbox)
     
     # Save the map as a JPG file.
     image_fn <- "king_co_measles_map_google_terrain.jpg"
-    ggsave(filename = image_fn, width = 3, height = 4.5, units = "in", scale = 0.5)
+    ggsave(filename = image_fn, width = 1.85, height = 4.5, units = "in", scale = 0.5)
   }
 }
 
-# Exercise: Make a map of the Pierce County measles outbreak locations using ggmap().
-# https://www.tpchd.org/healthy-people/diseases/measles/pierce-county-measles-investigation
