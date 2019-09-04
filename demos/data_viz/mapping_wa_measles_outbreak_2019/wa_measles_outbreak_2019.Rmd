@@ -301,14 +301,15 @@ if (!file.exists(data_fn)) {
 
 ## Create the map
 
-Restrict map to the Portand/Vancouver area by removing those in Bend.
-
 ```{r create_stamen_map}
+# Restrict map to the Portand/Vancouver area by removing those in Bend.
 locations <- locations %>% filter(!grepl('Bend', site))
 
+# Prepare the basemap from the stamen source and toner-lite tiles.
 stamen_basemap <- suppressMessages(get_stamenmap(
   make_bbox(lon, lat, locations, f = .15), zoom = 10, maptype = "toner-lite"))
 
+# Add points and labels to the basemap, using a theme that hides axis labels.
 g <- ggmap(stamen_basemap) + 
   geom_point(mapping = aes(x = lon, y = lat), data = locations, 
              color = 'red', size = 2, alpha = 0.5) + 
@@ -406,16 +407,19 @@ We have to download the data files manually from the [WA DoH website](https://ww
 since their site does not support automated downloads from R.
 
 ```{r}
+# Read immunization status data file.
 data_fn <- file.path('..', 'mapping_with_leaflet',
       'wa_state_schools_k-12_immunization_status_data_2018-2019.csv')
 wa_coverage <- read.csv(data_fn, stringsAsFactors = FALSE, check.names = FALSE)
 
+# Read immunization exemption data file and clean-up.
 ex_data_fn <- file.path('..', 'mapping_with_leaflet',
       'wa_state_schools_k-12_immunization_exemption_data_2018-2019.csv')
 wa_ex <- read.csv(ex_data_fn, stringsAsFactors = FALSE, check.names = FALSE)
 wa_ex <- wa_ex %>% mutate(Exempt = as.numeric(gsub('%', '', Percent))) %>% 
   filter(Enrollment > 0) %>% select(`School Name`, `Bldg No`, Exempt)
 
+# Merge data sets and clean-up.
 wa_coverage <- wa_coverage %>% 
   left_join(wa_ex, by = c('School Name', 'Bldg No')) %>%
   rename('lat' = 'Latitude', 'lon' = 'Longitude') %>% 
@@ -447,15 +451,14 @@ if (file.exists(key_fn)) {
 }
 ```
 
-Since some schools will have exactly the same coordinates, we will want to 
-separate those slightly.
+Some schools have the same coordinates as others, so we will separate them 
+with `jitter()`.
 
 ```{r}
-wa_coverage <- wa_coverage %>% 
-  mutate_at(.vars = vars(lat, lon), .funs = list(~jitter(., factor = 0.5)))
+wa_coverage <- wa_coverage %>% mutate_at(vars(lat, lon), ~jitter(.))
 ```
 
-## Prepare variables for plotting
+## Prepare "Popups" and "Tooltips"
 
 When you click on a point (circle) in our `leaflet` map, we want a popup to 
 show some details about the school. 
@@ -477,16 +480,30 @@ wa_coverage <- wa_coverage %>%
   mutate(label = paste0(`School Name`, ': ', Percent, '%'))
 ```
 
-Cut the continuous variable "Percent complete" into bins making factor levels.
+## Make the map
 
 ```{r}
+# Cut the continuous variable "Percent complete" into bins making factor levels.
 wa_coverage$Pct <- 
   cut(wa_coverage$Percent, c(0, 50, 70, 80, 90, 94, 97, 100), include.lowest = TRUE, 
       labels = c('<50%', '50-69%', '70-79%', '80-89%', '90-93%', '94-96%', 
                  '97-100%'), ordered_result = TRUE)
+
+# Assign a palette to this factor variable using colorFactor.
+pal <-
+  colorFactor(palette = colorRamp(c("red", "green3"), interpolate = "spline"),
+  wa_coverage$Pct)
+
+# Create the leaflet map, using the color palette for the circles and legend.
+g <- leaflet(data = wa_coverage) %>% addTiles() %>% 
+  addCircleMarkers(lng = ~lon, lat = ~lat, radius = ~sqrt(Enrollment) * .3, 
+                   color = ~pal(Pct), label = ~htmlEscape(label),
+                   popup = ~Popup) %>% 
+  addLegend("bottomright", pal = pal, values = ~Pct, opacity = 1, 
+            title = "Immunization<br>Coverage<br>Percent<br>Complete")
 ```
 
-## Make a map title
+## Add a title
 
 Leaflet makes a web visualization so we need to use some CSS and HTML to 
 make the title.
@@ -510,26 +527,7 @@ title <- tags$div(tag.map.title,
   HTML(paste("Immunization Coverage Rates for Washington Schools,<br>", 
              "Percent Complete for All Students, K-12, SY 2018-2019"))
 ) 
-```
 
-## Make the map
-
-```{r}
-# Assign a palette to this using colorFactor.
-pal <-
-  colorFactor(palette = colorRamp(c("red", "green3"), interpolate = "spline"),
-  wa_coverage$Pct)
-
-# Create the leaflet visualization.
-g <- leaflet(data = wa_coverage) %>% addTiles() %>% 
-  addCircleMarkers(lng = ~lon, lat = ~lat, 
-                   label = ~htmlEscape(label),
-                   color = ~pal(Pct), 
-                   popup = ~Popup,
-                   radius = ~sqrt(Enrollment) * .3) %>% 
-  addLegend("bottomright", pal = pal, values = ~Pct,
-            title = "Immunization<br>Coverage<br>Percent<br>Complete",
-            opacity = 1)
 g1 <- g %>% addControl(title, position = "topleft", className="map-title")
 ```
 
@@ -544,14 +542,17 @@ g1
 We can also add markers for the Clark County measles outbreak exposure sites.
 
 ```{r, add_markers}
+# Update the title.
 title <- tags$div(tag.map.title, 
   HTML(paste("Clark County 2019 Measles Outbreak Exposure Sites<br>",
              "and K-12 Immunization Coverage, SY 2018-2019"))
 )
 
+# Add a label variable to the locations data frame.
 locations <- unique(locations) %>% mutate(site = htmlEscape(site)) %>% 
   mutate(label = gsub('^([^,]*),.*$', '<b>Exposure Site:</b> \\1', site))
 
+# Add markers for the exposure sites and hover-over ("tooltip") label.
 g2 <- g %>% addMarkers(~lon, ~lat, data = locations, group = "exposure", 
                        icon = list(iconUrl = 'biohazard.svg', 
                                    iconSize = c(20, 20)), 
