@@ -23,7 +23,7 @@ editor_options:
 ```
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
 ```
 
 ```{r get_template, include=FALSE}
@@ -77,7 +77,7 @@ There were also some notable responses by state and local governments:
 
 Here are some [details](https://www.doh.wa.gov/YouandYourFamily/IllnessandDisease/Measles/Measles2019) about the 86 confirmed cases in the outbreaks:
 
-* Most were in Clark County (71 cases) and King County (12 cases).
+* Most were in Clark County (71 cases) and King County (14 cases).
 * Most were in children ages 1 to 10 (52 cases) and 11 to 18 (17 cases).
 * Most had a vaccination status of "0 doses" (66) and "unknown" (11).
 
@@ -328,6 +328,40 @@ g <- ggmap(stamen_basemap) +
 g
 ```
 
+## King County Measles Outbreak
+
+<img style="float: right; height:500px;" src="https://github.com/deohs/coders/raw/master/demos/data_viz/mapping_with_ggmap/king_co_measles_map_stamen_toner.jpg" alt="King County"/>
+
+King County published the exposure sites in batches:
+
+* [Jan. 23, 2019](https://kingcounty.gov/depts/health/news/2019/January/23-measles.aspx) - 7 sites in Auburn, Kent, and Covington
+* [May 4, 2019](https://kingcounty.gov/depts/health/news/2019/May/04-measles.aspx) - 13 sites in Downtown Seattle and Capital Hill
+* [May 12, 2019](https://kingcounty.gov/depts/health/news/2019/May/12-measles.aspx) - 12 sites in SeaTac, Orting, and Bonney Lake
+* [May 17, 2019](https://kingcounty.gov/depts/health/news/2019/May/17-measles.aspx) - 6 sites in Auburn
+* [May 21, 2019](https://kingcounty.gov/depts/health/news/2019/May/21-measles.aspx) - 6 sites in SeaTac and Renton
+* [June 28, 2019](https://kingcounty.gov/depts/health/news/2019/June/28-measles.aspx) - 4 sites at Children's Hospital and Kent
+* [July, 2019](https://www.kingcounty.gov/measles/cases) - 25 sites mostly at SeaTac and Children's Hospital
+
+This map and the ones on the next slide were made with this script:
+
+* [King County Measles Exposure Sites](https://github.com/deohs/coders/blob/master/demos/data_viz/mapping_with_ggmap/king_co_measles_exposure_sites_map.R)
+
+## Alternate basemaps for `ggmap`
+
+For comparison, here are the King County measles exposure sites shown with Stamen 
+Toner-Lite tiles, Stamen Terrain tiles, Google Terrain tiles.
+
+```{r compare_basemaps, echo=FALSE, fig.height=4.5, cache=FALSE}
+pacman::p_load(jpeg, grid, gridExtra)
+image_dir <- file.path('..', 'mapping_with_ggmap')
+images <- c(file.path(image_dir, 'king_co_measles_map_stamen_toner.jpg'),
+            file.path(image_dir, 'king_co_measles_map_stamen_terrain.jpg'),
+            file.path(image_dir, 'king_co_measles_map_google_terrain.jpg'))
+rl <- lapply(images, readJPEG)
+gl <- lapply(rl, rasterGrob)
+grid.arrange(grobs = gl, ncol = 3)
+```
+
 ## Mapping with `leaflet`
 
 `leaflet` is a Javascript library for making interactive maps. It can be used 
@@ -360,10 +394,9 @@ We are loading:
 * `leaflet` to create the map visualization
 * `htmlwidgets` and `htmltools` to add HTML titles and to sanitize data
 * `rgdal` for reading and manipulating shapefiles
-* `rgeos` for finding the center of a polygon
-* `knitr` for table formatting with `kable()`
-* `kableExtra` for specifying options for `kable()`
-* `ggmap` for `geocode()`
+* `rgeos` for finding the center of a polygon (centroid)
+* `knitr` and `kableExtra` for making tables with `kable()`
+* `ggmap` for geocoding with `geocode()`
 
 ## Get data
 
@@ -695,34 +728,6 @@ write.csv(df, data_fn, row.names = FALSE)
 
 ## Exercise 2: `ggmap`
 
-There are two parts: A and B. Choose to do either A or B or both.
-
-A. Pierce County, WA
-
-There were two confirmed cases of measles in the Tacoma / Pierce County area 
-in May, 2019.
-
-The points of the exposure locations are provided at this link: [Pierce County Measles Investigation](https://www.tpchd.org/healthy-people/diseases/measles/pierce-county-measles-investigation). Create a map with `ggmap` which plots the points of these locations.
-
-Here is code you can use to get the location names (and some addresses):
-
-```{r, eval=FALSE}
-library(dplyr)
-library(rvest)
-
-url <- paste0('https://www.tpchd.org/healthy-people/diseases/measles/', 
-              'pierce-county-measles-investigation')
-locations <- read_html(url) %>% html_nodes(xpath ="//table[2]") %>% 
-  html_table(header = TRUE) %>% .[[1]] %>% as_tibble()
-data_fn <- file.path('..', 'mapping_with_ggmap', 
-                     'pierce_co_measles_locations.csv')
-write.csv(locations, data_fn, row.names = FALSE)
-```
-
-## Exercise 2: `ggmap`, cont.
-
-B. Oregon
-
 The Multnomah Health Officer published a list of [exposure locations](https://multco.us/health-officer/measles-outbreak-winter-2019-oregon-exposures) 
 for the Winter 2019 measles outbreak. Create a map with `ggmap` which plots the 
 points of these locations.
@@ -760,12 +765,16 @@ much effort, but automating with an R function is preferred.
 You can use any basemap you like, but try to choose one which will not obscure 
 the points marking the exposure locations.
 
-For reference, see the following script which maps the King County exposure 
-locations: 
+## Exercise 3: `leaflet` - King County
 
-* [King County Measles Exposure Sites](https://github.com/deohs/coders/blob/master/demos/data_viz/mapping_with_ggmap/king_co_measles_exposure_sites_map.R)
+The [King County Measles Exposure Sites](https://github.com/deohs/coders/blob/master/demos/data_viz/mapping_with_ggmap/king_co_measles_exposure_sites_map.R) 
+R script was used to download and map exposure locations for the Seattle/Tacoma area.
 
-## Exercise 3: `leaflet`
+Create a `leaflet` map plotting these locations using the same method as 
+was used for the Clark County example shown earlier in this presentation. 
+Include the school district polygons and color them as we did earlier.
+
+## Exercise 4: `leaflet` - Oregon
 
 The state of Oregon has published an [Excel data file](https://www.oregon.gov/oha/PH/PREVENTIONWELLNESS/VACCINESIMMUNIZATION/GETTINGIMMUNIZED/Documents/SchK-12.xls) with the immunization 
 rates for all K-12 schools in the state.
@@ -782,10 +791,10 @@ provided for you: [or_k12_immunization_coverage.csv](https://github.com/deohs/co
 
 The code which generated this file is in the next section of this document.
 
-Bonus points if you add markers for the exposure sites from Exercise 2-B and 
+Bonus points if you add markers for the exposure sites from Exercise 2 and 
 add [polygons for the Oregon school districts]("https://www2.census.gov/geo/tiger/TIGER2019/UNSD/tl_2019_41_unsd.zip).
 
-## Exercise 3: `leaflet`, cont.
+## Exercise 4: `leaflet`, cont.
 
 ```{r, eval=FALSE}
 # Geocode the Oregon K-12 school locations
