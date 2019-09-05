@@ -58,7 +58,7 @@ ggplot() +
                color = "gray50", size = 0.3, alpha = 0.4) + coord_quickmap() +
   scale_fill_brewer(palette = "YlOrRd", na.value = "grey70", direction = -1) + 
   geom_text(data = county_names, aes(long, lat, label = county),
-            size = 1.25, color = "gray10") +
+            size = 1.5, color = "gray10") +
   theme_void() +
   labs(x = NULL, y = NULL, fill = NULL,
        title = "School Immunization Coverage in Washington Counties",
