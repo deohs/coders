@@ -23,7 +23,7 @@ editor_options:
 ```
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+knitr::opts_chunk$set(echo = TRUE, cache = FALSE)
 ```
 
 ```{r get_template, include=FALSE}
@@ -112,7 +112,7 @@ Washington counties.
 
 Load packages with `pacman` to auto-install any missing packages.
 
-```{r}
+```{r, cache=FALSE}
 # Load packages.
 if (!suppressPackageStartupMessages(require(pacman))) {
   install.packages("pacman", repos = "http://cran.us.r-project.org")
@@ -199,7 +199,8 @@ will be the center of the county's polygon.
 
 ```{r}
 # Create a dataframe for county labels.
-county_names <- wa_county %>% group_by(county) %>% 
+county_names <- wa_county %>% 
+  mutate(county = paste0(county, '\n', Complete, '%')) %>% group_by(county) %>% 
   summarise_at(.vars = c('long', 'lat'), .funs = ~ mean(range(.)))
 ```
 
@@ -207,7 +208,7 @@ county_names <- wa_county %>% group_by(county) %>%
 
 Use `ggplot()` to combine the polygons, color them, and add labels.
 
-```{r create_measles_choropleth}
+```{r create_measles_choropleth, cache=FALSE}
 # Plot map.
 g <- ggplot() +
   geom_polygon(data = wa_county, 
@@ -215,7 +216,7 @@ g <- ggplot() +
                color = "gray50", alpha = 0.4) + 
   scale_fill_brewer(palette = "YlOrRd", direction = -1) + 
   geom_text(data = county_names, aes(long, lat, label = county),
-            size = 2, color = "gray10") +
+            size = 2.5, color = "gray10") +
   coord_quickmap() + theme_void() +
   labs(x = NULL, y = NULL, fill = NULL,
        title = "School Immunization Coverage in Washington Counties",
@@ -252,7 +253,7 @@ We will restrict the map to the Portand/Vancouver area.
 
 Load packages with `pacman` to auto-install any missing packages.
 
-```{r}
+```{r, cache=FALSE}
 # Load packages.
 if (!suppressPackageStartupMessages(require(pacman))) {
   install.packages("pacman", repos = "http://cran.us.r-project.org")
@@ -444,7 +445,7 @@ This will allow us to see if there are "pockets" of low immunization rates.
 
 Load packages with `pacman` to auto-install any missing packages.
 
-```{r}
+```{r, cache=FALSE}
 # Load packages.
 if (!suppressPackageStartupMessages(require(pacman))) {
   install.packages("pacman", repos = "http://cran.us.r-project.org")
