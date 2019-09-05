@@ -429,7 +429,7 @@ the state.
 We will plot these as circles where the size indicates the student enrollment 
 and the color indicates the immunization coverage rate.
 
-This will allow is to see if there are "pockets" of low immunization rates.
+This will allow us to see if there are "pockets" of low immunization rates.
 
 ## Setup
 
