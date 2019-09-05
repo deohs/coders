@@ -354,10 +354,13 @@ tot <- length(sites)
 clk <- length(sites[!grepl('Portland|Bend', sites, ignore.case = TRUE)])
 edu <- length(sites[grepl('School|Academy|Daycare|HomeLink|Home Connection', 
                    sites, ignore.case = TRUE)])
+med <- length(sites[grepl('Hospital|Clinic|Urgent|Medical|Emergency', 
+                   sites, ignore.case = TRUE)])
 ```
 
 * There were `r tot` sites, `r clk` of them in Clark County (`r paste0(round(100*clk/tot), '%')`).
 * There were `r edu` sites at schools (`r paste0(round(100*edu/tot), '%')`).
+* There were `r med` sites at medical facilities (`r paste0(round(100*med/tot), '%')`).
 
 We also know from [county reports](https://www.clark.wa.gov/public-health/measles-investigation) that:
 
