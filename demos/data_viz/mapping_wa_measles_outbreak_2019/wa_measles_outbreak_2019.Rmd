@@ -348,7 +348,9 @@ g
 
 ## Clark County Measles Outbreak
 
-```{r}
+So, what can we conclude so far about this outbreak?
+
+```{r, echo=FALSE}
 sites <- unique(locations$site)
 tot <- length(sites)
 clk <- length(sites[!grepl('Portland|Bend', sites, ignore.case = TRUE)])
@@ -357,6 +359,8 @@ edu <- length(sites[grepl('School|Academy|Daycare|HomeLink|Home Connection',
 med <- length(sites[grepl('Hospital|Clinic|Urgent|Medical|Emergency', 
                    sites, ignore.case = TRUE)])
 ```
+
+From tallying the exposure site locations, we find that:
 
 * There were `r tot` sites, `r clk` of them in Clark County (`r paste0(round(100*clk/tot), '%')`).
 * There were `r edu` sites at schools (`r paste0(round(100*edu/tot), '%')`).
@@ -371,7 +375,9 @@ Since most of the cases (`r paste0(round(100*clk/tot), '%')`) were in Clark
 County, Clark County is only 80.3% complete for immunization, most of the 
 cases (`r paste0(round(100*68/71), '%')`) were children, and many of the 
 exposure sites (`r paste0(round(100*edu/tot), '%')`) were schools, measles is 
-likely to have spread at schools during this outbreak.
+likely to have spread at schools during this outbreak. 
+
+Therefore, it may be worthwhile to take a closer look at the individual schools.
 
 ## How about King County?
 
