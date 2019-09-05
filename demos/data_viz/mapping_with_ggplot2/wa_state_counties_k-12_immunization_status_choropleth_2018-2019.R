@@ -65,7 +65,9 @@ ggplot() +
        subtitle = "Percent complete for all students, K-12, SY 2018-2019",
        caption = paste("Source: School Immunization Dashboards,", 
                        "Washington State Department of Health")
-  ) + theme(plot.caption = element_text(face = "italic", size = 7))
+  ) + theme(plot.caption = element_text(face = "italic", size = 7), 
+            legend.key.size = unit(0.4, "cm"),
+            legend.text = element_text(size = 6))
 
 # Save the map as a PNG file.
 image_fn <- "wa_county_immunization_choropleth_map.png"
