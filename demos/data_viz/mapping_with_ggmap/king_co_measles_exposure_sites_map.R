@@ -12,6 +12,8 @@
 #   Journal, 5(1), 144-161. URL
 #   http://journal.r-project.org/archive/2013-1/kahle-wickham.pdf
 
+# -------- Setup -------
+
 # Clear workspace of all objects and unload all extra (non-base) packages.
 rm(list = ls(all = TRUE))
 if (!is.null(sessionInfo()$otherPkgs)) {
@@ -29,65 +31,13 @@ if (!suppressPackageStartupMessages(require(pacman))) {
 }
 pacman::p_load(readr, rvest, dplyr, tidyr, maps, ggmap)
 
-# Define functions
+# --------- Define functions ---------
+
 get_kc_locations <- function(url) {
   read_html(url) %>% html_nodes(xpath = '//div/table') %>% 
     html_table(fill = TRUE) %>% .[[1]] %>% as_tibble() %>% pull(3) %>% 
     unique() %>% grep('Location', ., value = TRUE, invert = TRUE)
 }
-
-# Get exposure sites from King County.
-data_fn <- "king_co_measles_locations.csv"
-if (!file.exists(data_fn)) {
-  exposure_site <- as.character(NULL)
-  
-  # Jan. 23, 2019
-  url <- 'https://kingcounty.gov/depts/health/news/2019/January/23-measles.aspx'
-  exposure_site <- append(exposure_site, get_kc_locations(url))
-  
-  # May 4, 2019
-  url <- 'https://kingcounty.gov/depts/health/news/2019/May/04-measles.aspx'
-  exposure_site <- append(exposure_site, get_kc_locations(url))
-  
-  # May 12, 2019
-  url <- 'https://kingcounty.gov/depts/health/news/2019/May/12-measles.aspx'
-  exposure_site <- append(exposure_site, get_kc_locations(url))
-  
-  # May 17, 2019
-  url <- 'https://kingcounty.gov/depts/health/news/2019/May/17-measles.aspx'
-  exposure_site <- append(exposure_site, get_kc_locations(url))
-  
-  # May 21, 2019
-  url <- 'https://kingcounty.gov/depts/health/news/2019/May/21-measles.aspx'
-  exposure_site <- append(exposure_site, get_kc_locations(url))
-  
-  # June, 2019
-  url <- 'https://kingcounty.gov/depts/health/news/2019/June/28-measles.aspx'
-  exposure_site <- append(exposure_site, get_kc_locations(url))
-  
-  # July, 2019
-  url <- 'https://www.kingcounty.gov/measles/cases'
-  exposure_site <- append(exposure_site, get_kc_locations(url))
-  
-  # Geocode locations to get lat and lon for each site name.
-  
-  # Register API key. Do NOT save this in a file that you will share.
-  key_fn <- '~/google_api.key'
-  if (file.exists(key_fn)) {
-    register_google(key = readLines(key_fn))
-    if (has_google_key()) {
-      locations <- geocode(location = exposure_site)
-      locations$site <- exposure_site
-      locations <- locations %>% drop_na() %>% filter(lon < -120, lat > 45) %>% 
-        unique()
-      write.csv(locations, data_fn, row.names = FALSE)
-    }
-  }
-} else {
-  locations <- read_csv(data_fn)
-}
-
-# ------ Functions --------
 
 plot_map <- function(basemap, bbox) {
   # Plot the map using either a Google or Stamen basemap. Add site labels.
@@ -109,6 +59,36 @@ plot_map <- function(basemap, bbox) {
     theme(plot.title = element_text(size = 3.5),
           plot.subtitle = element_text(size = 3),
           plot.caption = element_text(face = "italic", size = 2.5))
+}
+
+# ------- Load data -------
+
+# Get exposure sites from King County.
+data_fn <- "king_co_measles_locations.csv"
+if (!file.exists(data_fn)) {
+  urls <- c(paste0('https://kingcounty.gov/depts/health/news/', 
+              c('2019/January/23-measles.aspx', '2019/May/04-measles.aspx', 
+                '2019/May/12-measles.aspx', '2019/May/17-measles.aspx', 
+                '2019/May/21-measles.aspx', '2019/June/28-measles.aspx')),
+            'https://www.kingcounty.gov/measles/cases')
+  exposure_site <- as.vector(unlist(sapply(urls, get_kc_locations)))
+  
+  # Geocode locations to get lat and lon for each site name.
+  
+  # Register API key. Do NOT save this in a file that you will share.
+  key_fn <- '~/google_api.key'
+  if (file.exists(key_fn)) {
+    register_google(key = readLines(key_fn))
+    if (has_google_key()) {
+      locations <- geocode(location = exposure_site)
+      locations$site <- exposure_site
+      locations <- locations %>% drop_na() %>% filter(lon < -120, lat > 45) %>% 
+        unique()
+      write.csv(locations, data_fn, row.names = FALSE)
+    }
+  }
+} else {
+  locations <- read_csv(data_fn)
 }
 
 # ------ Stamen Basemap --------
