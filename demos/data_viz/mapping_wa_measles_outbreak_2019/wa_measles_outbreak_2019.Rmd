@@ -346,16 +346,25 @@ g <- ggmap(stamen_basemap) +
 g
 ```
 
+## Clark County Exposed Schools
+
+```{r}
+locations$site[1] <- paste0(locations$site[1], ', Vancouver')
+sites <- gsub('^([^,]+).*,([A-Za-z .]+)$', '\\1,\\2', unique(locations$site))
+sites[grepl('School|Academy|Daycare|HomeLink|Home Connection', 
+                   sites, ignore.case = TRUE)]
+```
+
 ## Clark County Measles Outbreak
 
 So, what can we conclude so far about this outbreak?
 
 ```{r, echo=FALSE}
-sites <- unique(locations$site)
 tot <- length(sites)
 clk <- length(sites[!grepl('Portland|Bend', sites, ignore.case = TRUE)])
 edu <- length(sites[grepl('School|Academy|Daycare|HomeLink|Home Connection', 
                    sites, ignore.case = TRUE)])
+pri <- length(sites[grepl('Elementary|Primary', sites, ignore.case = TRUE)])
 med <- length(sites[grepl('Hospital|Clinic|Urgent|Medical|Emergency', 
                    sites, ignore.case = TRUE)])
 ```
@@ -363,12 +372,12 @@ med <- length(sites[grepl('Hospital|Clinic|Urgent|Medical|Emergency',
 From tallying the exposure site locations, we find that:
 
 * There were `r tot` sites, `r clk` of them in Clark County (`r paste0(round(100*clk/tot), '%')`).
-* There were `r edu` sites at schools (`r paste0(round(100*edu/tot), '%')`).
-* There were `r med` sites at medical facilities (`r paste0(round(100*med/tot), '%')`).
+* There were `r edu` school sites (`r paste0(round(100*edu/tot), '%')`), 
+  including `r pri` elementary school sites.
 
 We also know from [county reports](https://www.clark.wa.gov/public-health/measles-investigation) that:
 
-* 66 of 71 cases were children age 1-18.
+* 66 of 71 cases were children age 1-18. 52 of these cases were age 1-10.
 * 68 cases were unimmunized or unverified. 
 
 Since most of the cases (`r paste0(round(100*clk/tot), '%')`) were in Clark 
