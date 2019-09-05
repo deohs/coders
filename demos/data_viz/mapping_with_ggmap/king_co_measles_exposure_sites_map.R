@@ -67,9 +67,9 @@ plot_map <- function(basemap, bbox) {
 data_fn <- "king_co_measles_locations.csv"
 if (!file.exists(data_fn)) {
   urls <- c(paste0('https://kingcounty.gov/depts/health/news/', 
-              c('2019/January/23-measles.aspx', '2019/May/04-measles.aspx', 
-                '2019/May/12-measles.aspx', '2019/May/17-measles.aspx', 
-                '2019/May/21-measles.aspx', '2019/June/28-measles.aspx')),
+              c('2019/January/23', '2019/May/04', '2019/May/12', 
+                '2019/May/17', '2019/May/21', '2019/June/28'), 
+              '-measles.aspx'),
             'https://www.kingcounty.gov/measles/cases')
   exposure_site <- as.vector(unlist(sapply(urls, get_kc_locations)))
   
