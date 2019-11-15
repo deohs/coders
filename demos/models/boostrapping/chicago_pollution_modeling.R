@@ -208,19 +208,13 @@ all.equal(boot.results, boot.results.mc)
 
 # Convert to single dataframe with columns: model, variable, estimate, LCI, UCI
 res_to_df <- function(.data) {
-  for(i in seq_along(.data)) {
-    df_temp <- .data[[i]]$estimates
-    df_temp$variable <- rownames(df_temp)
-    df_temp$model <- .data[[i]]$formula
-  
-    if (i == 1) {
-      df <- df_temp[, c("model", "variable", "estimate", "LCI", "UCI")]
-    } else{
-      df <-
-        rbind(df, df_temp[, c("model", "variable", "estimate", "LCI", "UCI")])
-    }
-  }
-  return(df %>% arrange(model, variable))
+  df <- do.call("rbind", lapply(.data, function(x) {
+    df <- x$estimates
+    df$variable <- rownames(df)
+    df$model <- x$formula
+    df[, c("model", "variable", "estimate", "LCI", "UCI")]
+  }))
+  df[order(df$model, df$variable),]
 }
 
 # Convert to single dataframe with columns: model, variable, estimate, LCI, UCI
