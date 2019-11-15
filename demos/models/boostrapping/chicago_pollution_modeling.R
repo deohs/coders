@@ -78,7 +78,7 @@ formula_list_char <- as.list(
 formula_list <- lapply(formula_list_char, as.formula)
 
 # Create boostrap samples
-nBoot <- 100
+nBoot <- 10
 
 # ----------------------------------------------------------------------
 # Compare different ways to get the bootrap samples
@@ -94,7 +94,7 @@ system.time(
   }
 )
 # For nBoot = 100...
-# user  system elapsed 
+#  user  system elapsed 
 # 0.823   0.044   0.872 
 
 # Create boot.samples with sample() function, with replacement, using lapply()
@@ -105,7 +105,7 @@ system.time(
   })
 )
 # For nBoot = 100...
-# user  system elapsed 
+#  user  system elapsed 
 # 0.780   0.033   0.877
 
 all.equal(boot.samples, boot.samples2)
@@ -116,7 +116,7 @@ system.time(
   boot.samples2 <- 1:nBoot %>% map(~df[sample(1:nrow(df), replace = TRUE), ])
 )
 # For nBoot = 100...
-# user  system elapsed 
+#  user  system elapsed 
 # 0.692   0.026   0.723  
 
 all.equal(boot.samples, boot.samples2)
@@ -128,7 +128,7 @@ system.time(
     map(analysis)
 )
 # For nBoot = 100...
-# user  system elapsed 
+#  user  system elapsed 
 # 0.679   0.000   0.683
 
 all.equal(boot.samples, boot.samples2)
@@ -143,24 +143,14 @@ all.equal(boot.samples, boot.samples2)
 alpha <- 0.05
 
 # Define a function to extract model results
-get_boot_results <- function(.data, .formula, weights = NULL) {
+get_boot_results <- function(.data, .formula, .weights = NULL) {
   out <- list()
   out$formula <- .formula
   .formula <- as.formula(.formula)
-  coefs <- as.data.frame(matrix(
-    unlist(lapply(.data, function(y) {
-        if (!is.null(weights)) {
-          lm(.formula, y, weights = weights)$coef
-        } else {
-          lm(.formula, y)$coef
-        }
-      })
-    ),
-    nrow = length(seq_along(.data)),
-    byrow = T
-  ))
+  coefs <- as.data.frame(matrix(unlist(lapply(.data, function(y) 
+      lm(.formula, y, weights = .weights)$coef)),
+    nrow = length(seq_along(.data)), byrow = T))
   colnames(coefs) <- names(lm(.formula, .data[[1]])$coef)
-  
   est <- apply(coefs, 2, mean)
   LCI <- apply(coefs, 2, function(z) quantile(z, alpha / 2))
   UCI <- apply(coefs, 2, function(z) quantile(z, 1 - alpha / 2))
@@ -179,7 +169,7 @@ system.time(
            function(f) get_boot_results(boot.samples, f))
   )
 # For nBoot = 100...
-# user  system elapsed 
+#   user  system elapsed 
 # 19.934   0.139  20.083
 
 # Define number of cores
@@ -193,7 +183,7 @@ system.time(
                               mc.cores = num_cores)
   )
 # For nBoot = 100...
-# user  system elapsed 
+#  user  system elapsed 
 # 9.911   7.111   8.910 
 
 all.equal(boot.results, boot.results.mc)
@@ -232,18 +222,18 @@ res_to_df2 <- function(.data) {
 # Filter to only keep rows where variable contains the string "pm10"
 system.time(
   df_raw_filtered <- 
-    res_to_df(boot.results) %>% filter(grepl("pm10", variable))
+    res_to_df(boot.results) %>% filter(grepl("pm", variable))
   )
 # For nBoot = 100...
-# user  system elapsed 
+#  user  system elapsed 
 # 0.024   0.000   0.024
 
 system.time(
   df_raw_filtered2 <- 
-    res_to_df2(boot.results) %>% filter(grepl("pm10", variable))
+    res_to_df2(boot.results) %>% filter(grepl("pm", variable))
   )
 # For nBoot = 100...
-# user  system elapsed 
+#  user  system elapsed 
 # 0.185   0.000   0.189
 
 all.equal(df_raw_filtered, df_raw_filtered2)
@@ -263,58 +253,71 @@ system.time(
   df_raw_filtered <- 
     res_to_df(lapply(formula_list_char, function(f) {
       get_boot_results(boot.samples, f) })) %>% 
-    filter(grepl("pm10", variable))
+    filter(grepl("pm", variable))
 )
 # For nBoot = 100...
-# user  system elapsed 
-# 12.937   0.124  13.066 
+#   user  system elapsed 
+# 19.164   0.437  19.623 
 
 # Filter to only keep rows where variable contains the string "pm10"
 system.time(
   df_raw_filtered2 <- 
     res_to_df(mclapply(formula_list_char, function(f) {
       get_boot_results(boot.samples, f) }, mc.cores = num_cores)) %>% 
-    filter(grepl("pm10", variable))
+    filter(grepl("pm", variable))
 )
 # For nBoot = 100...
-# user  system elapsed 
-# 11.898   5.245   5.983
+#   user  system elapsed 
+# 11.699  86.454  52.250 
 
 all.equal(df_raw_filtered, df_raw_filtered2)
 # TRUE
 
-# Test results: The multicore version is about twice as fast as the 
-# single core version.
+# Test results: The multicore version is about twice as slow as the 
+# single core version. (Note: In other tests, before we added wupport for 
+# weights, we observed the reverse. TODO: Improve implementation of weights.)
+
+
+# TODO: Test with weights, for example...
+# system.time(
+#   df_raw_filtered <- 
+#     res_to_df(lapply(formula_list_char, function(f) {
+#       get_boot_results(boot.samples, f, 
+#                        .weights = runif(nrow(df), min = 0, max = 1)) })) %>% 
+#     filter(grepl("pm", variable))
+# )
 
 # ---------------------------------------------------------------------------
 # Compare with using purrr and broom
 # ---------------------------------------------------------------------------
 
+# Fit models and calculate confidence intervals in mean of terms of interest
+boot_results_tidy <- function(.data, .formulas, .var = '', 
+                              .weights = NULL, 
+                              .times = 10, .alpha = 0.05) {
+  .data %>% bootstraps(times = .times) %>% 
+    mutate(results = map(splits, ~mapply(
+      lm, formula = .formulas, MoreArgs = list(data = .x, weights = .weights))),
+      coef =  map(results, ~lapply(.x, tidy)),
+      model = lapply(1:.times, function(x) as.character(.formulas))) %>% 
+    select(model, coef) %>% 
+    unnest(c(model, coef)) %>% unnest(c(model, coef)) %>% 
+    filter(grepl(.var, term)) %>% group_by(model, term) %>% 
+    summarize(beta = mean(estimate),
+              LCI = quantile(estimate, .alpha / 2),
+              UCI = quantile(estimate, 1 - .alpha / 2)) %>% 
+    rename(variable = term, estimate = beta) %>% as.data.frame()
+}
+
 # Fit models and calculate confidence intervals on mean of estimate of pm10
 set.seed(12345)
-system.time(
-df_raw_filtered3 <- df %>% bootstraps(times = nBoot) %>% 
-  mutate(results_raw = map(splits, ~lapply(formula_list, function(f) {
-      lm(f, analysis(.x) ) })),
-         coef_info =  map(results_raw, ~lapply(.x, tidy)),
-         model = lapply(1:nBoot, function(x) as.character(formula_list))) %>% 
-  select(model, coef_info) %>% 
-  unnest(c(model, coef_info)) %>% 
-  unnest(c(model, coef_info)) %>% 
-  filter(term == 'pm10') %>%
-  group_by(model, term) %>% 
-  summarize(beta = mean(estimate),
-            LCI = quantile(estimate, alpha / 2),
-            UCI = quantile(estimate, 1 - alpha / 2)) %>% 
-  rename(variable = term, estimate = beta) %>%
-  as.data.frame()
-)
-# For nBoot = 100...
-# user  system elapsed 
-# 56.275   0.285  56.543
+system.time(df_raw_filtered3 <- 
+              boot_results_tidy(.data = df, .formulas = formula_list, 
+                                .var = 'pm', .times = nBoot))
 
-# View results
-df_raw_filtered3
+# For nBoot = 100...
+#    user  system elapsed 
+# 62.287   1.350  63.643 
 
 # Compare with results from previous approach
 all.equal(df_raw_filtered, df_raw_filtered3)
@@ -326,38 +329,44 @@ all.equal(df_raw_filtered, df_raw_filtered3)
 # Compare with using purrr and broom, single-core vs. parallel
 # ---------------------------------------------------------------------------
 
+# Fit models and calculate confidence intervals in mean of terms of interest
+boot_results_tidy_mc <- function(.data, .formulas, .var = '', 
+                              .weights = rep(1, nrow(.data)), 
+                              .times = 10, .alpha = 0.05, mc.cores = 1) {
+  .data %>% bootstraps(times = .times) %>% 
+    mutate(results = map(splits, ~mcmapply(
+      lm, formula = .formulas, MoreArgs = list(data = .x, weights = .weights)),
+      mc.cores = mc.cores),
+      coef =  map(results, ~mclapply(.x, tidy, mc.cores = mc.cores)),
+      model = lapply(1:.times, function(x) as.character(.formulas))) %>% 
+    select(model, coef) %>% 
+    unnest(c(model, coef)) %>% unnest(c(model, coef)) %>% 
+    filter(grepl(.var, term)) %>% group_by(model, term) %>% 
+    summarize(beta = mean(estimate),
+              LCI = quantile(estimate, .alpha / 2),
+              UCI = quantile(estimate, 1 - .alpha / 2)) %>% 
+    rename(variable = term, estimate = beta) %>% as.data.frame()
+}
+
 # Fit models and calculate confidence intervals on mean of estimate of pm10
 set.seed(12345)
-system.time(
-  df_raw_filtered3 <- df %>% bootstraps(times = nBoot) %>% 
-    mutate(results_raw = map(splits, ~mclapply(formula_list, function(f) {
-      lm(f, analysis(.x) ) }, mc.cores = num_cores)),
-      coef_info =  map(results_raw, ~mclapply(.x, tidy, mc.cores = num_cores)),
-      model = lapply(1:nBoot, function(x) as.character(formula_list))) %>% 
-    select(model, coef_info) %>% 
-    unnest(c(model, coef_info)) %>% 
-    unnest(c(model, coef_info)) %>% 
-    filter(term == 'pm10') %>%
-    group_by(model, term) %>% 
-    summarize(beta = mean(estimate),
-              LCI = quantile(estimate, alpha / 2),
-              UCI = quantile(estimate, 1 - alpha / 2)) %>% 
-    rename(variable = term, estimate = beta) %>%
-    as.data.frame()
-)
+system.time(df_raw_filtered3 <- 
+              boot_results_tidy_mc(.data = df, .formulas = formula_list, 
+                                   .var = 'pm', .times = nBoot, 
+                                   mc.cores = num_cores))
 # For nBoot = 100...
-# user  system elapsed 
-# 103.972 276.005 147.195
-
-# View results
-df_raw_filtered3
+#    user  system elapsed 
+# 153.944 484.831 352.020 
 
 # Compare with results from previous approach
 all.equal(df_raw_filtered, df_raw_filtered3)
 
 # Test results: The single-core tidyverse version is about 2-1/2 times faster 
 # than the multicore tidyverse version. The multicore base-R version is almost 
-# 25 times faster than the multicore tidyverse version.
+# 7 times faster than the multicore tidyverse version. (Note: Before we added
+# support for weights, the multicore base-R version was 25 times faster than
+# this version, and this version was twice as fast as it is now with support 
+# for weights. TODO: Improve performance when using weights.)
 
 # Find object size of output in memory
 object_size(df_raw_filtered3)
