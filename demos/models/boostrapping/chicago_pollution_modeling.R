@@ -134,7 +134,7 @@ system.time(
 all.equal(boot.samples, boot.samples2)
 
 # Test results: All four variations take about the same amount of time to 
-# run, though the two base-R versions are slightly faster.
+# run, though the two tidyverse versions are slightly faster.
 
 
 # Extract summaries from bootstrapped samples
