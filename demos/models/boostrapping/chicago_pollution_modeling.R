@@ -21,7 +21,7 @@ if (!require(pacman)) {
   install.packages('pacman', repos = 'http://cran.us.r-project.org')
 }
 pacman::p_load(dlnm, ThermIndex, magrittr, tibble, dplyr, tidyr, rsample, 
-               broom, purrr, parallel, pryr)
+               broom, purrr, modelr, parallel, pryr)
 
 # Get data
 data(chicagoNMMAPS)
@@ -292,12 +292,11 @@ all.equal(df_raw_filtered, df_raw_filtered2)
 # ---------------------------------------------------------------------------
 
 # Fit models and calculate confidence intervals in mean of terms of interest
-boot_results_tidy <- function(.data, .formulas, .var = '', 
-                              .weights = NULL, 
+boot_results_tidy <- function(.data, .formulas, .var = '', .weights = NULL, 
                               .times = 10, .alpha = 0.05) {
   .data %>% bootstraps(times = .times) %>% 
-    mutate(results = map(splits, ~mapply(
-      lm, formula = .formulas, MoreArgs = list(data = .x, weights = .weights))),
+    mutate(results = map(splits, 
+                         ~fit_with(.x, lm, .formulas, weights = .weights)),
       coef =  map(results, ~lapply(.x, tidy)),
       model = lapply(1:.times, function(x) as.character(.formulas))) %>% 
     select(model, coef) %>% 
