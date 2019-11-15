@@ -21,7 +21,7 @@ if (!require(pacman)) {
   install.packages('pacman', repos = 'http://cran.us.r-project.org')
 }
 pacman::p_load(dlnm, ThermIndex, magrittr, tibble, dplyr, tidyr, rsample, 
-               broom, purrr, parallel)
+               broom, purrr, parallel, pryr)
 
 # Get data
 data(chicagoNMMAPS)
@@ -78,7 +78,7 @@ formula_list_char <- as.list(
 formula_list <- lapply(formula_list_char, as.formula)
 
 # Create boostrap samples
-nBoot <- 10 #change to 1000
+nBoot <- 100
 
 # ----------------------------------------------------------------------
 # Compare different ways to get the bootrap samples
@@ -87,29 +87,54 @@ nBoot <- 10 #change to 1000
 # Create boot.samples with sample() function, with replacement, using for()
 set.seed(12345)
 boot.samples <- list()
-for(i in 1:nBoot){
-  # Take sample with replacement
-  boot.samples[[i]] <- df[sample(1:nrow(df)[1], replace = TRUE), ]
-}
+system.time(
+  for(i in 1:nBoot){
+    # Take sample with replacement
+    boot.samples[[i]] <- df[sample(1:nrow(df)[1], replace = TRUE), ]
+  }
+)
+# For nBoot = 100...
+# user  system elapsed 
+# 0.823   0.044   0.872 
 
 # Create boot.samples with sample() function, with replacement, using lapply()
 set.seed(12345)
-boot.samples2 <- list()
-boot.samples2 <- lapply(1:nBoot, function(x) {
-  df[sample(1:nrow(df), replace = TRUE), ]
-})
+system.time(
+  boot.samples2 <- lapply(1:nBoot, function(x) {
+    df[sample(1:nrow(df), replace = TRUE), ]
+  })
+)
+# For nBoot = 100...
+# user  system elapsed 
+# 0.780   0.033   0.877
+
 all.equal(boot.samples, boot.samples2)
 
 # Create boot.samples with sample() function, with replacement using map()
 set.seed(12345)
-boot.samples2 <- 1:nBoot %>% map(~df[sample(1:nrow(df), replace = TRUE), ])
+system.time(
+  boot.samples2 <- 1:nBoot %>% map(~df[sample(1:nrow(df), replace = TRUE), ])
+)
+# For nBoot = 100...
+# user  system elapsed 
+# 0.692   0.026   0.723  
+
 all.equal(boot.samples, boot.samples2)
 
 # Compare use of sample() to create boot.samples with rsample::bootstraps()
 set.seed(12345)
-boot.samples2 <- df %>% bootstraps(times = nBoot) %>% pull(splits) %>%
-  map(analysis)
+system.time(
+  boot.samples2 <- df %>% bootstraps(times = nBoot) %>% pull(splits) %>%
+    map(analysis)
+)
+# For nBoot = 100...
+# user  system elapsed 
+# 0.679   0.000   0.683
+
 all.equal(boot.samples, boot.samples2)
+
+# Test results: All four variations take about the same amount of time to 
+# run, though the two base-R versions are slightly faster.
 
 
 # Extract summaries from bootstrapped samples
@@ -153,12 +178,12 @@ system.time(
     lapply(formula_list_char, 
            function(f) get_boot_results(boot.samples, f))
   )
-# For nBoot = 3...
+# For nBoot = 100...
 # user  system elapsed 
-# 1.021   0.000   1.024 
+# 19.934   0.139  20.083
 
 # Define number of cores
-num_cores <- 8
+num_cores <- 4
 
 # Get model results for all models - repeat using parallel processing
 system.time(
@@ -167,13 +192,15 @@ system.time(
              function(f) get_boot_results(boot.samples, f), 
                               mc.cores = num_cores)
   )
-# For nBoot = 3...
+# For nBoot = 100...
 # user  system elapsed 
-# 0.612   0.473   0.413
+# 9.911   7.111   8.910 
 
 all.equal(boot.results, boot.results.mc)
 # TRUE
 
+# Test results: Multicore processing was about twice as fast as single
+# core processing.
 
 # ----------------------------------------------------------------------
 # Compare two functions to convert results list into a dataframe
@@ -213,21 +240,57 @@ system.time(
   df_raw_filtered <- 
     res_to_df(boot.results) %>% filter(grepl("pm10", variable))
   )
+# For nBoot = 100...
 # user  system elapsed 
-# 0.02    0.00    0.02
+# 0.024   0.000   0.024
 
 system.time(
   df_raw_filtered2 <- 
     res_to_df2(boot.results) %>% filter(grepl("pm10", variable))
   )
+# For nBoot = 100...
 # user  system elapsed 
-# 0.147   0.000   0.147
+# 0.185   0.000   0.189
 
 all.equal(df_raw_filtered, df_raw_filtered2)
 # TRUE
 
 df_raw_filtered
 
+# Test results: The base-R version was about 8 times faster than the 
+# tidyverse version.
+
+# ----------------------------------------------------------------------------
+# Compare the processing time of the whole procedure, single-core vs. parallel
+# ----------------------------------------------------------------------------
+
+# Filter to only keep rows where variable contains the string "pm10"
+system.time(
+  df_raw_filtered <- 
+    res_to_df(lapply(formula_list_char, function(f) {
+      get_boot_results(boot.samples, f) })) %>% 
+    filter(grepl("pm10", variable))
+)
+# For nBoot = 100...
+# user  system elapsed 
+# 12.937   0.124  13.066 
+
+# Filter to only keep rows where variable contains the string "pm10"
+system.time(
+  df_raw_filtered2 <- 
+    res_to_df(mclapply(formula_list_char, function(f) {
+      get_boot_results(boot.samples, f) }, mc.cores = num_cores)) %>% 
+    filter(grepl("pm10", variable))
+)
+# For nBoot = 100...
+# user  system elapsed 
+# 11.898   5.245   5.983
+
+all.equal(df_raw_filtered, df_raw_filtered2)
+# TRUE
+
+# Test results: The multicore version is about twice as fast as the 
+# single core version.
 
 # ---------------------------------------------------------------------------
 # Compare with using purrr and broom
@@ -252,6 +315,9 @@ df_raw_filtered3 <- df %>% bootstraps(times = nBoot) %>%
   rename(variable = term, estimate = beta) %>%
   as.data.frame()
 )
+# For nBoot = 100...
+# user  system elapsed 
+# 56.275   0.285  56.543
 
 # View results
 df_raw_filtered3
@@ -259,34 +325,45 @@ df_raw_filtered3
 # Compare with results from previous approach
 all.equal(df_raw_filtered, df_raw_filtered3)
 
-# ----------------------------------------------------------------------
-# Compare getting model results with multiple cores
-# ----------------------------------------------------------------------
+# Test results: The base-R version is about four times as fast as the 
+# tidyverse version.
 
-# Define number of cores
-num_cores <- 8
+# ---------------------------------------------------------------------------
+# Compare with using purrr and broom, single-core vs. parallel
+# ---------------------------------------------------------------------------
 
 # Fit models and calculate confidence intervals on mean of estimate of pm10
 set.seed(12345)
 system.time(
-df_raw_filtered3 <- df %>% bootstraps(times = nBoot) %>% 
-  mutate(results_raw = map(splits, ~mclapply(formula_list, function(f) {
-    lm(f, analysis(.x) ) }), mc.cores = num_cores),
-    coef_info =  map(results_raw, ~mclapply(.x, tidy, mc.cores = num_cores)),
-    model = lapply(1:nBoot, function(x) as.character(formula_list))) %>% 
-  select(model, coef_info) %>% 
-  unnest(c(model, coef_info)) %>% 
-  unnest(c(model, coef_info)) %>% 
-  filter(term == 'pm10') %>%
-  group_by(model, term) %>% 
-  summarize(beta = mean(estimate),
-            LCI = quantile(estimate, alpha / 2),
-            UCI = quantile(estimate, 1 - alpha / 2)) %>% 
-  rename(variable = term, estimate = beta) %>%
-  as.data.frame()
+  df_raw_filtered3 <- df %>% bootstraps(times = nBoot) %>% 
+    mutate(results_raw = map(splits, ~mclapply(formula_list, function(f) {
+      lm(f, analysis(.x) ) }, mc.cores = num_cores)),
+      coef_info =  map(results_raw, ~mclapply(.x, tidy, mc.cores = num_cores)),
+      model = lapply(1:nBoot, function(x) as.character(formula_list))) %>% 
+    select(model, coef_info) %>% 
+    unnest(c(model, coef_info)) %>% 
+    unnest(c(model, coef_info)) %>% 
+    filter(term == 'pm10') %>%
+    group_by(model, term) %>% 
+    summarize(beta = mean(estimate),
+              LCI = quantile(estimate, alpha / 2),
+              UCI = quantile(estimate, 1 - alpha / 2)) %>% 
+    rename(variable = term, estimate = beta) %>%
+    as.data.frame()
 )
+# For nBoot = 100...
+# user  system elapsed 
+# 103.972 276.005 147.195
+
 # View results
 df_raw_filtered3
 
 # Compare with results from previous approach
 all.equal(df_raw_filtered, df_raw_filtered3)
+
+# Test results: The single-core tidyverse version is about 2-1/2 times faster 
+# than the multicore tidyverse version. The multicore base-R version is almost 
+# 25 times faster than the multicore tidyverse version.
+
+# Find object size of output in memory
+object_size(df_raw_filtered3)
