@@ -78,7 +78,7 @@ formula_list_char <- as.list(
 formula_list <- lapply(formula_list_char, as.formula)
 
 # Create boostrap samples
-nBoot <- 3 #change to 1000
+nBoot <- 10 #change to 1000
 
 # ----------------------------------------------------------------------
 # Compare different ways to get the bootrap samples
@@ -158,7 +158,7 @@ system.time(
 # 1.021   0.000   1.024 
 
 # Define number of cores
-num_cores <- 4
+num_cores <- 8
 
 # Get model results for all models - repeat using parallel processing
 system.time(
@@ -235,6 +235,7 @@ df_raw_filtered
 
 # Fit models and calculate confidence intervals on mean of estimate of pm10
 set.seed(12345)
+system.time(
 df_raw_filtered3 <- df %>% bootstraps(times = nBoot) %>% 
   mutate(results_raw = map(splits, ~lapply(formula_list, function(f) {
       lm(f, analysis(.x) ) })),
@@ -250,6 +251,7 @@ df_raw_filtered3 <- df %>% bootstraps(times = nBoot) %>%
             UCI = quantile(estimate, 1 - alpha / 2)) %>% 
   rename(variable = term, estimate = beta) %>%
   as.data.frame()
+)
 
 # View results
 df_raw_filtered3
@@ -257,3 +259,34 @@ df_raw_filtered3
 # Compare with results from previous approach
 all.equal(df_raw_filtered, df_raw_filtered3)
 
+# ----------------------------------------------------------------------
+# Compare getting model results with multiple cores
+# ----------------------------------------------------------------------
+
+# Define number of cores
+num_cores <- 8
+
+# Fit models and calculate confidence intervals on mean of estimate of pm10
+set.seed(12345)
+system.time(
+df_raw_filtered3 <- df %>% bootstraps(times = nBoot) %>% 
+  mutate(results_raw = map(splits, ~mclapply(formula_list, function(f) {
+    lm(f, analysis(.x) ) }), mc.cores = num_cores),
+    coef_info =  map(results_raw, ~mclapply(.x, tidy, mc.cores = num_cores)),
+    model = lapply(1:nBoot, function(x) as.character(formula_list))) %>% 
+  select(model, coef_info) %>% 
+  unnest(c(model, coef_info)) %>% 
+  unnest(c(model, coef_info)) %>% 
+  filter(term == 'pm10') %>%
+  group_by(model, term) %>% 
+  summarize(beta = mean(estimate),
+            LCI = quantile(estimate, alpha / 2),
+            UCI = quantile(estimate, 1 - alpha / 2)) %>% 
+  rename(variable = term, estimate = beta) %>%
+  as.data.frame()
+)
+# View results
+df_raw_filtered3
+
+# Compare with results from previous approach
+all.equal(df_raw_filtered, df_raw_filtered3)
