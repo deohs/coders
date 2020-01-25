@@ -1,0 +1,151 @@
+---
+title: "Table1"
+author: "Rachel Shaffer"
+date: "1/24/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction to Table 1
+
+In epidemiology and related fields, a "Table 1" is a table that presents descriptive statistics on the population under study. Often, we want to understand how baseline characteristics of a study population are related to certain stratifying variables (an exposure, an outcome, etc)
+
+## Example Table 1 demo, closely adapted from: https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html 
+
+### Table1 using formula interface
+
+First, we need to import the data and create the stratifying variables that we are interested in. 
+
+```{r import and prep data, echo=FALSE}
+
+# loading data from boot package 
+library(boot) 
+melanoma2 <- melanoma
+ 
+# Create basic variables that we're interested in
+melanoma2$status <- 
+  factor(melanoma2$status, 
+         levels=c(2,1,3),
+         labels=c("Alive", # Reference
+                  "Melanoma death", 
+                  "Non-melanoma death"))
+
+```
+
+Then, we can create a first attempt at Table1. Here, we will look at status (alive, melanoma death, non-melanoma death, and overall) by sex, age, ulcer, and thickness. 
+
+We can create a table1 with a formula, where the key descriptive variables are separated by a "+" sign and the stratifying variable comes after the "|"
+
+```{r first table 1, echo=FALSE}
+
+# loading package 
+library(table1)
+
+# first attempt with formula 
+table1(~ factor(sex) + age + factor(ulcer) + thickness | status, data=melanoma2)
+
+```
+
+The main problem with this table is that the descriptive labels don't look great. So we can manually add labels & units to them: 
+
+```{r adding labels, echo=FALSE}
+
+# adding labels & units 
+melanoma2$sex <- 
+  factor(melanoma2$sex, levels=c(1,0),
+         labels=c("Male", 
+                  "Female"))
+ 
+melanoma2$ulcer <- 
+  factor(melanoma2$ulcer, levels=c(0,1),
+         labels=c("Absent", 
+                  "Present"))
+
+label(melanoma2$sex)       <- "Sex"
+label(melanoma2$age)       <- "Age"
+label(melanoma2$ulcer)     <- "Ulceration"
+label(melanoma2$thickness) <- "Thickness"
+
+units(melanoma2$age)       <- "years"
+units(melanoma2$thickness) <- "mm"
+
+
+
+# updated attempt with formula 
+table1(~ sex + age + ulcer + thickness | status, data=melanoma2, overall="Total")
+
+
+```
+
+This looks good, but what if we want further customization? For example, we could put another level of header for "death", to group the melanoma & non-melanoma groups? And we could change what output is reported for each continuous variable? 
+
+### Table 1 using list format 
+
+If so, we will need to expand beyond the basic "formula" interface and set up the table using a list format. 
+
+First, we set up the list of labels for variables and the groups that we want to display in our table:
+
+```{r setting up list for table, echo=FALSE}
+
+# setting up list of labels for variables and groups 
+labels <- list(
+    variables=list(sex="Sex",
+                   age="Age (years)",
+                   ulcer="Ulceration",
+                   thickness="Thickness (mm)"),
+    groups=list("", "", "Death"))
+
+# Remove the word "death" from the labels, since it now appears above
+levels(melanoma2$status) <- c("Alive", "Melanoma", "Non-melanoma")
+
+```
+
+Then, we set up the strata (columns) that we want to include in our table. 
+
+```{r setting up strata, echo=FALSE}
+
+strata <- c(list(Total=melanoma2), split(melanoma2, melanoma2$status))
+
+```
+
+Next, we can use custom rendering to specify what we want each type of variable (continuous vs. categorical) to display
+
+```{r custom rendering, echo=FALSE}
+
+my.render.cont <- function(x) {
+    with(stats.apply.rounding(stats.default(x), digits=2), c("",
+        "Mean (SD)"=sprintf("%s (&plusmn; %s)", MEAN, SD)))
+}
+my.render.cat <- function(x) {
+    c("", sapply(stats.default(x), function(y) with(y,
+        sprintf("%d (%0.0f %%)", FREQ, PCT))))
+}
+
+```
+
+And then we can print our final table: 
+
+```{r updated table, echo=FALSE}
+
+table1(strata, labels, groupspan=c(1, 1, 2),
+       render.continuous=my.render.cont, render.categorical=my.render.cat)
+
+```
+
+## More examples
+
+More details on this table and other examples can be found here: https://cran.r-project.org/web/packages/table1/vignettes/table1-examples.html 
+
+## Potential ideas for workshop explorations
+
+1) Change appearance of table 
+2) Display different statistics for different variables 
+3) Practice similar code on a different dataset, with different stratifying variables 
+4) Add a column of p-values 
+
+## Summary
+
+Overall, I think this function provides a lot of customization options for Table1. The main problem is that it only produces HTML, which is not useful if we are creating tables to put in publications! 
