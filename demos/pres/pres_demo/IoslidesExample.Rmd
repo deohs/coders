@@ -1,0 +1,80 @@
+---
+title: "Ioslides Example"
+author: "Brian High"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  ioslides_presentation:
+    fig_caption: yes
+    fig_retina: 1
+    fig_width: 5
+    fig_height: 3
+    keep_md: true
+    smaller: false
+    incremental: false
+    logo: img/logo_128.png
+    css: inc/deohs-ioslides-theme.css
+    template: inc/deohs-default-ioslides.html
+---
+
+```{r set_knitr_options, echo = FALSE}
+suppressMessages(library(knitr))
+opts_chunk$set(tidy = FALSE, cache = FALSE, echo = TRUE)
+```
+
+<!-- Note: Custom CSS changes title font and removes footer gradient. -->
+<!-- Note: Custom HTML template replaces logo with banner on title page.-->
+
+## R Markdown
+
+This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Table
+
+```{r iris, echo = TRUE}
+library(kableExtra)
+knitr::kable(head(iris)) %>% kable_styling(font_size = 18)
+```
+
+## Slide with Plot
+
+```{r pressure}
+plot(pressure)
+```
+
+## Slide with Crosstalk Elements {.smaller}
+
+```{r, echo=FALSE, message=FALSE}
+library(crosstalk)
+library(leaflet)
+library(DT)
+
+# Wrap data frame in SharedData
+sd <- SharedData$new(quakes[sample(nrow(quakes), 100),])
+
+# Create a filter input
+filter_slider("mag", "Magnitude", sd, column = ~ mag, step = 0.1, width = 400)
+
+# Use SharedData like a dataframe with Crosstalk-enabled widgets
+bscols(
+  leaflet(sd, width = 400, height = 300) %>% addTiles() %>% addMarkers(),
+  datatable(sd,
+    extensions = "Scroller", style = "bootstrap", class = "compact",
+    width = "100%", height = "30%",
+    options = list(deferRender = TRUE, scrollY = 200, scroller = TRUE))
+)
+```
+

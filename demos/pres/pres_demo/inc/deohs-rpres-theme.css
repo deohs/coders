@@ -1,0 +1,59 @@
+/* Styling for title slide */
+
+.section .reveal .state-background {
+   background: #ffffff;
+}
+
+.section .reveal section {
+   background: url(img/DEOHS-Logo-Line-Purple-Print-Transparency.png);
+   background-size: 625px 35px;
+   background-repeat: no-repeat;
+   background-position: top left;
+   padding-top: 50px;
+}
+
+.section .reveal section:before {
+   content: '';
+   position: absolute;
+   width: 100%;
+   height: 4px;
+   background: #483777;
+   background-repeat: no-repeat;
+   background-position: top left;
+}
+
+.section .reveal h1, 
+.section .reveal h2 {
+    margin-top: 50px;
+    color: #483777;
+    font-weight: bold;
+    text-shadow: none;
+    text-align: center;
+    line-height: 300px;
+    height: 200px;
+}
+
+.section .reveal p {
+   color: black;
+   margin-top: 50px;
+   text-align: center;
+}
+
+/* Styling for non-title slides */
+
+.reveal {
+   background: #ffffff;
+}
+
+.reveal section:not([data-state="section"]) {
+    background: url(img/W-47x35.png) no-repeat bottom left;
+}
+
+/* Styling for slide titles. */
+
+.reveal h3 {
+    color: #483777;
+    font-weight: bold;
+    text-shadow: none;
+    text-align: left;
+}

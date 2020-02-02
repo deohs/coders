@@ -1,0 +1,143 @@
+---
+title: Xaringan (Remark.js) Demo
+output:
+  xaringan::moon_reader:
+    css:
+      - "default"
+      - "inc/deohs-remarkjs-theme.css"
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+    seal: false
+    self_contained: true
+  md_document:
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+class: title-slide
+
+<div style="text-align:left; padding-bottom: 125px;">
+    <img src="img/DEOHS-Logo-Line-Purple-Print-Transparency.png">
+    <hr class="title-slide"/>
+</div>
+
+# Xaringan (Remark.js) Demo 
+
+## Brian High
+
+### `r format(Sys.time(), '%d %B, %Y')`
+
+---
+layout: true
+<!-- Note: Footer interferes with heading rendering on the Crosstalk slide. -->
+<div class="my-footer">
+  <img src="img/W-47x35.png" width="33px" height="23px">
+</div>
+---
+
+# Xaringan and Remark.js
+
+[Remark.js](https://remarkjs.com/) is a Javascript library used for making 
+slide presentations like this one. 
+
+[xaringan](https://github.com/yihui/xaringan) ("Presentation Nina") is an R 
+package for using Remark.js with R Markdown.
+
+You can install the `xaringan` package like this:
+
+```{r, eval=FALSE, echo=TRUE}
+remotes::install_github('yihui/xaringan')
+```
+
+---
+
+# R Markdown
+
+This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+
+---
+
+# Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+<aside class="notes">
+Here are some notes.
+</aside>
+
+---
+
+# Slide with Image and Link
+
+![triple image](https://deohs.washington.edu/sites/default/files/triple-image.png)
+
+- [DEOHS Website](https://deohs.washington.edu)
+
+---
+
+# Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+---
+
+# Slide with Table
+
+```{r iris, echo = TRUE}
+library(kableExtra)
+knitr::kable(head(iris)) %>% kable_styling(font_size = 18)
+```
+
+---
+
+# Slide with Plot
+
+```{r pressure, fig.height=5}
+plot(pressure)
+```
+
+---
+layout: true
+<!-- Removing the footer because it interferes with heading of next slide. -->
+---
+
+# Slide with Crosstalk Elements
+
+## Fiji Earthquakes
+
+<div class="smaller-font">
+
+```{r, echo = FALSE, message=FALSE}
+library(crosstalk)
+library(leaflet)
+library(DT)
+
+# Wrap data frame in SharedData
+sd <- SharedData$new(quakes[sample(nrow(quakes), 100),])
+
+# Create a filter input
+filter_slider("mag", "Magnitude", sd, column = ~ mag, step = 0.1, width = 250)
+
+# Use SharedData like a dataframe with Crosstalk-enabled widgets
+bscols(
+  leaflet(sd, width = 400, height = 350) %>% addTiles() %>% addMarkers(),
+  datatable(sd,
+    extensions = "Scroller", style = "bootstrap", class = "compact",
+    width = "100%", height = "45%",
+    options = list(deferRender = TRUE, scrollY = 250, scroller = TRUE))
+)
+```
+
+</div>

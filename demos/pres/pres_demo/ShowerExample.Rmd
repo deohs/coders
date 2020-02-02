@@ -1,0 +1,87 @@
+---
+title: "Shower Example"
+author: "Brian High"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  rmdshower::shower_presentation:
+    self_contained: true
+    katex: true
+    ratio: 16x10
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<style>
+/* Disable page numbers */
+.slide:after {
+    display: none;
+}
+/* Increase font size of code and output */ 
+code,pre {
+    font-size: 20px;
+}
+</style>
+
+## R Markdown
+
+This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Table
+
+```{r iris, echo = FALSE}
+library(kableExtra)
+knitr::kable(head(iris)) %>% kable_styling(font_size = 18)
+```
+
+## Slide with Plot
+
+```{r pressure, echo =FALSE, fig.height = 4}
+plot(pressure)
+```
+
+## Slide with Crosstalk Elements
+
+<!-- Note: The DT::datatable element will be misformatted. -->
+
+<div style="font-size: 65%">
+
+```{r, echo=FALSE, message=FALSE}
+library(crosstalk)
+library(leaflet)
+library(DT)
+
+# Wrap data frame in SharedData
+sd <- SharedData$new(quakes[sample(nrow(quakes), 100),])
+
+# Create a filter input
+filter_slider("mag", "Magnitude", sd, column = ~ mag, step = 0.1, width = 400)
+
+# Use SharedData like a dataframe with Crosstalk-enabled widgets
+bscols(
+  leaflet(sd, width = 400, height = 275) %>% addTiles() %>% addMarkers(),
+  datatable(sd,
+    extensions = "Scroller", style = "bootstrap", class = "compact",
+    width = "100%", height = "80%",
+    options = list(deferRender = TRUE, scrollY = 150, scroller = TRUE))
+)
+```
+
+</div>
+
+

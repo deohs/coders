@@ -1,0 +1,142 @@
+---
+title: "Reveal.js Example"
+author: "Brian High"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  revealjs::revealjs_presentation:
+    keep_md: true
+    template: inc/deohs-default-revealjs.html
+    includes:
+      after_body: inc/deohs-footer.html
+    theme: simple
+    transition: slide
+    self_contained: true
+    reveal_options:
+      slideNumber: true
+      controls: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Reveal.js
+
+<!-- Set custom CSS for this presentation in the first slide. -->
+
+<!-- Left-align parapgraph and bullet text. Reduce font size to 80%. -->
+<style type="text/css">
+  .reveal p {
+    text-align: left;
+    font-size: 80%;
+  }
+  .reveal ul {
+    display: block;
+    font-size: 80%;
+  }
+  .reveal ol {
+    display: block;
+    font-size: 80%;
+  }
+</style>
+
+<!-- Reduce font size of "preformatted" code section to 50%. -->
+<style>
+.reveal pre {
+  font-size: 50%
+}
+</style>
+
+[Reveal.js](https://revealjs.com/) is a Javascript library used for making 
+slide presentations like this one. 
+
+[revealjs](https://github.com/rstudio/revealjs) is an R package for using 
+Reveal.js with R Markdown.
+
+You can install the `revealjs` package like this:
+
+```{r, eval=FALSE, echo=TRUE}
+install.packages("revealjs", type = "source")
+```
+
+## R Markdown
+
+This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+
+For all slides, paragraph and bullet text is left-aligned by default using CSS in the first slide.
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+<aside class="notes">
+Here are some notes. They are not shown on the slide.
+</aside>
+
+## Slide with Image and Link
+
+![triple image](https://deohs.washington.edu/sites/default/files/triple-image.png)
+
+- [DEOHS Website](https://deohs.washington.edu)
+
+## Slide with R Output
+
+```{r cars, echo = TRUE}
+summary(cars)
+```
+
+## Slide with Table
+
+```{r iris, echo = TRUE}
+knitr::kable(head(iris))
+```
+
+## Slide with Plot
+
+This plot is center-aligned through a chunk option.
+
+```{r pressure, fig.height=4, fig.align='center'}
+plot(pressure)
+```
+
+## Slide with Centered Text
+
+<section style="text-align: center;">
+This text is center-aligned using CSS.
+</section>
+
+
+## Slide with Crosstalk Elements
+
+### Fiji Earthquakes
+
+<!-- Note: Some "transitions" are not compatible with crosstalk::bscols(). -->
+
+<div style="font-size: 45%">
+
+```{r, echo=FALSE, message=FALSE}
+library(crosstalk)
+library(leaflet)
+library(DT)
+
+# Wrap data frame in SharedData
+sd <- SharedData$new(quakes[sample(nrow(quakes), 100),])
+
+# Create a filter input
+filter_slider("mag", "Magnitude", sd, column = ~ mag, step = 0.1, width = 400)
+
+# Use SharedData like a dataframe with Crosstalk-enabled widgets
+bscols(
+  leaflet(sd, width = 500, height = 400) %>% addTiles() %>% addMarkers(),
+  datatable(sd,
+    extensions = "Scroller", style = "bootstrap", class = "compact",
+    width = "100%", height = "45%",
+    options = list(deferRender = TRUE, scrollY = 300, scroller = TRUE))
+)
+```
+
+</div>

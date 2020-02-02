@@ -1,0 +1,43 @@
+Rpres Example
+========================================================
+author: Brian High
+date: `r format(Sys.time(), '%d %B, %Y')`
+css: inc/deohs-rpres-theme.css
+autosize: true
+
+First Slide
+========================================================
+
+For more details on authoring R presentations please visit <https://support.rstudio.com/hc/en-us/articles/200486468>.
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+Slide With Code
+========================================================
+
+```{r}
+summary(cars)
+```
+
+
+Slide With Plot
+========================================================
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Plotly Plot
+========================================================
+
+```{r, results='hide', echo=FALSE}
+library(plotly)
+p <- plot_ly(ggplot2::diamonds, x = ~cut, y = ~price, 
+             color = ~clarity, type = "box") %>%
+  layout(boxmode = "group")
+htmlwidgets::saveWidget(as.widget(p), file = "demo.html")
+```
+<iframe src="demo.html" style="position:absolute;height:80%;width:100%"></iframe>
+
