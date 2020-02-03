@@ -21,17 +21,8 @@
   background: #ffffff;
   font-family: Arial, Helvetica, sans-serif;
   color: #483777; 
-  font-weight: bold; 
   text-shadow: 0 0;
   text-align: center;
-}
-
-h1.title-slide {
-  font-size: 4em;
-}
-
-h2.title-slide, h3.title-slide {
-  font-size: 2em;
 }
 
 .title-slide img {
@@ -71,7 +62,6 @@ h2, h3 {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1em;
   color: #483777;
-  font-weight: bold; 
   text-align: center;
 }
 
