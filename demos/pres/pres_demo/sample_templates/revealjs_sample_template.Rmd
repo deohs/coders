@@ -1,0 +1,55 @@
+---
+title: "Reveal.js Sample Template"
+author: "{author}"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+  revealjs::revealjs_presentation:
+    keep_md: true
+    template: inc/deohs-default-revealjs.html
+    includes:
+      after_body: inc/deohs-footer.html
+    theme: simple
+    transition: slide
+    self_contained: true
+    reveal_options:
+      slideNumber: true
+      controls: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## First Slide
+
+<!-- Set custom CSS for this presentation in the first slide. -->
+
+<!-- Left-align parapgraph and bullet text. Reduce font size to 80%. -->
+<style type="text/css">
+  .reveal p {
+    text-align: left;
+    font-size: 80%;
+  }
+  .reveal ul {
+    display: block;
+    font-size: 80%;
+  }
+  .reveal ol {
+    display: block;
+    font-size: 80%;
+  }
+</style>
+
+<!-- Reduce font size of "preformatted" code section to 50%. -->
+<style>
+.reveal pre {
+  font-size: 50%
+}
+</style>
+
+
+{First slide's content goes here ...}
+
+
+## Second Slide
+

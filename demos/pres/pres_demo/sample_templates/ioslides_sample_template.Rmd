@@ -1,0 +1,29 @@
+---
+title: "Ioslides Sample Template"
+author: "{author}"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  ioslides_presentation:
+    fig_caption: yes
+    fig_retina: 1
+    fig_width: 5
+    fig_height: 3
+    keep_md: true
+    smaller: false
+    incremental: false
+    logo: img/logo_128.png
+    css: inc/deohs-ioslides-theme.css
+    template: inc/deohs-default-ioslides.html
+---
+
+```{r set_knitr_options, echo = FALSE}
+suppressMessages(library(knitr))
+opts_chunk$set(tidy = FALSE, cache = FALSE, echo = TRUE)
+```
+
+<!-- Note: Custom CSS changes title font and removes footer gradient. -->
+<!-- Note: Custom HTML template replaces logo with banner on title page.-->
+
+## First Slide
+
+## Second Slide

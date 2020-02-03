@@ -1,0 +1,9 @@
+Rpres Sample Template
+========================================================
+author: {author}
+date: `r format(Sys.time(), '%d %B, %Y')`
+css: inc/deohs-rpres-theme.css
+autosize: true
+
+First Slide
+========================================================

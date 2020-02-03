@@ -1,0 +1,103 @@
+
+.remark-container {
+  background-color: white;
+  box-shadow: none;
+}
+
+.remark-slide-container{
+  display:block;
+}
+
+.remark-slide-scaler{
+  box-shadow:none;
+}
+
+.remark-slide-content { 
+  color: #000000;
+  font-size: 100%;
+}
+
+.title-slide {
+  background: #ffffff;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #483777; 
+  font-weight: bold; 
+  text-shadow: 0 0;
+  text-align: center;
+}
+
+h1.title-slide {
+  font-size: 4em;
+}
+
+h2.title-slide, h3.title-slide {
+  font-size: 2em;
+}
+
+.title-slide img {
+  width: 600px;
+  height: 33px;
+  display: block;
+}
+
+hr.title-slide {
+  border: #483777;
+  background-color: #483777;
+  height: 4px;
+}
+
+.title-slide .remark-slide-number {
+  display: none;
+}
+
+div.my-footer {
+    background-color: #ffffff;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    height: 20px;
+    width: 95%;
+}
+
+h1 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 2em;
+  color: #483777;
+  font-weight: bold; 
+  text-align: center;
+}
+
+h2, h3 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1em;
+  color: #483777;
+  font-weight: bold; 
+  text-align: center;
+}
+
+p, li {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 150%;
+}
+
+code, pre {
+  font-size: 125%;
+}
+
+.notes {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 125%;
+}
+
+.smaller-font {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 100%;
+}
+
+.remark-inline-code{
+  /* background: #F5F5F5; /* lighter */
+  background: #e7e8e2; /* darker */
+  border-radius: 3px;
+  padding: 4px;
+}
+

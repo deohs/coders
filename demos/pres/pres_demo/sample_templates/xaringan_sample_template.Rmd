@@ -1,0 +1,57 @@
+---
+title: Xaringan Sample Template
+output:
+  xaringan::moon_reader:
+    css:
+      - "default"
+      - "inc/deohs-remarkjs-theme.css"
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+    seal: false
+    self_contained: true
+  md_document:
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+class: title-slide
+
+<!-- Note: Set spacing between banner image and title with padding-bottom. -->
+
+<div style="text-align:left; padding-bottom: 125px;">
+    <img src="img/DEOHS-Logo-Line-Purple-Print-Transparency.png">
+    <hr class="title-slide"/>
+</div>
+
+# Xaringan Sample Template 
+
+## {author}
+
+### `r format(Sys.time(), '%d %B, %Y')`
+
+<!-- Note: Include footer HTML at the end of the title slide. -->
+
+---
+layout: true
+<!-- Note: Footer interferes with heading rendering on the Crosstalk slide. -->
+<div class="my-footer">
+  <img src="img/W-47x35.png" width="33px" height="23px">
+</div>
+---
+
+# First Slide
+
+{Slide content goes here...}
+
+<!-- Note: Separate slides with "---" on a line by itself. -->
+
+---
+
+# Second Slide
+
+
