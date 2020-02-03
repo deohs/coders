@@ -61,22 +61,25 @@ h1 {
 h2, h3 {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1em;
-  color: #483777;
+  color: #555555;
   text-align: center;
 }
 
 p, li {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 150%;
+  color: #555555;
 }
 
 code, pre {
   font-size: 125%;
+  color: #555555;
 }
 
-.notes {
+aside.notes {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 125%;
+  display: none;
 }
 
 .smaller-font {
@@ -89,5 +92,6 @@ code, pre {
   background: #e7e8e2; /* darker */
   border-radius: 3px;
   padding: 4px;
+  color: #555555;
 }
 
