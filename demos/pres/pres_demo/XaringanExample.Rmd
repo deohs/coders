@@ -11,7 +11,7 @@ output:
       highlightLines: true
       countIncrementalSlides: false
     seal: false
-    self_contained: true
+    self_contained: false
   md_document:
 always_allow_html: true
 ---
