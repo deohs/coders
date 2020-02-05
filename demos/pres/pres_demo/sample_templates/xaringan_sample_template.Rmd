@@ -16,6 +16,7 @@ always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
+# pacman::p_load_gh('yihui/xaringan')  # Install Xaringan if missing.
 options(htmltools.dir.version = FALSE)
 ```
 
