@@ -3,11 +3,13 @@
 slides > slide.title-slide hgroup h1 {
     color: #483777;
     font-weight: bold;
+    font-size: 200%;
 }
 
 slides > slide hgroup h2 {
     color: #483777;
     font-weight: bold;
+    font-size: 150%;
 }
 
 /* Add custom banner image. Note: Now done in deohs-default-ioslides.html. */
@@ -35,6 +37,6 @@ pre, code {
   width: 100%; /* 106%; */
   left: 0; /* -60px; */
   padding: 10px 15px 10px 15px; /* 10px 0 10px 60px; */
-  font-size: 16px;
+  font-size: 18px;
 }
 
