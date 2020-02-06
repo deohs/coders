@@ -1,9 +1,10 @@
 Presentations with R
 ========================================================
 author: Brian High
-date: 03 February, 2020
+date: 05 February, 2020
 css: inc/deohs-rpres-theme.css
 autosize: true
+transition: fade
 
 Why not use PowerPoint?
 ========================================================

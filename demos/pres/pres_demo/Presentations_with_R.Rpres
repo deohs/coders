@@ -4,6 +4,7 @@ author: Brian High
 date: `r format(Sys.time(), '%d %B, %Y')`
 css: inc/deohs-rpres-theme.css
 autosize: true
+transition: fade
 
 Why not use PowerPoint?
 ========================================================
