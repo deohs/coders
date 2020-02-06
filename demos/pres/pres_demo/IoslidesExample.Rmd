@@ -57,6 +57,8 @@ plot(pressure)
 
 ## Slide with Crosstalk Elements {.smaller}
 
+### Fiji Earthquakes
+
 ```{r, echo=FALSE, message=FALSE}
 library(crosstalk)
 library(leaflet)
