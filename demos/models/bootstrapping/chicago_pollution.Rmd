@@ -1,0 +1,258 @@
+---
+title: "Many Models in Base-R"
+author: "Brian High and Rachel Shaffer"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  ioslides_presentation:
+    fig_caption: yes
+    fig_retina: 1
+    fig_width: 5
+    fig_height: 3
+    keep_md: yes
+    smaller: yes
+    incremental: false
+    logo: img/logo_128.png
+    css: inc/deohs-ioslides-theme.css
+    template: inc/deohs-default-ioslides.html
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r header, include=FALSE}
+# Filename: chicago_pollution.Rmd
+# Copyright (c) University of Washington
+# License: MIT https://opensource.org/licenses/MIT (See LICENSE file.)
+# Repository: https://github.com/deohs/coders
+```
+
+## Objectives
+
+Many models:
+
+* Automate "many models" with base-R using Chicago pollution data.
+* Produce a table of model estimates for various combinations of covariates.
+
+Background processing:
+
+* Demonstrate alternative ways to render (knit) Rmd files.
+* Explore the use of the `screen` utility.
+
+Modular programming:
+
+* Demonstrate use of the `source` function to read code from other R scripts.
+* Compare using `source` for functions to creating and using packages.
+
+## Setup
+
+```{r setup}
+# Set knitr options
+knitr::opts_chunk$set(echo = TRUE, cache = FALSE)
+options("kableExtra.html.bsTable" = TRUE)
+```
+
+```{r load_packages}
+# Load packages
+pacman::p_load(dlnm, ThermIndex, kableExtra)
+```
+
+## Get data
+
+Import the `chicagoNMMAPS` dataset from the `dlnm` package:
+
+```{r get_data}
+data(chicagoNMMAPS)
+df <- chicagoNMMAPS
+```
+
+```
+date:   Date in the period 1987-2000.
+time:   The sequence of observations
+year:   Year
+month:  Month (numeric)
+doy:    Day of the year
+dow:    Day of the week (factor)
+death:  Counts of all cause mortality excluding accident
+cvd:    Cardiovascular Deaths
+resp:   Respiratory Deaths
+temp:   Mean temperature (in Celsius degrees)
+dptp:   Dew point temperature
+rhum:   Mean relative humidity
+pm10:   PM10
+o3:     Ozone
+```
+
+## Prepare formulas for base models
+
+```{r prepare_base_model_formulas}
+# Calculate humidex
+df$hmdx <- with(df, humidex(temp, rhum))
+
+# Make vector of outcomes
+outcomes <- c("death", "cvd", "resp")
+
+# Make vector of exposures
+exposures <- c("pm10", "o3")
+
+# Make formula of outcomes associated w/exposures for each possible combination
+base_models <- paste0(outcomes, " ~ ", rep(exposures, each = length(outcomes)))
+```
+
+## Add covariates to base models
+
+```{r add_covariates}
+# Make a list of covariates
+covariates_list <- list(
+  model1 = c("temp"),
+  model2 = c("temp", "dptp"),
+  model3 = c("temp", "dptp", "rhum"),
+  model4 = c("temp", "dptp", "rhum", "hmdx"),
+  model5 = c("temp", "dptp", "rhum", "hmdx", "dow")
+  )
+
+# Transfer from list to format separated by "+" 
+covariates <- unlist(lapply(covariates_list, 
+                            function(x) paste(x, collapse = " + ")))
+
+# Develop all combinations of exposures, outcomes, covariates 
+formula_list_char <- as.list(
+  paste0(rep(base_models, each = length(covariates)), " + ", covariates))
+
+# Create a list of formulas
+formula_list <- lapply(formula_list_char, as.formula)
+```
+
+## Create bootstrap samples
+
+Create boot_samples with sample() function, with replacement, using lapply().
+
+```{r create_boot_samples}
+nBoot <- 10
+set.seed(12345)
+boot_samples <- lapply(1:nBoot, 
+                       function(x) df[sample(1:nrow(df), replace = TRUE), ])
+```
+
+## Extract summaries
+
+Define a function to return a data frame of model results.
+
+```{r define_get_model_results_fuction}
+# Credit: This function was modified from code by Cooper Schumacher.
+get_model_results <- function(.data, .formula, alpha = 0.05, weights = NULL) {
+  out <- list()
+  out$formula <- .formula
+  .formula <- as.formula(.formula)
+  coefs <- as.data.frame(matrix(unlist(lapply(.data, function(y) {
+        if (!is.null(weights)) lm(.formula, y, weights = weights)$coef
+        else lm(.formula, y)$coef
+      })), nrow = length(seq_along(.data)), byrow = TRUE))
+  colnames(coefs) <- names(lm(.formula, .data[[1]])$coef)
+  
+  est <- apply(coefs, 2, mean)
+  LCI <- apply(coefs, 2, function(z) quantile(z, alpha / 2))
+  UCI <- apply(coefs, 2, function(z) quantile(z, 1 - alpha / 2))
+  out$estimates <- data.frame(cbind(estimate = est, LCI = LCI, UCI = UCI))
+  out
+}
+```
+
+## Get results for all models
+
+```{r get_results}
+model_results <- 
+  lapply(formula_list_char, 
+         function(f) get_model_results(boot_samples, f))
+```
+
+## Combine results
+
+Define a function to convert the results to single dataframe with columns: 
+model, variable, estimate, LCI, UCI.
+
+```{r combine_results}
+res_to_df <- function(.data) {
+  for(i in seq_along(.data)) {
+    df_temp <- .data[[i]]$estimates
+    df_temp$variable <- rownames(df_temp)
+    df_temp$model <- .data[[i]]$formula
+  
+    if (i == 1) {
+      df <- 
+        df_temp[, c("model", "variable", "estimate", "LCI", "UCI")]
+    } else{
+      df <-
+        rbind(df, df_temp[, c("model", "variable", "estimate", "LCI", "UCI")])
+    }
+  }
+  return(df[order(df$model, df$variable),])
+}
+```
+
+## Filter results for pm10
+
+Filter to keep only those rows where `variable` contains the string "pm10".
+
+```{r filter_results}
+df_res <- res_to_df(model_results)
+df_pm10 <- df_res[df_res$variable == 'pm10',]
+row.names(df_pm10) <- NULL
+```
+
+## Results
+
+```{r show_results, echo = FALSE}
+df_pm10_html <- knitr::kable(x = df_pm10, format = 'html')
+kable_styling(df_pm10_html, full_width = TRUE, bootstrap_options = 'condensed')
+```
+
+## Appendix A: Alternate ways to render
+
+### In the R console:
+
+```
+rmarkdown::render("chicago_pollution.Rmd")
+```
+
+### In the Terminal (Bash):
+
+```
+Rscript -e 'rmarkdown::render("chicago_pollution.Rmd")'
+```
+
+### In the Jobs tab:
+
+* Create a R script containing: `rmarkdown::render("chicago_pollution.Rmd")`
+* In the Jobs tab, click "Start Local Job" and configure to run R script.
+
+## Appendix B: The "screen" utility
+
+With the "screen" utility you can run multiple shell processes simultaneously.
+
+* `screen -h` shows command options.
+* `screen` creates a new screen. (Use Ctrl+A D to detach.)
+* `screen "NAME"` creates a new screen named "NAME".
+* `screen -r` connects to a running screen. (Or use `screen -r "NAME"`.)
+* `screen -list` shows running screens.
+
+![Use Ctrl+A D to detach from a screen.](ctrl-a-d_388x220.jpg)
+
+## Appendix C: Read code with "source"
+
+As an alternative to defining the function in the Rmd file as we did above, we
+can also save the function in a separate file and import it using the `source`
+function.
+
+```{r, eval=FALSE}
+source('model_lib.R')
+```
+
+This might be useful if the Rmd was exceedingly long and unwieldy to work with.
+
+However, storing code separately like this may make it harder for others to 
+follow or to verify reproducibility. One school of thought favors modularity 
+for managability and code reuse, while the other prefers a monolithic approach.
+
+## Discussion: "source" versus packages
+
+If your functions are generally useful independently of this project, it may 
+be wise to share them as a package insted of using `source`. What do you think?
