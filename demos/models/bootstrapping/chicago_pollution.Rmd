@@ -228,11 +228,11 @@ Rscript -e 'rmarkdown::render("chicago_pollution.Rmd")'
 
 With the "screen" utility you can run multiple shell processes simultaneously.
 
-* `screen -h` shows command options.
 * `screen` creates a new screen. (Use Ctrl+A D to detach.)
-* `screen "NAME"` creates a new screen named "NAME".
+* `screen -S "NAME"` creates a new screen named "NAME".
+* `screen -dmS "NAME" CMD` creates a screen "NAME", runs CMD, and detaches.
 * `screen -r` connects to a running screen. (Or use `screen -r "NAME"`.)
-* `screen -list` shows running screens.
+* `screen -list` or `screen -ls` shows running screens.
 
 ![Use Ctrl+A D to detach from a screen.](ctrl-a-d_388x220.jpg)
 
