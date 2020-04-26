@@ -1,7 +1,7 @@
 ---
 title: "Many Models in Base-R"
 author: "Brian High and Rachel Shaffer"
-date: "25 April, 2020"
+date: "26 April, 2020"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -175,19 +175,12 @@ model, variable, estimate, LCI, UCI.
 
 ```r
 res_to_df <- function(.data) {
-  for(i in seq_along(.data)) {
-    df_temp <- .data[[i]]$estimates
-    df_temp$variable <- rownames(df_temp)
-    df_temp$model <- .data[[i]]$formula
-  
-    if (i == 1) {
-      df <- 
-        df_temp[, c("model", "variable", "estimate", "LCI", "UCI")]
-    } else{
-      df <-
-        rbind(df, df_temp[, c("model", "variable", "estimate", "LCI", "UCI")])
-    }
-  }
+  df <- do.call('rbind', lapply(seq_along(.data), function(i) {
+    df_i <- .data[[i]]$estimates
+    df_i$variable <- rownames(df_i)
+    df_i$model <- .data[[i]]$formula
+    df_i[, c("model", "variable", "estimate", "LCI", "UCI")]
+  }))
   return(df[order(df$model, df$variable),])
 }
 ```
