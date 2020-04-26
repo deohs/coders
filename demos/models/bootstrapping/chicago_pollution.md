@@ -62,6 +62,8 @@ data(chicagoNMMAPS)
 df <- chicagoNMMAPS
 ```
 
+From `help('chicagoNMMAPS', dlnm)`:
+
 ```
 date:   Date in the period 1987-2000.
 time:   The sequence of observations
@@ -139,8 +141,9 @@ Define a function to return a data frame of model results.
 
 
 ```r
-# Credit: This function was modified from code by Cooper Schumacher.
 get_model_results <- function(.data, .formula, alpha = 0.05, weights = NULL) {
+  # .data is a list of dataframes of bootstraps, .formula is model formula.
+  # Credit: This function was modified from code by Cooper Schumacher.
   out <- list()
   out$formula <- .formula
   .formula <- as.formula(.formula)
@@ -169,19 +172,23 @@ model_results <-
 
 ## Combine results
 
-Define a function to convert the results to single dataframe with columns: 
+Define functions to combine the results into single dataframe with columns: 
 model, variable, estimate, LCI, UCI.
 
 
 ```r
-res_to_df <- function(.data) {
-  df <- do.call('rbind', lapply(seq_along(.data), function(i) {
-    df_i <- .data[[i]]$estimates
-    df_i$variable <- rownames(df_i)
-    df_i$model <- .data[[i]]$formula
-    df_i[, c("model", "variable", "estimate", "LCI", "UCI")]
-  }))
-  return(df[order(df$model, df$variable),])
+model_result_to_df <- function(.data) {
+  # .data is a list containing a dataframe of estimates for one model.
+  df <- .data$estimates
+  df$variable <- rownames(df)
+  df$model <- .data$formula
+  df[, c("model", "variable", "estimate", "LCI", "UCI")]
+}
+
+combine_model_results <- function(.data) {
+  # .data is a list of models, each with a list with a dataframe of estimates.
+  df <- do.call('rbind', lapply(.data, model_result_to_df))
+  df[order(df$model, df$variable),]
 }
 ```
 
@@ -191,7 +198,7 @@ Filter to keep only those rows where `variable` contains the string "pm10".
 
 
 ```r
-df_res <- res_to_df(model_results)
+df_res <- combine_model_results(model_results)
 df_pm10 <- df_res[df_res$variable == 'pm10',]
 row.names(df_pm10) <- NULL
 ```
