@@ -115,8 +115,8 @@ From a vector of covariates, create a vector of model formulas.
 # Make a vector of model covariates expanded as "A", "A + B", "A + B + C", etc.
 sep <- ' + '
 covariate <- c("temp", "dptp", "rhum", "hmdx", "dow")
-covariates <- unlist(sapply(seq_along(covariate), 
-                     function(i) paste(covariate[1:i], collapse = sep)))
+covariates <- sapply(seq_along(covariate), 
+                     function(i) paste(covariate[1:i], collapse = sep))
 
 # Develop all combinations of exposures, outcomes, covariates 
 models <- paste0(rep(base_models, each = length(covariates)), sep, covariates)
@@ -167,9 +167,9 @@ get_model_results <- function(.data, .formula, alpha = 0.05, weights = NULL) {
       })), nrow = length(seq_along(.data)), byrow = TRUE))
   colnames(coefs) <- names(lm(.formula, .data[[1]])$coef)
   
-  est <- apply(coefs, 2, mean)
-  LCI <- apply(coefs, 2, function(z) quantile(z, alpha / 2))
-  UCI <- apply(coefs, 2, function(z) quantile(z, 1 - alpha / 2))
+  est <- sapply(coefs, mean)
+  LCI <- sapply(coefs, function(z) quantile(z, alpha / 2))
+  UCI <- sapply(coefs, function(z) quantile(z, 1 - alpha / 2))
   out$estimates <- data.frame(cbind(estimate = est, LCI = LCI, UCI = UCI))
   out
 }
