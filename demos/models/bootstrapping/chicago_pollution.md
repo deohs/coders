@@ -49,7 +49,7 @@ options("kableExtra.html.bsTable" = TRUE)
 
 ```r
 # Load packages
-pacman::p_load(dlnm, ThermIndex, kableExtra)
+pacman::p_load(dlnm, ThermIndex, kableExtra, data.tree)
 ```
 
 ## Get the data
@@ -217,21 +217,19 @@ Examine the resulting list of dataframes.
 
 
 ```r
-print(c(list.length = length(boot_samples), df1.dim = dim(boot_samples[[1]])))
+length(boot_samples)
 ```
 
 ```
-## list.length    df1.dim1    df1.dim2 
-##          10        5114          15
+## [1] 10
 ```
 
 ```r
-colnames(boot_samples[[1]])
+dim(boot_samples[[1]])
 ```
 
 ```
-##  [1] "date"  "time"  "year"  "month" "doy"   "dow"   "death" "cvd"   "resp" 
-## [10] "temp"  "dptp"  "rhum"  "pm10"  "o3"    "hmdx"
+## [1] 5114   15
 ```
 
 ## Define a function to run models
@@ -282,15 +280,72 @@ combine_model_results <- function(.data) {
 }
 ```
 
-## Run models and combine results
+## Define functions to visualize lists
 
-Run all models, extract the results, and combine them into a dataframe.
+Define functions to use with the `data.tree` package to visualize lists.
+
+
+```r
+# From: https://stackoverflow.com/questions/51608378
+
+depth <- function(x) ifelse(is.list(x), 1 + max(sapply(x, depth)), 0)
+
+toTree <- function(x) {
+  d <- depth(x)
+  if(d > 1) {
+    lapply(x, toTree)
+  } else {
+    children <- lapply(names(x), function(nm) list(name = nm))
+  }
+}
+
+plot_list_structure <- function(x) {
+  plot(FromListSimple(toTree(x), nodeName = deparse(substitute(x))))
+}
+```
+
+## Run the models
+
+Run all models and extract the results.
 
 
 ```r
 model_results <- lapply(models, 
                         function(model) get_model_results(boot_samples, model))
+```
+
+Visualize structure of first item of results list.
+
+
+```r
+plot_list_structure(model_results[[1]])
+```
+
+![](list_structure.png)
+
+## Combine the results
+
+Combine the results into a single dataframe.
+
+
+```r
 df_results <- combine_model_results(model_results)
+```
+
+View the structure of the results dataframe.
+
+
+```r
+str(df_results, vec.len = 3)
+```
+
+```
+## 'data.frame':	180 obs. of  5 variables:
+##  $ model   : chr  "cvd ~ o3 + temp" "cvd ~ o3 + temp" "cvd ~ o3 + temp" ...
+##  $ variable: chr  "(Intercept)" "o3" "temp" ...
+##  $ estimate: num  52.6066 0.0893 -0.3473 52.6288 ...
+##  $ LCI     : num  51.996 0.056 -0.375 51.3 ...
+##  $ UCI     : num  53.086 0.117 -0.323 53.438 ...
 ```
 
 Filter to keep only those rows where `variable` contains the string "pm10".

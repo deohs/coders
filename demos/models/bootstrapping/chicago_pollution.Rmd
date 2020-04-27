@@ -52,7 +52,7 @@ options("kableExtra.html.bsTable" = TRUE)
 
 ```{r load_packages}
 # Load packages
-pacman::p_load(dlnm, ThermIndex, kableExtra)
+pacman::p_load(dlnm, ThermIndex, kableExtra, data.tree)
 ```
 
 ## Get the data
@@ -146,8 +146,8 @@ boot_samples <- lapply(1:nBoot,
 Examine the resulting list of dataframes.
 
 ```{r examine_boot_samples}
-print(c(list.length = length(boot_samples), df1.dim = dim(boot_samples[[1]])))
-colnames(boot_samples[[1]])
+length(boot_samples)
+dim(boot_samples[[1]])
 ```
 
 ## Define a function to run models
@@ -196,14 +196,58 @@ combine_model_results <- function(.data) {
 }
 ```
 
-## Run models and combine results
+## Define functions to visualize lists
 
-Run all models, extract the results, and combine them into a dataframe.
+Define functions to use with the `data.tree` package to visualize lists.
 
-```{r get_and_combine_results}
+```{r define_functions_to_visualize_lists}
+# From: https://stackoverflow.com/questions/51608378
+
+depth <- function(x) ifelse(is.list(x), 1 + max(sapply(x, depth)), 0)
+
+toTree <- function(x) {
+  d <- depth(x)
+  if(d > 1) {
+    lapply(x, toTree)
+  } else {
+    children <- lapply(names(x), function(nm) list(name = nm))
+  }
+}
+
+plot_list_structure <- function(x) {
+  plot(FromListSimple(toTree(x), nodeName = deparse(substitute(x))))
+}
+```
+
+## Run the models
+
+Run all models and extract the results into a list of lists of dataframes.
+
+```{r get_results}
 model_results <- lapply(models, 
                         function(model) get_model_results(boot_samples, model))
+```
+
+Visualize structure of first item of results list.
+
+```{r visualize_model_results_structure, warning=FALSE, eval=FALSE}
+plot_list_structure(model_results[[1]])
+```
+
+![](list_structure.png)
+
+## Combine the results
+
+Combine the results into a single dataframe.
+
+```{r combine_results}
 df_results <- combine_model_results(model_results)
+```
+
+View the structure of the results dataframe.
+
+```{r view_str_results}
+str(df_results, vec.len = 3)
 ```
 
 Filter to keep only those rows where `variable` contains the string "pm10".
