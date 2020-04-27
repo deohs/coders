@@ -83,6 +83,8 @@ o3:     Ozone
 
 ## Prepare formulas for base models
 
+Create base model formulas from vectors of outcomes and exposures.
+
 
 ```r
 # Calculate humidex
@@ -98,34 +100,111 @@ exposures <- c("pm10", "o3")
 base_models <- paste0(outcomes, " ~ ", rep(exposures, each = length(outcomes)))
 ```
 
-## Add covariates to base models
+Here are the resulting base model formulas:
 
 
 ```r
-# Make a list of covariates
-covariates_list <- list(
-  model1 = c("temp"),
-  model2 = c("temp", "dptp"),
-  model3 = c("temp", "dptp", "rhum"),
-  model4 = c("temp", "dptp", "rhum", "hmdx"),
-  model5 = c("temp", "dptp", "rhum", "hmdx", "dow")
-  )
+base_models
+```
 
-# Transfer from list to format separated by "+" 
-covariates <- unlist(lapply(covariates_list, 
-                            function(x) paste(x, collapse = " + ")))
+```
+## [1] "death ~ pm10" "cvd ~ pm10"   "resp ~ pm10"  "death ~ o3"   "cvd ~ o3"    
+## [6] "resp ~ o3"
+```
+
+## Add covariates to base models
+
+From a list of vectors of covariates, create a list of model formulas.
+
+
+```r
+# Make a vector of model covariates expanded as "A", "A + B", "A + B + C", etc.
+sep <- ' + '
+covars <- c("temp", "dptp", "rhum", "hmdx", "dow")
+covariates <- sapply(seq_along(covars), 
+                     function(i) paste(covars[1:i], collapse = sep))
 
 # Develop all combinations of exposures, outcomes, covariates 
 formula_list_char <- as.list(
-  paste0(rep(base_models, each = length(covariates)), " + ", covariates))
-
-# Create a list of formulas
-formula_list <- lapply(formula_list_char, as.formula)
+  paste0(rep(base_models, each = length(covariates)), sep, covariates))
 ```
+
+## View formulas
+
+<table class="table table-condensed" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Exposure = pm10 </th>
+   <th style="text-align:left;"> Exposure = o3 </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> death ~ pm10 + temp </td>
+   <td style="text-align:left;"> death ~ o3 + temp </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> death ~ pm10 + temp + dptp </td>
+   <td style="text-align:left;"> death ~ o3 + temp + dptp </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> death ~ pm10 + temp + dptp + rhum </td>
+   <td style="text-align:left;"> death ~ o3 + temp + dptp + rhum </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> death ~ pm10 + temp + dptp + rhum + hmdx </td>
+   <td style="text-align:left;"> death ~ o3 + temp + dptp + rhum + hmdx </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> death ~ pm10 + temp + dptp + rhum + hmdx + dow </td>
+   <td style="text-align:left;"> death ~ o3 + temp + dptp + rhum + hmdx + dow </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> cvd ~ pm10 + temp </td>
+   <td style="text-align:left;"> cvd ~ o3 + temp </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> cvd ~ pm10 + temp + dptp </td>
+   <td style="text-align:left;"> cvd ~ o3 + temp + dptp </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> cvd ~ pm10 + temp + dptp + rhum </td>
+   <td style="text-align:left;"> cvd ~ o3 + temp + dptp + rhum </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> cvd ~ pm10 + temp + dptp + rhum + hmdx </td>
+   <td style="text-align:left;"> cvd ~ o3 + temp + dptp + rhum + hmdx </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> cvd ~ pm10 + temp + dptp + rhum + hmdx + dow </td>
+   <td style="text-align:left;"> cvd ~ o3 + temp + dptp + rhum + hmdx + dow </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> resp ~ pm10 + temp </td>
+   <td style="text-align:left;"> resp ~ o3 + temp </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> resp ~ pm10 + temp + dptp </td>
+   <td style="text-align:left;"> resp ~ o3 + temp + dptp </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> resp ~ pm10 + temp + dptp + rhum </td>
+   <td style="text-align:left;"> resp ~ o3 + temp + dptp + rhum </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> resp ~ pm10 + temp + dptp + rhum + hmdx </td>
+   <td style="text-align:left;"> resp ~ o3 + temp + dptp + rhum + hmdx </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> resp ~ pm10 + temp + dptp + rhum + hmdx + dow </td>
+   <td style="text-align:left;"> resp ~ o3 + temp + dptp + rhum + hmdx + dow </td>
+  </tr>
+</tbody>
+</table>
 
 ## Create bootstrap samples
 
-Create boot_samples with sample() function, with replacement, using lapply().
+Create `boot_samples` with `sample` function using `lapply`.
 
 
 ```r
@@ -135,9 +214,30 @@ boot_samples <- lapply(1:nBoot,
                        function(x) df[sample(1:nrow(df), replace = TRUE), ])
 ```
 
-## Extract summaries
+Examine the resulting list of dataframes.
 
-Define a function to return a data frame of model results.
+
+```r
+print(c(list.length = length(boot_samples), df1.dim = dim(boot_samples[[1]])))
+```
+
+```
+## list.length    df1.dim1    df1.dim2 
+##          10        5114          15
+```
+
+```r
+colnames(boot_samples[[1]])
+```
+
+```
+##  [1] "date"  "time"  "year"  "month" "doy"   "dow"   "death" "cvd"   "resp" 
+## [10] "temp"  "dptp"  "rhum"  "pm10"  "o3"    "hmdx"
+```
+
+## Define a function to run models
+
+Define a function to run models and return a data frame of model results.
 
 
 ```r
@@ -161,16 +261,7 @@ get_model_results <- function(.data, .formula, alpha = 0.05, weights = NULL) {
 }
 ```
 
-## Get results for all models
-
-
-```r
-model_results <- 
-  lapply(formula_list_char, 
-         function(f) get_model_results(boot_samples, f))
-```
-
-## Combine results
+## Define functions to combine results
 
 Define functions to combine the results into single dataframe with columns: 
 model, variable, estimate, LCI, UCI.
@@ -192,18 +283,26 @@ combine_model_results <- function(.data) {
 }
 ```
 
-## Filter results for pm10
+## Run models and combine results
+
+Run all models, extract the results, and combine them into a dataframe.
+
+
+```r
+model_results <- lapply(formula_list_char, 
+                        function(f) get_model_results(boot_samples, f))
+df_res <- combine_model_results(model_results)
+```
 
 Filter to keep only those rows where `variable` contains the string "pm10".
 
 
 ```r
-df_res <- combine_model_results(model_results)
 df_pm10 <- df_res[df_res$variable == 'pm10',]
 row.names(df_pm10) <- NULL
 ```
 
-## Results
+## View the results
 
 <table class="table table-condensed" style="margin-left: auto; margin-right: auto;">
  <thead>

@@ -85,6 +85,8 @@ o3:     Ozone
 
 ## Prepare formulas for base models
 
+Create base model formulas from vectors of outcomes and exposures.
+
 ```{r prepare_base_model_formulas}
 # Calculate humidex
 df$hmdx <- with(df, humidex(temp, rhum))
@@ -99,33 +101,41 @@ exposures <- c("pm10", "o3")
 base_models <- paste0(outcomes, " ~ ", rep(exposures, each = length(outcomes)))
 ```
 
+Here are the resulting base model formulas:
+
+```{r view_base_models}
+base_models
+```
+
 ## Add covariates to base models
 
-```{r add_covariates}
-# Make a list of covariates
-covariates_list <- list(
-  model1 = c("temp"),
-  model2 = c("temp", "dptp"),
-  model3 = c("temp", "dptp", "rhum"),
-  model4 = c("temp", "dptp", "rhum", "hmdx"),
-  model5 = c("temp", "dptp", "rhum", "hmdx", "dow")
-  )
+From a list of vectors of covariates, create a list of model formulas.
 
-# Transfer from list to format separated by "+" 
-covariates <- unlist(lapply(covariates_list, 
-                            function(x) paste(x, collapse = " + ")))
+```{r add_covariates}
+# Make a vector of model covariates expanded as "A", "A + B", "A + B + C", etc.
+sep <- ' + '
+covars <- c("temp", "dptp", "rhum", "hmdx", "dow")
+covariates <- sapply(seq_along(covars), 
+                     function(i) paste(covars[1:i], collapse = sep))
 
 # Develop all combinations of exposures, outcomes, covariates 
 formula_list_char <- as.list(
-  paste0(rep(base_models, each = length(covariates)), " + ", covariates))
+  paste0(rep(base_models, each = length(covariates)), sep, covariates))
+```
 
-# Create a list of formulas
-formula_list <- lapply(formula_list_char, as.formula)
+## View formulas
+
+```{r view_list_of_formulas, echo = FALSE}
+f <- data.frame(`Exposure = pm10` = unlist(formula_list_char[1:15]),
+                `Exposure = o3` = unlist(formula_list_char[16:30]), 
+                check.names = FALSE)
+f_html <- knitr::kable(f)
+kable_styling(f_html, full_width = TRUE, bootstrap_options = 'condensed')
 ```
 
 ## Create bootstrap samples
 
-Create boot_samples with sample() function, with replacement, using lapply().
+Create `boot_samples` with `sample` function using `lapply`.
 
 ```{r create_boot_samples}
 nBoot <- 10
@@ -134,11 +144,18 @@ boot_samples <- lapply(1:nBoot,
                        function(x) df[sample(1:nrow(df), replace = TRUE), ])
 ```
 
-## Extract summaries
+Examine the resulting list of dataframes.
 
-Define a function to return a data frame of model results.
+```{r examine_boot_samples}
+print(c(list.length = length(boot_samples), df1.dim = dim(boot_samples[[1]])))
+colnames(boot_samples[[1]])
+```
 
-```{r define_get_model_results_fuction}
+## Define a function to run models
+
+Define a function to run models and return a data frame of model results.
+
+```{r define_get_model_results_function}
 get_model_results <- function(.data, .formula, alpha = 0.05, weights = NULL) {
   # .data is a list of dataframes of bootstraps, .formula is model formula.
   # Credit: This function was modified from code by Cooper Schumacher.
@@ -159,20 +176,12 @@ get_model_results <- function(.data, .formula, alpha = 0.05, weights = NULL) {
 }
 ```
 
-## Get results for all models
-
-```{r get_results}
-model_results <- 
-  lapply(formula_list_char, 
-         function(f) get_model_results(boot_samples, f))
-```
-
-## Combine results
+## Define functions to combine results
 
 Define functions to combine the results into single dataframe with columns: 
 model, variable, estimate, LCI, UCI.
 
-```{r combine_results}
+```{r define_combine_model_results_functions}
 model_result_to_df <- function(.data) {
   # .data is a list containing a dataframe of estimates for one model.
   df <- .data$estimates
@@ -188,17 +197,24 @@ combine_model_results <- function(.data) {
 }
 ```
 
-## Filter results for pm10
+## Run models and combine results
+
+Run all models, extract the results, and combine them into a dataframe.
+
+```{r get_and_combine_results}
+model_results <- lapply(formula_list_char, 
+                        function(f) get_model_results(boot_samples, f))
+df_res <- combine_model_results(model_results)
+```
 
 Filter to keep only those rows where `variable` contains the string "pm10".
 
 ```{r filter_results}
-df_res <- combine_model_results(model_results)
 df_pm10 <- df_res[df_res$variable == 'pm10',]
 row.names(df_pm10) <- NULL
 ```
 
-## Results
+## View the results
 
 ```{r show_results, echo = FALSE}
 df_pm10_html <- knitr::kable(x = df_pm10, format = 'html')
