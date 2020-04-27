@@ -1,7 +1,7 @@
 ---
 title: "Many Models in Base-R"
 author: "Brian High and Rachel Shaffer"
-date: "26 April, 2020"
+date: "27 April, 2020"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -52,7 +52,7 @@ options("kableExtra.html.bsTable" = TRUE)
 pacman::p_load(dlnm, ThermIndex, kableExtra)
 ```
 
-## Get data
+## Get the data
 
 Import the `chicagoNMMAPS` dataset from the `dlnm` package:
 
@@ -81,7 +81,7 @@ pm10:   PM10
 o3:     Ozone
 ```
 
-## Prepare formulas for base models
+## Prepare the base models
 
 Create base model formulas from vectors of outcomes and exposures.
 
@@ -112,24 +112,23 @@ base_models
 ## [6] "resp ~ o3"
 ```
 
-## Add covariates to base models
+## Add the covariates to models
 
-From a list of vectors of covariates, create a list of model formulas.
+From a vector of covariates, create a vector of model formulas.
 
 
 ```r
 # Make a vector of model covariates expanded as "A", "A + B", "A + B + C", etc.
 sep <- ' + '
-covars <- c("temp", "dptp", "rhum", "hmdx", "dow")
-covariates <- sapply(seq_along(covars), 
-                     function(i) paste(covars[1:i], collapse = sep))
+covariate <- c("temp", "dptp", "rhum", "hmdx", "dow")
+covariates <- unlist(sapply(seq_along(covariate), 
+                     function(i) paste(covariate[1:i], collapse = sep)))
 
 # Develop all combinations of exposures, outcomes, covariates 
-formula_list_char <- as.list(
-  paste0(rep(base_models, each = length(covariates)), sep, covariates))
+models <- paste0(rep(base_models, each = length(covariates)), sep, covariates)
 ```
 
-## View formulas
+## View the models
 
 <table class="table table-condensed" style="margin-left: auto; margin-right: auto;">
  <thead>
@@ -202,7 +201,7 @@ formula_list_char <- as.list(
 </tbody>
 </table>
 
-## Create bootstrap samples
+## Create the bootstrap samples
 
 Create `boot_samples` with `sample` function using `lapply`.
 
@@ -279,7 +278,7 @@ model_result_to_df <- function(.data) {
 combine_model_results <- function(.data) {
   # .data is a list of models, each with a list with a dataframe of estimates.
   df <- do.call('rbind', lapply(.data, model_result_to_df))
-  df[order(df$model, df$variable),]
+  df[order(df$model, df$variable), ]
 }
 ```
 
@@ -289,17 +288,17 @@ Run all models, extract the results, and combine them into a dataframe.
 
 
 ```r
-model_results <- lapply(formula_list_char, 
-                        function(f) get_model_results(boot_samples, f))
-df_res <- combine_model_results(model_results)
+model_results <- lapply(models, 
+                        function(model) get_model_results(boot_samples, model))
+df_results <- combine_model_results(model_results)
 ```
 
 Filter to keep only those rows where `variable` contains the string "pm10".
 
 
 ```r
-df_pm10 <- df_res[df_res$variable == 'pm10',]
-row.names(df_pm10) <- NULL
+df_results_pm10 <- df_results[df_results$variable == 'pm10', ]
+row.names(df_results_pm10) <- NULL
 ```
 
 ## View the results
