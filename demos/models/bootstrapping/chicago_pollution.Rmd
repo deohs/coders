@@ -125,8 +125,8 @@ models <- paste0(rep(base_models, each = length(covariates)), sep, covariates)
 ## View the models
 
 ```{r view_models, echo = FALSE}
-models_df <- data.frame(`Exposure = pm10` = models[1:15], 
-                        `Exposure = o3` = models[16:30],  
+models_df <- data.frame(`Exposure = PM10` = models[grepl('pm10', models)], 
+                        `Exposure = O3` = models[grepl('o3', models)],  
                         check.names = FALSE)
 x_html <- knitr::kable(x = models_df, format = 'html')
 kable_styling(x_html, full_width = TRUE, bootstrap_options = 'condensed')

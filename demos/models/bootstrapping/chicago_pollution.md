@@ -133,8 +133,8 @@ models <- paste0(rep(base_models, each = length(covariates)), sep, covariates)
 <table class="table table-condensed" style="margin-left: auto; margin-right: auto;">
  <thead>
   <tr>
-   <th style="text-align:left;"> Exposure = pm10 </th>
-   <th style="text-align:left;"> Exposure = o3 </th>
+   <th style="text-align:left;"> Exposure = PM10 </th>
+   <th style="text-align:left;"> Exposure = O3 </th>
   </tr>
  </thead>
 <tbody>
