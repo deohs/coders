@@ -280,10 +280,10 @@ can show a subset of the results, filtering results to a specific "variable".
 
 
 ```r
-show_results_table <- function(variable) {
-  df_results_x <- df_results[df_results$variable == variable, ]
-  rownames(df_results_x) <- NULL
-  x_html <- knitr::kable(x = df_results_x, format = 'html')
+show_results_table <- function(df, variable) {
+  x <- df[df$variable == variable, ]
+  rownames(x) <- NULL
+  x_html <- knitr::kable(x = x, format = 'html')
   kable_styling(x_html, full_width = TRUE, bootstrap_options = 'condensed')
 }
 ```
@@ -292,7 +292,7 @@ show_results_table <- function(variable) {
 
 
 ```r
-show_results_table('o3')
+show_results_table(df_results, 'o3')
 ```
 
 <table class="table table-condensed" style="margin-left: auto; margin-right: auto;">
@@ -376,7 +376,7 @@ show_results_table('o3')
 
 
 ```r
-show_results_table('pm10')
+show_results_table(df_results, 'pm10')
 ```
 
 <table class="table table-condensed" style="margin-left: auto; margin-right: auto;">
