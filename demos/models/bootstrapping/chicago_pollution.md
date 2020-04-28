@@ -275,13 +275,11 @@ str(df_results, vec.len = 3)
 
 ## Define a function to show results
 
-To display a results table that can fit on a "slide", define a function that 
-can show a subset of the results, filtering results to a specific "variable".
+Define a function that formats a table of results for use on a slide.
 
 
 ```r
-show_results_table <- function(df, variable) {
-  x <- df[df$variable == variable, ]
+show_results_table <- function(x) {
   rownames(x) <- NULL
   x_html <- knitr::kable(x = x, format = 'html')
   kable_styling(x_html, full_width = TRUE, bootstrap_options = 'condensed')
@@ -292,7 +290,7 @@ show_results_table <- function(df, variable) {
 
 
 ```r
-show_results_table(df_results, 'o3')
+show_results_table(df_results[df_results$variable == 'o3', ])
 ```
 
 <table class="table table-condensed" style="margin-left: auto; margin-right: auto;">
@@ -376,7 +374,7 @@ show_results_table(df_results, 'o3')
 
 
 ```r
-show_results_table(df_results, 'pm10')
+show_results_table(df_results[df_results$variable == 'pm10', ])
 ```
 
 <table class="table table-condensed" style="margin-left: auto; margin-right: auto;">
