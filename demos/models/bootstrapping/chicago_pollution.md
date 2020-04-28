@@ -24,7 +24,7 @@ editor_options:
 
 Many models:
 
-* Automate "many models" with base-R using Chicago pollution data.
+* Automate bootstrapping and "many models" using Chicago pollution data.
 * Produce a table of model estimates for various combinations of covariates.
 
 Background processing:
@@ -120,7 +120,7 @@ From a vector of covariates, create a vector of model formulas.
 ```r
 # Make a vector of model covariates expanded as "A", "A + B", "A + B + C", etc.
 sep <- ' + '
-covariate <- c("temp", "dptp", "rhum", "hmdx", "dow")
+covariate <- c("temp", "hmdx", "dow")
 covariates <- sapply(seq_along(covariate), 
                      function(i) paste(covariate[1:i], collapse = sep))
 
@@ -130,73 +130,58 @@ models <- paste0(rep(base_models, each = length(covariates)), sep, covariates)
 
 ## View the models
 
+
+```r
+models_df <- data.frame(`Exposure = O3` = models[grepl('o3', models)],
+                        `Exposure = PM10` = models[grepl('pm10', models)], 
+                        check.names = FALSE)
+x_html <- knitr::kable(x = models_df, format = 'html')
+kable_styling(x_html, full_width = TRUE, bootstrap_options = 'condensed')
+```
+
 <table class="table table-condensed" style="margin-left: auto; margin-right: auto;">
  <thead>
   <tr>
-   <th style="text-align:left;"> Exposure = PM10 </th>
    <th style="text-align:left;"> Exposure = O3 </th>
+   <th style="text-align:left;"> Exposure = PM10 </th>
   </tr>
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;"> cvd ~ pm10 + temp </td>
    <td style="text-align:left;"> cvd ~ o3 + temp </td>
+   <td style="text-align:left;"> cvd ~ pm10 + temp </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> cvd ~ pm10 + temp + dptp </td>
-   <td style="text-align:left;"> cvd ~ o3 + temp + dptp </td>
+   <td style="text-align:left;"> cvd ~ o3 + temp + hmdx </td>
+   <td style="text-align:left;"> cvd ~ pm10 + temp + hmdx </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> cvd ~ pm10 + temp + dptp + rhum </td>
-   <td style="text-align:left;"> cvd ~ o3 + temp + dptp + rhum </td>
+   <td style="text-align:left;"> cvd ~ o3 + temp + hmdx + dow </td>
+   <td style="text-align:left;"> cvd ~ pm10 + temp + hmdx + dow </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> cvd ~ pm10 + temp + dptp + rhum + hmdx </td>
-   <td style="text-align:left;"> cvd ~ o3 + temp + dptp + rhum + hmdx </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> cvd ~ pm10 + temp + dptp + rhum + hmdx + dow </td>
-   <td style="text-align:left;"> cvd ~ o3 + temp + dptp + rhum + hmdx + dow </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> death ~ pm10 + temp </td>
    <td style="text-align:left;"> death ~ o3 + temp </td>
+   <td style="text-align:left;"> death ~ pm10 + temp </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> death ~ pm10 + temp + dptp </td>
-   <td style="text-align:left;"> death ~ o3 + temp + dptp </td>
+   <td style="text-align:left;"> death ~ o3 + temp + hmdx </td>
+   <td style="text-align:left;"> death ~ pm10 + temp + hmdx </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> death ~ pm10 + temp + dptp + rhum </td>
-   <td style="text-align:left;"> death ~ o3 + temp + dptp + rhum </td>
+   <td style="text-align:left;"> death ~ o3 + temp + hmdx + dow </td>
+   <td style="text-align:left;"> death ~ pm10 + temp + hmdx + dow </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> death ~ pm10 + temp + dptp + rhum + hmdx </td>
-   <td style="text-align:left;"> death ~ o3 + temp + dptp + rhum + hmdx </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> death ~ pm10 + temp + dptp + rhum + hmdx + dow </td>
-   <td style="text-align:left;"> death ~ o3 + temp + dptp + rhum + hmdx + dow </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> resp ~ pm10 + temp </td>
    <td style="text-align:left;"> resp ~ o3 + temp </td>
+   <td style="text-align:left;"> resp ~ pm10 + temp </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> resp ~ pm10 + temp + dptp </td>
-   <td style="text-align:left;"> resp ~ o3 + temp + dptp </td>
+   <td style="text-align:left;"> resp ~ o3 + temp + hmdx </td>
+   <td style="text-align:left;"> resp ~ pm10 + temp + hmdx </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> resp ~ pm10 + temp + dptp + rhum </td>
-   <td style="text-align:left;"> resp ~ o3 + temp + dptp + rhum </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> resp ~ pm10 + temp + dptp + rhum + hmdx </td>
-   <td style="text-align:left;"> resp ~ o3 + temp + dptp + rhum + hmdx </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> resp ~ pm10 + temp + dptp + rhum + hmdx + dow </td>
-   <td style="text-align:left;"> resp ~ o3 + temp + dptp + rhum + hmdx + dow </td>
+   <td style="text-align:left;"> resp ~ o3 + temp + hmdx + dow </td>
+   <td style="text-align:left;"> resp ~ pm10 + temp + hmdx + dow </td>
   </tr>
 </tbody>
 </table>
@@ -280,15 +265,18 @@ str(df_results, vec.len = 3)
 ```
 
 ```
-## 'data.frame':	180 obs. of  5 variables:
+## 'data.frame':	102 obs. of  5 variables:
 ##  $ model   : chr  "cvd ~ o3 + temp" "cvd ~ o3 + temp" "cvd ~ o3 + temp" ...
 ##  $ variable: chr  "(Intercept)" "o3" "temp" ...
-##  $ estimate: num  52.6066 0.0893 -0.3473 52.6288 ...
-##  $ LCI     : num  51.996 0.056 -0.375 51.3 ...
-##  $ UCI     : num  53.086 0.117 -0.323 53.438 ...
+##  $ estimate: num  52.6066 0.0893 -0.3473 53.8183 ...
+##  $ LCI     : num  51.996 0.056 -0.375 53.309 ...
+##  $ UCI     : num  53.086 0.117 -0.323 54.49 ...
 ```
 
 ## Define a function to show results
+
+To display a results table that can fit on a "slide", define a function that 
+can show a subset of the results, filtering results to a specific "variable".
 
 
 ```r
@@ -301,6 +289,11 @@ show_results_table <- function(variable) {
 ```
 
 ## O3 exposure model estimates
+
+
+```r
+show_results_table('o3')
+```
 
 <table class="table table-condensed" style="margin-left: auto; margin-right: auto;">
  <thead>
@@ -321,32 +314,18 @@ show_results_table <- function(variable) {
    <td style="text-align:right;"> 0.1165423 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> cvd ~ o3 + temp + dptp </td>
+   <td style="text-align:left;"> cvd ~ o3 + temp + hmdx </td>
    <td style="text-align:left;"> o3 </td>
-   <td style="text-align:right;"> 0.0890995 </td>
-   <td style="text-align:right;"> 0.0536970 </td>
-   <td style="text-align:right;"> 0.1208714 </td>
+   <td style="text-align:right;"> 0.0931739 </td>
+   <td style="text-align:right;"> 0.0535099 </td>
+   <td style="text-align:right;"> 0.1301772 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> cvd ~ o3 + temp + dptp + rhum </td>
+   <td style="text-align:left;"> cvd ~ o3 + temp + hmdx + dow </td>
    <td style="text-align:left;"> o3 </td>
-   <td style="text-align:right;"> 0.0982199 </td>
-   <td style="text-align:right;"> 0.0548249 </td>
-   <td style="text-align:right;"> 0.1427525 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> cvd ~ o3 + temp + dptp + rhum + hmdx </td>
-   <td style="text-align:left;"> o3 </td>
-   <td style="text-align:right;"> 0.0890608 </td>
-   <td style="text-align:right;"> 0.0490651 </td>
-   <td style="text-align:right;"> 0.1263183 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> cvd ~ o3 + temp + dptp + rhum + hmdx + dow </td>
-   <td style="text-align:left;"> o3 </td>
-   <td style="text-align:right;"> 0.0984590 </td>
-   <td style="text-align:right;"> 0.0558264 </td>
-   <td style="text-align:right;"> 0.1374928 </td>
+   <td style="text-align:right;"> 0.1017909 </td>
+   <td style="text-align:right;"> 0.0633519 </td>
+   <td style="text-align:right;"> 0.1402830 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> death ~ o3 + temp </td>
@@ -356,32 +335,18 @@ show_results_table <- function(variable) {
    <td style="text-align:right;"> 0.1264115 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> death ~ o3 + temp + dptp </td>
+   <td style="text-align:left;"> death ~ o3 + temp + hmdx </td>
    <td style="text-align:left;"> o3 </td>
-   <td style="text-align:right;"> 0.1092619 </td>
-   <td style="text-align:right;"> 0.0719740 </td>
-   <td style="text-align:right;"> 0.1515795 </td>
+   <td style="text-align:right;"> 0.0984191 </td>
+   <td style="text-align:right;"> 0.0543167 </td>
+   <td style="text-align:right;"> 0.1486057 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> death ~ o3 + temp + dptp + rhum </td>
+   <td style="text-align:left;"> death ~ o3 + temp + hmdx + dow </td>
    <td style="text-align:left;"> o3 </td>
-   <td style="text-align:right;"> 0.1286725 </td>
-   <td style="text-align:right;"> 0.0804766 </td>
-   <td style="text-align:right;"> 0.1953447 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> death ~ o3 + temp + dptp + rhum + hmdx </td>
-   <td style="text-align:left;"> o3 </td>
-   <td style="text-align:right;"> 0.1188298 </td>
-   <td style="text-align:right;"> 0.0741806 </td>
-   <td style="text-align:right;"> 0.1662666 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> death ~ o3 + temp + dptp + rhum + hmdx + dow </td>
-   <td style="text-align:left;"> o3 </td>
-   <td style="text-align:right;"> 0.1373464 </td>
-   <td style="text-align:right;"> 0.0889970 </td>
-   <td style="text-align:right;"> 0.1859659 </td>
+   <td style="text-align:right;"> 0.1136979 </td>
+   <td style="text-align:right;"> 0.0676347 </td>
+   <td style="text-align:right;"> 0.1620248 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> resp ~ o3 + temp </td>
@@ -391,37 +356,28 @@ show_results_table <- function(variable) {
    <td style="text-align:right;"> 0.0192536 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> resp ~ o3 + temp + dptp </td>
+   <td style="text-align:left;"> resp ~ o3 + temp + hmdx </td>
    <td style="text-align:left;"> o3 </td>
-   <td style="text-align:right;"> 0.0162771 </td>
-   <td style="text-align:right;"> 0.0097483 </td>
-   <td style="text-align:right;"> 0.0251458 </td>
+   <td style="text-align:right;"> 0.0119815 </td>
+   <td style="text-align:right;"> 0.0015424 </td>
+   <td style="text-align:right;"> 0.0201529 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> resp ~ o3 + temp + dptp + rhum </td>
+   <td style="text-align:left;"> resp ~ o3 + temp + hmdx + dow </td>
    <td style="text-align:left;"> o3 </td>
-   <td style="text-align:right;"> 0.0211066 </td>
-   <td style="text-align:right;"> 0.0088621 </td>
-   <td style="text-align:right;"> 0.0285830 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> resp ~ o3 + temp + dptp + rhum + hmdx </td>
-   <td style="text-align:left;"> o3 </td>
-   <td style="text-align:right;"> 0.0287108 </td>
-   <td style="text-align:right;"> 0.0154216 </td>
-   <td style="text-align:right;"> 0.0372056 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> resp ~ o3 + temp + dptp + rhum + hmdx + dow </td>
-   <td style="text-align:left;"> o3 </td>
-   <td style="text-align:right;"> 0.0301120 </td>
-   <td style="text-align:right;"> 0.0170970 </td>
-   <td style="text-align:right;"> 0.0376039 </td>
+   <td style="text-align:right;"> 0.0128436 </td>
+   <td style="text-align:right;"> 0.0024441 </td>
+   <td style="text-align:right;"> 0.0203854 </td>
   </tr>
 </tbody>
 </table>
 
 ## PM10 exposure model estimates
+
+
+```r
+show_results_table('pm10')
+```
 
 <table class="table table-condensed" style="margin-left: auto; margin-right: auto;">
  <thead>
@@ -442,32 +398,18 @@ show_results_table <- function(variable) {
    <td style="text-align:right;"> 0.0668540 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> cvd ~ pm10 + temp + dptp </td>
+   <td style="text-align:left;"> cvd ~ pm10 + temp + hmdx </td>
    <td style="text-align:left;"> pm10 </td>
-   <td style="text-align:right;"> 0.0511083 </td>
-   <td style="text-align:right;"> 0.0383196 </td>
-   <td style="text-align:right;"> 0.0662777 </td>
+   <td style="text-align:right;"> 0.0427465 </td>
+   <td style="text-align:right;"> 0.0304881 </td>
+   <td style="text-align:right;"> 0.0552883 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> cvd ~ pm10 + temp + dptp + rhum </td>
+   <td style="text-align:left;"> cvd ~ pm10 + temp + hmdx + dow </td>
    <td style="text-align:left;"> pm10 </td>
-   <td style="text-align:right;"> 0.0473119 </td>
-   <td style="text-align:right;"> 0.0362884 </td>
-   <td style="text-align:right;"> 0.0602035 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> cvd ~ pm10 + temp + dptp + rhum + hmdx </td>
-   <td style="text-align:left;"> pm10 </td>
-   <td style="text-align:right;"> 0.0440634 </td>
-   <td style="text-align:right;"> 0.0331879 </td>
-   <td style="text-align:right;"> 0.0592219 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> cvd ~ pm10 + temp + dptp + rhum + hmdx + dow </td>
-   <td style="text-align:left;"> pm10 </td>
-   <td style="text-align:right;"> 0.0437042 </td>
-   <td style="text-align:right;"> 0.0331400 </td>
-   <td style="text-align:right;"> 0.0582670 </td>
+   <td style="text-align:right;"> 0.0425363 </td>
+   <td style="text-align:right;"> 0.0296936 </td>
+   <td style="text-align:right;"> 0.0542660 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> death ~ pm10 + temp </td>
@@ -477,32 +419,18 @@ show_results_table <- function(variable) {
    <td style="text-align:right;"> 0.1313425 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> death ~ pm10 + temp + dptp </td>
+   <td style="text-align:left;"> death ~ pm10 + temp + hmdx </td>
    <td style="text-align:left;"> pm10 </td>
-   <td style="text-align:right;"> 0.1163644 </td>
-   <td style="text-align:right;"> 0.1036797 </td>
-   <td style="text-align:right;"> 0.1333185 </td>
+   <td style="text-align:right;"> 0.0974559 </td>
+   <td style="text-align:right;"> 0.0801501 </td>
+   <td style="text-align:right;"> 0.1137221 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> death ~ pm10 + temp + dptp + rhum </td>
+   <td style="text-align:left;"> death ~ pm10 + temp + hmdx + dow </td>
    <td style="text-align:left;"> pm10 </td>
-   <td style="text-align:right;"> 0.1087425 </td>
-   <td style="text-align:right;"> 0.0965766 </td>
-   <td style="text-align:right;"> 0.1236963 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> death ~ pm10 + temp + dptp + rhum + hmdx </td>
-   <td style="text-align:left;"> pm10 </td>
-   <td style="text-align:right;"> 0.1060289 </td>
-   <td style="text-align:right;"> 0.0923862 </td>
-   <td style="text-align:right;"> 0.1234868 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> death ~ pm10 + temp + dptp + rhum + hmdx + dow </td>
-   <td style="text-align:left;"> pm10 </td>
-   <td style="text-align:right;"> 0.1054414 </td>
-   <td style="text-align:right;"> 0.0937138 </td>
-   <td style="text-align:right;"> 0.1211341 </td>
+   <td style="text-align:right;"> 0.0967002 </td>
+   <td style="text-align:right;"> 0.0801824 </td>
+   <td style="text-align:right;"> 0.1122437 </td>
   </tr>
   <tr>
    <td style="text-align:left;"> resp ~ pm10 + temp </td>
@@ -512,32 +440,18 @@ show_results_table <- function(variable) {
    <td style="text-align:right;"> 0.0131852 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> resp ~ pm10 + temp + dptp </td>
+   <td style="text-align:left;"> resp ~ pm10 + temp + hmdx </td>
    <td style="text-align:left;"> pm10 </td>
-   <td style="text-align:right;"> 0.0110167 </td>
-   <td style="text-align:right;"> 0.0083609 </td>
-   <td style="text-align:right;"> 0.0135813 </td>
+   <td style="text-align:right;"> 0.0095284 </td>
+   <td style="text-align:right;"> 0.0059913 </td>
+   <td style="text-align:right;"> 0.0129597 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> resp ~ pm10 + temp + dptp + rhum </td>
+   <td style="text-align:left;"> resp ~ pm10 + temp + hmdx + dow </td>
    <td style="text-align:left;"> pm10 </td>
-   <td style="text-align:right;"> 0.0122123 </td>
-   <td style="text-align:right;"> 0.0089700 </td>
-   <td style="text-align:right;"> 0.0154710 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> resp ~ pm10 + temp + dptp + rhum + hmdx </td>
-   <td style="text-align:left;"> pm10 </td>
-   <td style="text-align:right;"> 0.0137187 </td>
-   <td style="text-align:right;"> 0.0108019 </td>
-   <td style="text-align:right;"> 0.0167244 </td>
-  </tr>
-  <tr>
-   <td style="text-align:left;"> resp ~ pm10 + temp + dptp + rhum + hmdx + dow </td>
-   <td style="text-align:left;"> pm10 </td>
-   <td style="text-align:right;"> 0.0141906 </td>
-   <td style="text-align:right;"> 0.0113721 </td>
-   <td style="text-align:right;"> 0.0168547 </td>
+   <td style="text-align:right;"> 0.0098003 </td>
+   <td style="text-align:right;"> 0.0062184 </td>
+   <td style="text-align:right;"> 0.0129570 </td>
   </tr>
 </tbody>
 </table>

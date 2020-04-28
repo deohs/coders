@@ -114,7 +114,7 @@ From a vector of covariates, create a vector of model formulas.
 ```{r add_covariates}
 # Make a vector of model covariates expanded as "A", "A + B", "A + B + C", etc.
 sep <- ' + '
-covariate <- c("temp", "dptp", "rhum", "hmdx", "dow")
+covariate <- c("temp", "hmdx", "dow")
 covariates <- sapply(seq_along(covariate), 
                      function(i) paste(covariate[1:i], collapse = sep))
 
@@ -124,9 +124,9 @@ models <- paste0(rep(base_models, each = length(covariates)), sep, covariates)
 
 ## View the models
 
-```{r view_models, echo = FALSE}
-models_df <- data.frame(`Exposure = PM10` = models[grepl('pm10', models)], 
-                        `Exposure = O3` = models[grepl('o3', models)],  
+```{r view_models}
+models_df <- data.frame(`Exposure = O3` = models[grepl('o3', models)],
+                        `Exposure = PM10` = models[grepl('pm10', models)], 
                         check.names = FALSE)
 x_html <- knitr::kable(x = models_df, format = 'html')
 kable_styling(x_html, full_width = TRUE, bootstrap_options = 'condensed')
@@ -210,13 +210,13 @@ show_results_table <- function(variable) {
 
 ## O3 exposure model estimates
 
-```{r show_results_o3, echo = FALSE}
+```{r show_results_o3}
 show_results_table('o3')
 ```
 
 ## PM10 exposure model estimates
 
-```{r show_results_pm10, echo = FALSE}
+```{r show_results_pm10}
 show_results_table('pm10')
 ```
 
