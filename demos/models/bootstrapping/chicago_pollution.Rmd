@@ -250,17 +250,21 @@ View the structure of the results dataframe.
 str(df_results, vec.len = 3)
 ```
 
-Filter to keep only those rows where `variable` contains the string "pm10".
+## O3 exposure model estimates
 
-```{r filter_results}
-df_results_pm10 <- df_results[df_results$variable == 'pm10', ]
-row.names(df_results_pm10) <- NULL
+```{r show_results_o3, echo = FALSE}
+df_results_x <- df_results[df_results$variable == 'o3', ]
+row.names(df_results_x) <- NULL
+x_html <- knitr::kable(x = df_results_x, format = 'html')
+kable_styling(x_html, full_width = TRUE, bootstrap_options = 'condensed')
 ```
 
-## View the results
+## PM10 exposure model estimates
 
-```{r show_results, echo = FALSE}
-x_html <- knitr::kable(x = df_results_pm10, format = 'html')
+```{r show_results_pm10, echo = FALSE}
+df_results_x <- df_results[df_results$variable == 'pm10', ]
+row.names(df_results_x) <- NULL
+x_html <- knitr::kable(x = df_results_x, format = 'html')
 kable_styling(x_html, full_width = TRUE, bootstrap_options = 'condensed')
 ```
 

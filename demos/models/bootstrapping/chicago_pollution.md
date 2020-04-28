@@ -306,7 +306,7 @@ plot_list_structure <- function(x) {
 
 ## Run the models
 
-Run all models and extract the results.
+Run all models and extract the results into a list of lists of dataframes.
 
 
 ```r
@@ -348,15 +348,128 @@ str(df_results, vec.len = 3)
 ##  $ UCI     : num  53.086 0.117 -0.323 53.438 ...
 ```
 
-Filter to keep only those rows where `variable` contains the string "pm10".
+## O3 exposure model estimates
 
+<table class="table table-condensed" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> model </th>
+   <th style="text-align:left;"> variable </th>
+   <th style="text-align:right;"> estimate </th>
+   <th style="text-align:right;"> LCI </th>
+   <th style="text-align:right;"> UCI </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> cvd ~ o3 + temp </td>
+   <td style="text-align:left;"> o3 </td>
+   <td style="text-align:right;"> 0.0892533 </td>
+   <td style="text-align:right;"> 0.0559730 </td>
+   <td style="text-align:right;"> 0.1165423 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> cvd ~ o3 + temp + dptp </td>
+   <td style="text-align:left;"> o3 </td>
+   <td style="text-align:right;"> 0.0890995 </td>
+   <td style="text-align:right;"> 0.0536970 </td>
+   <td style="text-align:right;"> 0.1208714 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> cvd ~ o3 + temp + dptp + rhum </td>
+   <td style="text-align:left;"> o3 </td>
+   <td style="text-align:right;"> 0.0982199 </td>
+   <td style="text-align:right;"> 0.0548249 </td>
+   <td style="text-align:right;"> 0.1427525 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> cvd ~ o3 + temp + dptp + rhum + hmdx </td>
+   <td style="text-align:left;"> o3 </td>
+   <td style="text-align:right;"> 0.0890608 </td>
+   <td style="text-align:right;"> 0.0490651 </td>
+   <td style="text-align:right;"> 0.1263183 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> cvd ~ o3 + temp + dptp + rhum + hmdx + dow </td>
+   <td style="text-align:left;"> o3 </td>
+   <td style="text-align:right;"> 0.0984590 </td>
+   <td style="text-align:right;"> 0.0558264 </td>
+   <td style="text-align:right;"> 0.1374928 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> death ~ o3 + temp </td>
+   <td style="text-align:left;"> o3 </td>
+   <td style="text-align:right;"> 0.0897555 </td>
+   <td style="text-align:right;"> 0.0529863 </td>
+   <td style="text-align:right;"> 0.1264115 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> death ~ o3 + temp + dptp </td>
+   <td style="text-align:left;"> o3 </td>
+   <td style="text-align:right;"> 0.1092619 </td>
+   <td style="text-align:right;"> 0.0719740 </td>
+   <td style="text-align:right;"> 0.1515795 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> death ~ o3 + temp + dptp + rhum </td>
+   <td style="text-align:left;"> o3 </td>
+   <td style="text-align:right;"> 0.1286725 </td>
+   <td style="text-align:right;"> 0.0804766 </td>
+   <td style="text-align:right;"> 0.1953447 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> death ~ o3 + temp + dptp + rhum + hmdx </td>
+   <td style="text-align:left;"> o3 </td>
+   <td style="text-align:right;"> 0.1188298 </td>
+   <td style="text-align:right;"> 0.0741806 </td>
+   <td style="text-align:right;"> 0.1662666 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> death ~ o3 + temp + dptp + rhum + hmdx + dow </td>
+   <td style="text-align:left;"> o3 </td>
+   <td style="text-align:right;"> 0.1373464 </td>
+   <td style="text-align:right;"> 0.0889970 </td>
+   <td style="text-align:right;"> 0.1859659 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> resp ~ o3 + temp </td>
+   <td style="text-align:left;"> o3 </td>
+   <td style="text-align:right;"> 0.0108445 </td>
+   <td style="text-align:right;"> 0.0052996 </td>
+   <td style="text-align:right;"> 0.0192536 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> resp ~ o3 + temp + dptp </td>
+   <td style="text-align:left;"> o3 </td>
+   <td style="text-align:right;"> 0.0162771 </td>
+   <td style="text-align:right;"> 0.0097483 </td>
+   <td style="text-align:right;"> 0.0251458 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> resp ~ o3 + temp + dptp + rhum </td>
+   <td style="text-align:left;"> o3 </td>
+   <td style="text-align:right;"> 0.0211066 </td>
+   <td style="text-align:right;"> 0.0088621 </td>
+   <td style="text-align:right;"> 0.0285830 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> resp ~ o3 + temp + dptp + rhum + hmdx </td>
+   <td style="text-align:left;"> o3 </td>
+   <td style="text-align:right;"> 0.0287108 </td>
+   <td style="text-align:right;"> 0.0154216 </td>
+   <td style="text-align:right;"> 0.0372056 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> resp ~ o3 + temp + dptp + rhum + hmdx + dow </td>
+   <td style="text-align:left;"> o3 </td>
+   <td style="text-align:right;"> 0.0301120 </td>
+   <td style="text-align:right;"> 0.0170970 </td>
+   <td style="text-align:right;"> 0.0376039 </td>
+  </tr>
+</tbody>
+</table>
 
-```r
-df_results_pm10 <- df_results[df_results$variable == 'pm10', ]
-row.names(df_results_pm10) <- NULL
-```
-
-## View the results
+## PM10 exposure model estimates
 
 <table class="table table-condensed" style="margin-left: auto; margin-right: auto;">
  <thead>
