@@ -29,7 +29,7 @@ editor_options:
 
 Many models:
 
-* Automate "many models" with base-R using Chicago pollution data.
+* Automate bootstrapping and "many models" using Chicago pollution data.
 * Produce a table of model estimates for various combinations of covariates.
 
 Background processing:
@@ -52,7 +52,7 @@ options("kableExtra.html.bsTable" = TRUE)
 
 ```{r load_packages}
 # Load packages
-pacman::p_load(dlnm, ThermIndex, kableExtra, data.tree)
+pacman::p_load(dlnm, ThermIndex, kableExtra)
 ```
 
 ## Get the data
@@ -92,10 +92,10 @@ Create base model formulas from vectors of outcomes and exposures.
 df$hmdx <- with(df, humidex(temp, rhum))
 
 # Make vector of outcomes
-outcomes <- c("death", "cvd", "resp")
+outcomes <- c("cvd", "death", "resp")
 
 # Make vector of exposures
-exposures <- c("pm10", "o3")
+exposures <- c("o3", "pm10")
 
 # Make formula of outcomes associated w/exposures for each possible combination
 base_models <- paste0(outcomes, " ~ ", rep(exposures, each = length(outcomes)))
@@ -158,8 +158,7 @@ Define a function to run models and return a data frame of model results.
 get_model_results <- function(.data, .formula, alpha = 0.05, weights = NULL) {
   # .data is a list of dataframes of bootstraps, .formula is model formula.
   # Credit: This function was modified from code by Cooper Schumacher.
-  out <- list()
-  out$formula <- .formula
+  .model <- .formula
   .formula <- as.formula(.formula)
   coefs <- as.data.frame(matrix(unlist(lapply(.data, function(y) {
         if (!is.null(weights)) lm(.formula, y, weights = weights)$coef
@@ -170,78 +169,23 @@ get_model_results <- function(.data, .formula, alpha = 0.05, weights = NULL) {
   est <- sapply(coefs, mean)
   LCI <- sapply(coefs, function(z) quantile(z, alpha / 2))
   UCI <- sapply(coefs, function(z) quantile(z, 1 - alpha / 2))
-  out$estimates <- data.frame(cbind(estimate = est, LCI = LCI, UCI = UCI))
-  out
-}
-```
-
-## Define functions to combine results
-
-Define functions to combine the results into single dataframe with columns: 
-model, variable, estimate, LCI, UCI.
-
-```{r define_combine_model_results_functions}
-model_result_to_df <- function(.data) {
-  # .data is a list containing a dataframe of estimates for one model.
-  df <- .data$estimates
+  model <- rep(.model, length(est))
+  df <- data.frame(model = model, cbind(estimate = est, LCI = LCI, UCI = UCI),
+                   stringsAsFactors = FALSE)
   df$variable <- rownames(df)
-  df$model <- .data$formula
+  rownames(df) <- NULL
   df[, c("model", "variable", "estimate", "LCI", "UCI")]
-}
-
-combine_model_results <- function(.data) {
-  # .data is a list of models, each with a list with a dataframe of estimates.
-  df <- do.call('rbind', lapply(.data, model_result_to_df))
-  df[order(df$model, df$variable), ]
-}
-```
-
-## Define functions to visualize lists
-
-Define functions to use with the `data.tree` package to visualize lists.
-
-```{r define_functions_to_visualize_lists}
-# From: https://stackoverflow.com/questions/51608378
-
-depth <- function(x) ifelse(is.list(x), 1 + max(sapply(x, depth)), 0)
-
-toTree <- function(x) {
-  d <- depth(x)
-  if(d > 1) {
-    lapply(x, toTree)
-  } else {
-    children <- lapply(names(x), function(nm) list(name = nm))
-  }
-}
-
-plot_list_structure <- function(x) {
-  plot(FromListSimple(toTree(x), nodeName = deparse(substitute(x))))
 }
 ```
 
 ## Run the models
 
-Run all models and extract the results into a list of lists of dataframes.
+Run all models and combine the results into a dataframe.
 
 ```{r get_results}
-model_results <- lapply(models, 
-                        function(model) get_model_results(boot_samples, model))
-```
-
-Visualize structure of first item of results list.
-
-```{r visualize_model_results_structure, warning=FALSE, eval=FALSE}
-plot_list_structure(model_results[[1]])
-```
-
-![](list_structure.png)
-
-## Combine the results
-
-Combine the results into a single dataframe.
-
-```{r combine_results}
-df_results <- combine_model_results(model_results)
+df_results <- do.call('rbind', lapply(models, function(model) {
+  get_model_results(boot_samples, model)
+}))
 ```
 
 View the structure of the results dataframe.
@@ -250,22 +194,30 @@ View the structure of the results dataframe.
 str(df_results, vec.len = 3)
 ```
 
+## Define a function to show results
+
+To display a results table that can fit on a "slide", define a function that 
+can show a subset of the results, filtering results to a specific "variable".
+
+```{r show_results_table_function}
+show_results_table <- function(variable) {
+  df_results_x <- df_results[df_results$variable == variable, ]
+  rownames(df_results_x) <- NULL
+  x_html <- knitr::kable(x = df_results_x, format = 'html')
+  kable_styling(x_html, full_width = TRUE, bootstrap_options = 'condensed')
+}
+```
+
 ## O3 exposure model estimates
 
 ```{r show_results_o3, echo = FALSE}
-df_results_x <- df_results[df_results$variable == 'o3', ]
-row.names(df_results_x) <- NULL
-x_html <- knitr::kable(x = df_results_x, format = 'html')
-kable_styling(x_html, full_width = TRUE, bootstrap_options = 'condensed')
+show_results_table('o3')
 ```
 
 ## PM10 exposure model estimates
 
 ```{r show_results_pm10, echo = FALSE}
-df_results_x <- df_results[df_results$variable == 'pm10', ]
-row.names(df_results_x) <- NULL
-x_html <- knitr::kable(x = df_results_x, format = 'html')
-kable_styling(x_html, full_width = TRUE, bootstrap_options = 'condensed')
+show_results_table('pm10')
 ```
 
 ## Appendix A: Alternate ways to render

@@ -192,6 +192,10 @@ all.equal(boot.results, boot.results.mc)
 # Test results: Multicore processing was about twice as fast as single
 # core processing.
 
+# Display structure of results list
+#source("plot_lib.R")
+#plot_list_structure(boot.results[1:2])
+
 # ----------------------------------------------------------------------
 # Compare two functions to convert results list into a dataframe
 # ----------------------------------------------------------------------
