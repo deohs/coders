@@ -126,17 +126,31 @@ covariates <- sapply(seq_along(covariate),
 
 # Develop all combinations of exposures, outcomes, covariates 
 models <- paste0(rep(base_models, each = length(covariates)), sep, covariates)
+
+# Prepare a dataframe of models to display as a two-column table
+models_df <- data.frame(`Exposure = O3` = models[grepl('o3', models)],
+                        `Exposure = PM10` = models[grepl('pm10', models)], 
+                        check.names = FALSE)
+```
+
+## Define a function to show a table
+
+Define a function that displays a dataframe as an HTML table.
+
+
+```r
+show_html_table <- function(x) {
+  rownames(x) <- NULL
+  x_html <- knitr::kable(x = x, format = 'html')
+  kable_styling(x_html, full_width = TRUE, bootstrap_options = 'condensed')
+}
 ```
 
 ## View the models
 
 
 ```r
-models_df <- data.frame(`Exposure = O3` = models[grepl('o3', models)],
-                        `Exposure = PM10` = models[grepl('pm10', models)], 
-                        check.names = FALSE)
-x_html <- knitr::kable(x = models_df, format = 'html')
-kable_styling(x_html, full_width = TRUE, bootstrap_options = 'condensed')
+show_html_table(models_df)
 ```
 
 <table class="table table-condensed" style="margin-left: auto; margin-right: auto;">
@@ -219,7 +233,7 @@ dim(boot_samples[[1]])
 
 ## Define a function to run models
 
-Define a function to run models and return a data frame of model results.
+Define a function to run models and return a dataframe of model results.
 
 
 ```r
@@ -273,24 +287,11 @@ str(df_results, vec.len = 3)
 ##  $ UCI     : num  53.086 0.117 -0.323 54.49 ...
 ```
 
-## Define a function to show results
-
-Define a function that formats a table of results for use on a slide.
-
-
-```r
-show_results_table <- function(x) {
-  rownames(x) <- NULL
-  x_html <- knitr::kable(x = x, format = 'html')
-  kable_styling(x_html, full_width = TRUE, bootstrap_options = 'condensed')
-}
-```
-
 ## O3 exposure model estimates
 
 
 ```r
-show_results_table(df_results[df_results$variable == 'o3', ])
+show_html_table(df_results[df_results$variable == 'o3', ])
 ```
 
 <table class="table table-condensed" style="margin-left: auto; margin-right: auto;">
@@ -374,7 +375,7 @@ show_results_table(df_results[df_results$variable == 'o3', ])
 
 
 ```r
-show_results_table(df_results[df_results$variable == 'pm10', ])
+show_html_table(df_results[df_results$variable == 'pm10', ])
 ```
 
 <table class="table table-condensed" style="margin-left: auto; margin-right: auto;">
