@@ -37,6 +37,11 @@ Background processing:
 * Demonstrate alternative ways to render (knit) Rmd files.
 * Explore the use of the `screen` utility.
 
+Performance tuning:
+
+* Compare performance of base-R functions with some more modern alternatives.
+* Compare performance when using multiple processors in parallel.
+
 Modular programming:
 
 * Demonstrate use of the `source` function to read code from other R scripts.
@@ -45,9 +50,9 @@ Modular programming:
 ## Setup
 
 ```{r setup}
-# Set knitr options
+# Set options
 knitr::opts_chunk$set(echo = TRUE, cache = FALSE)
-options("kableExtra.html.bsTable" = TRUE)
+options("kableExtra.html.bsTable" = TRUE, mc.cores = 1)
 ```
 
 ```{r load_packages}
@@ -265,6 +270,28 @@ This might be useful if the Rmd was exceedingly long and unwieldy to work with.
 However, storing code separately like this may make it harder for others to 
 follow or to verify reproducibility. One school of thought favors modularity 
 for managability and code reuse, while the other prefers a monolithic approach.
+
+## Appendix C: Performance tuning
+
+### Tidyverse and **data.table** alternatives
+
+This script might run a little faster if some base-R functions are replaced 
+with more modern equivalents. 
+
+For example, use of `dplyr::bind_rows()` or `data.table::rbindlist()` in 
+place of `do.call('rbind', ...)` might make the script run a few percent 
+faster. However, in our tests*, we found these changes to the `get_results` 
+chunk increased the run time by 2% and 4%, respectively.
+
+### Parallel processing with **parallel**
+
+Further gains may come from running repetitive tasks in parallel. Using the 
+`parallel` package and the `mclapply()` function in place of `lapply()`, we 
+found* that we could reduce the run time of this script by about 34% with 2 
+processors (cores) and 49% with 4 cores. That is, with 4 cores it ran twice 
+as fast. 
+
+`*` We choose `nBoot <- 400` for our tests of the above alternatives.
 
 ## Discussion: "source" versus packages
 
