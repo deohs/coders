@@ -280,18 +280,18 @@ with more modern equivalents.
 
 For example, use of `dplyr::bind_rows()` or `data.table::rbindlist()` in 
 place of `do.call('rbind', ...)` might make the script run a few percent 
-faster. However, in our tests*, we found these changes to the `get_results` 
-chunk increased the run time by 2% and 4%, respectively.
+faster. However, in our tests, we found these changes to the `get_results` 
+chunk increased the run time by 2% and 4%, respectively. (`nBoot <- 400`).
+
+Further tests using **rsample**, **purrr**, and **broom** packages can be 
+found in [chicago_pollution_modeling.R](chicago_pollution_modeling.R).
 
 ### Parallel processing with **parallel**
 
 Further gains may come from running repetitive tasks in parallel. Using the 
-`parallel` package and the `mclapply()` function in place of `lapply()`, we 
-found* that we could reduce the run time of this script by about 34% with 2 
-processors (cores) and 49% with 4 cores. That is, with 4 cores it ran twice 
-as fast. 
-
-`*` We choose `nBoot <- 400` for our tests of the above alternatives.
+**parallel** package and the `mclapply()` function in place of `lapply()`, we 
+found that the run time was reduced by 34% with two processors (cores). With 
+four cores it ran about twice as fast. (`nBoot <- 400`).
 
 ## Discussion: "source" versus packages
 
