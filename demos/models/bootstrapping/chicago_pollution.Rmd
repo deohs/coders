@@ -228,20 +228,21 @@ show_html_table(df_results[df_results$variable == 'pm10', ])
 
 ### In the R console:
 
-```
-rmarkdown::render("chicago_pollution.Rmd")
-```
+* `rmarkdown::render("chicago_pollution.Rmd")`
+* RStudio provides only a single console.
 
 ### In the Terminal (Bash):
 
-```
-Rscript -e 'rmarkdown::render("chicago_pollution.Rmd")'
-```
+
+* `Rscript -e 'rmarkdown::render("chicago_pollution.Rmd")'`
+* RStudio allows you to open multiple terminals.
 
 ### In the Jobs tab:
 
 * Create a R script containing: `rmarkdown::render("chicago_pollution.Rmd")`
 * In the Jobs tab, click "Start Local Job" and configure to run R script.
+* You can run multiple jobs at once and you can launch jobs from the console.
+* `rstudioapi::jobRunScript(path = "render.R", importEnv = TRUE)`
 
 ## Appendix B: The "screen" utility
 
@@ -254,22 +255,6 @@ With the "screen" utility you can run multiple shell processes simultaneously.
 * `screen -list` or `screen -ls` shows running screens.
 
 ![Use Ctrl+A D to detach from a screen.](ctrl-a-d_388x220.jpg)
-
-## Appendix C: Read code with "source"
-
-As an alternative to defining the function in the Rmd file as we did above, we
-can also save the function in a separate file and import it using the `source`
-function.
-
-```{r, eval=FALSE}
-source('model_lib.R')
-```
-
-This might be useful if the Rmd was exceedingly long and unwieldy to work with.
-
-However, storing code separately like this may make it harder for others to 
-follow or to verify reproducibility. One school of thought favors modularity 
-for managability and code reuse, while the other prefers a monolithic approach.
 
 ## Appendix C: Performance tuning
 
@@ -292,6 +277,22 @@ Further gains may come from running repetitive tasks in parallel. Using the
 **parallel** package and the `mclapply()` function in place of `lapply()`, we 
 found that the run time was reduced by 34% with two processors (cores). With 
 four cores it ran about twice as fast. (`nBoot <- 400`).
+
+## Appendix D: Read code with "source"
+
+As an alternative to defining the function in the Rmd file as we did above, we
+can also save the function in a separate file and import it using the `source`
+function.
+
+```{r, eval=FALSE}
+source('model_lib.R')
+```
+
+This might be useful if the Rmd was exceedingly long and unwieldy to work with.
+
+However, storing code separately like this may make it harder for others to 
+follow or to verify reproducibility. One school of thought favors modularity 
+for managability and code reuse, while the other prefers a monolithic approach.
 
 ## Discussion: "source" versus packages
 
