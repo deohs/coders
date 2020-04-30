@@ -1,7 +1,7 @@
 ---
 title: "Many Models in Base-R"
 author: "Brian High and Rachel Shaffer"
-date: "29 April, 2020"
+date: "30 April, 2020"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -255,11 +255,12 @@ get_model_results <- function(.data, .formula, alpha = 0.05) {
   LCI <- sapply(coefs, function(z) quantile(z, alpha / 2))
   UCI <- sapply(coefs, function(z) quantile(z, 1 - alpha / 2))
   model <- rep(.model, length(est))
-  df <- data.frame(model = model, cbind(estimate = est, LCI = LCI, UCI = UCI),
+  variable <- names(est)
+  df <- data.frame(model = model, variable = variable,
+                   cbind(estimate = est, LCI = LCI, UCI = UCI),
                    stringsAsFactors = FALSE)
-  df$variable <- rownames(df)
   rownames(df) <- NULL
-  df[, c("model", "variable", "estimate", "LCI", "UCI")]
+  df
 }
 ```
 
