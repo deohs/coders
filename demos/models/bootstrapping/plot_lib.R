@@ -18,3 +18,18 @@ library(data.tree)
 plot_list_structure <- function(x) {
   plot(FromListSimple(toTree(x), nodeName = deparse(substitute(x))))
 }
+
+
+# # Example Usage:
+# UW <- list(SPH = list(
+#   OoD = 0,
+#   depts = data.frame(
+#     BIOST = 1,
+#     DEOHS = 2,
+#     DGH = 3,
+#     EPI = 4,
+#     HS = 5
+#   ),
+#   Nutr = 6
+# ))
+# plot_list_structure(UW)
