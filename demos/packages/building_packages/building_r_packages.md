@@ -170,8 +170,6 @@ Here are the steps we will take:
 
 ## Configure build tools
 
-"Build" → "Configure Build Tools" → [...]
-
 ![](rstudio_desktop_build_tools_roxygen_options_dialog.jpg)
 
 ## Adding documentation
@@ -192,12 +190,14 @@ your package.
 First, we will test the package with: 
 
      "Build" → "Test Package"
-     
+
 Then we will build the package with: 
 
      "Build" → "Clean and Rebuild"
 
-This will also install it into our local system and load it into memory.
+Finally, we prepare documentation and install the package with: 
+
+     "Build" → "Install and Restart"
 
 NOTE: Repeat these steps whenever you make changes to your package.
 
