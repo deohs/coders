@@ -237,3 +237,11 @@ pacman::p_load_gh("brianhigh/many.models")
 ?elem.to.wide
 example("elem.to.wide", "many.models")
 ```
+
+## Exercise
+
+Create a package from one or more functions you have written. Include a LICENSE 
+file. Post your package on Github.
+
+If you don't have any you would like to work with, you may also use the 
+functions in the [plot_lib.R](https://github.com/deohs/coders/blob/master/demos/models/bootstrapping/plot_lib.R) from a previous session. For this, include the Coders [LICENSE](https://github.com/deohs/coders/blob/master/LICENSE) file.
