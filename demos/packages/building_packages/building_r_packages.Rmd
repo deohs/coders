@@ -96,6 +96,7 @@ elem.to.wide <- function(.data) {
                  idvar = 'formula', 
                  direction = 'wide')
   names(df.wide) <- gsub('^value\\.', '', names(df.wide))
+  row.names(df.wide) <- NULL
   df.wide
 }
 ```
@@ -166,15 +167,22 @@ We will add documention by:
 2. Adding a LICENSE file.
 3. Adding Roxygen comments to the R files.
 4. Include examples with Roxygen comments.
+5. Add a `README.md file` (optional but recommended).
 
 ## Building the package
 
-We will build the package with: 
+First, we will test the package with: 
+
+     "Build" -> "Test Package"
+     
+Then we will build the package with: 
 
      "Build" -> "Clean and Rebuild"
 
 This will generate the Markdown files (*.md) for the function help files from 
 the Roxygen comments we added to the functions.
+
+Then it will build the package and install it into our local system.
 
 ## Testing the package
 

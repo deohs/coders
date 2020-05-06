@@ -77,6 +77,7 @@ elem.to.wide <- function(.data) {
                  idvar = 'formula', 
                  direction = 'wide')
   names(df.wide) <- gsub('^value\\.', '', names(df.wide))
+  row.names(df.wide) <- NULL
   df.wide
 }
 ```
@@ -122,8 +123,8 @@ df.wide
 ```
 ##                 formula (Intercept)       cyl        disp          hp
 ## 1             mpg ~ cyl    37.88458 -2.875790          NA          NA
-## 3      mpg ~ cyl + disp    34.66099 -1.587277 -0.02058363          NA
-## 6 mpg ~ cyl + disp + hp    34.18492 -1.227420 -0.01883809 -0.01467933
+## 2      mpg ~ cyl + disp    34.66099 -1.587277 -0.02058363          NA
+## 3 mpg ~ cyl + disp + hp    34.18492 -1.227420 -0.01883809 -0.01467933
 ```
 
 ## More examples
@@ -170,15 +171,22 @@ We will add documention by:
 2. Adding a LICENSE file.
 3. Adding Roxygen comments to the R files.
 4. Include examples with Roxygen comments.
+5. Add a `README.md file` (optional but recommended).
 
 ## Building the package
 
-We will build the package with: 
+First, we will test the package with: 
+
+     "Build" -> "Test Package"
+     
+Then we will build the package with: 
 
      "Build" -> "Clean and Rebuild"
 
 This will generate the Markdown files (*.md) for the function help files from 
 the Roxygen comments we added to the functions.
+
+Then it will build the package and install it into our local system.
 
 ## Testing the package
 
