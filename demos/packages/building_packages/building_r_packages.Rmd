@@ -182,6 +182,7 @@ Here are the steps we will take:
 4. Add the function files to the package.
 5. Check the checkbox for "Create a git repository".
 6. Click "Create Project".
+7. After the project opens, delete the NAMESPACE file. (We replace it later.)
 
 ## Configure build tools
 
