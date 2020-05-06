@@ -3,10 +3,10 @@
 # --------------------------------------------------------------------------
 # From: https://stackoverflow.com/questions/51608378
 
-depth <- function(x) ifelse(is.list(x), 1 + max(sapply(x, depth)), 0)
+treeDepth <- function(x) ifelse(is.list(x), 1 + max(sapply(x, depth)), 0)
 
 toTree <- function(x) {
-  d <- depth(x)
+  d <- treeDepth(x)
   if(d > 1) {
     lapply(x, toTree)
   } else {

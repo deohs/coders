@@ -1,7 +1,7 @@
 ---
 title: 'Building R Packages'
 author: "Brian High"
-date: "05 May, 2020"
+date: "06 May, 2020"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -154,19 +154,25 @@ df.inv.gauss <- extract.elem(.data = mtcars, .formula = formulas,
                              family = 'inverse.gaussian')
 ```
 
-## Building the package
+## Creating the package
 
 Here are the steps we will take:
 
 1. Save each function in it's own file.
 2. Create a new RStudio project, selecting:
 
-     "File" -> "New Project" -> "New Directory" -> "R Package"
+     "File" → "New Project" → "New Directory" → "R Package"
 
 3. Type in the package name of "many.models".
 4. Add the function files to the package.
 5. Check the checkbox for "Create a git repository".
 6. Click "Create Project".
+
+## Configure build tools
+
+"Build" → "Configure Build Tools" → [...]
+
+![](rstudio_desktop_build_tools_roxygen_options_dialog.jpg)
 
 ## Adding documentation
 
@@ -178,21 +184,22 @@ We will add documention by:
 4. Include examples with Roxygen comments.
 5. Add a `README.md` file (optional but recommended).
 
+NOTE: Update the version number in the DESCRIPTION file with each revision of 
+your package.
+
 ## Building the package
 
-First, we will generate the documentation.
+First, we will test the package with: 
 
-     "Build" -> "Document"
-
-Then we will test the package with: 
-
-     "Build" -> "Test Package"
+     "Build" → "Test Package"
      
-Finally, we will build the package with: 
+Then we will build the package with: 
 
-     "Build" -> "Clean and Rebuild"
+     "Build" → "Clean and Rebuild"
 
 This will also install it into our local system and load it into memory.
+
+NOTE: Repeat these steps whenever you make changes to your package.
 
 ## Testing the package
 
@@ -217,6 +224,8 @@ We will post to Github by:
      `git remote add origin https://github.com/username/reponame`
 
 5. Pushing the commit with: `git push origin master`
+
+NOTE: Repeat steps 2-5 whenever you make changes to your package.
 
 ## Testing the package again
 
