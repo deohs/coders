@@ -132,6 +132,31 @@ df.wide
 ## 3 mpg ~ cyl + disp + hp    34.18492 -1.227420 -0.01883809 -0.01467933
 ```
 
+## Equivalent with `tidyverse` ...
+
+This is equivalent to the following `tidyverse` pipeline:
+
+
+
+
+```r
+tibble(.formula = formulas) %>% group_by(.formula) %>% nest() %>% 
+  mutate(model = map(data, ~lm(.formula, mtcars))) %>% 
+  mutate(result = map(model, tidy)) %>% unnest(cols = c(result)) %>% 
+  select(-data, -model, -std.error, -statistic, -p.value) %>% 
+  pivot_wider(names_from = 'term', values_from = estimate)
+```
+
+```
+## # A tibble: 3 x 5
+## # Groups:   .formula [3]
+##   .formula              `(Intercept)`       cyl        disp          hp
+##   <chr>                         <dbl>     <dbl>       <dbl>       <dbl>
+## 1 mpg ~ cyl                  37.88458 -2.875790 NA          NA         
+## 2 mpg ~ cyl + disp           34.66099 -1.587277 -0.02058363 NA         
+## 3 mpg ~ cyl + disp + hp      34.18492 -1.227420 -0.01883809 -0.01467933
+```
+
 ## More examples
 
 These functions were written to be flexible. Here we see some variations on 
@@ -245,10 +270,11 @@ pacman::p_load_gh("brianhigh/many.models")
 example("elem.to.wide", "many.models")
 ```
 
-## Exercise
+## Exercises
 
-Create a package from one or more functions you have written. Include a LICENSE 
-file. Post your package on Github.
+1. Create a package from one or more functions you have written. Include a LICENSE 
+file. Post your package on Github. If you don't have any you would like to work with, you may also use the functions in the [plot_lib.R](https://github.com/deohs/coders/blob/master/demos/models/bootstrapping/plot_lib.R) from a previous session. For this, include the Coders [LICENSE](https://github.com/deohs/coders/blob/master/LICENSE) file.
 
-If you don't have any you would like to work with, you may also use the 
-functions in the [plot_lib.R](https://github.com/deohs/coders/blob/master/demos/models/bootstrapping/plot_lib.R) from a previous session. For this, include the Coders [LICENSE](https://github.com/deohs/coders/blob/master/LICENSE) file.
+2. Modify the `many.models` package to use refactored functions with 
+`tidyverse` pipelines. Name the package `many_models` do differentiate it 
+from the original version.
