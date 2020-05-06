@@ -214,7 +214,7 @@ your package.
 
 First, we will test the package with: 
 
-     "Build" → "Test Package"
+     "Build" → "Check Package"
 
 Then we will build the package with: 
 
