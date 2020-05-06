@@ -53,6 +53,11 @@ You need to have the following packages installed to create R packages:
 * `devtools`
 * `roxygen2`
 
+
+```r
+install.packages(c('devtools', 'roxygen2'))
+```
+
 ## Example: Many Models
 
 We will build a package called `many.models` from two functions:
@@ -171,22 +176,23 @@ We will add documention by:
 2. Adding a LICENSE file.
 3. Adding Roxygen comments to the R files.
 4. Include examples with Roxygen comments.
-5. Add a `README.md file` (optional but recommended).
+5. Add a `README.md` file (optional but recommended).
 
 ## Building the package
 
-First, we will test the package with: 
+First, we will generate the documentation.
+
+     "Build" -> "Document"
+
+Then we will test the package with: 
 
      "Build" -> "Test Package"
      
-Then we will build the package with: 
+Finally, we will build the package with: 
 
      "Build" -> "Clean and Rebuild"
 
-This will generate the Markdown files (*.md) for the function help files from 
-the Roxygen comments we added to the functions.
-
-Then it will build the package and install it into our local system.
+This will also install it into our local system and load it into memory.
 
 ## Testing the package
 
