@@ -238,7 +238,7 @@ We will post to Github by:
 
      `git remote add origin https://github.com/username/reponame`
 
-5. Pushing the commit with: `git push origin master`
+5. Pushing the commit with: `git push origin master -u`
 
 NOTE: Repeat steps 2-5 whenever you make changes to your package.
 

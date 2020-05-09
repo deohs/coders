@@ -1,7 +1,7 @@
 ---
 title: 'Building R Packages'
 author: "Brian High"
-date: "06 May, 2020"
+date: "09 May, 2020"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -249,7 +249,7 @@ We will post to Github by:
 
      `git remote add origin https://github.com/username/reponame`
 
-5. Pushing the commit with: `git push origin master`
+5. Pushing the commit with: `git push origin master -u`
 
 NOTE: Repeat steps 2-5 whenever you make changes to your package.
 
