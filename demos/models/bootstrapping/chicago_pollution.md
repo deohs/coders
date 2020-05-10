@@ -245,7 +245,7 @@ Define functions to run models and return a dataframe of model results.
 get_coefs <- function(x, .formula) coef(lm(.formula, x))
 
 get_stats <- function(x, alpha = 0.05) { 
-  c(mean = mean(x), quantile(x, c(alpha/2,1 - alpha/2)))
+  c(mean = mean(x), CI = quantile(x, c(alpha/2,1 - alpha/2)))
 }
 
 get_model_results <- function(.data, .formula, alpha = 0.05) {
@@ -279,8 +279,8 @@ str(df_results, vec.len = 3)
 ##  $ model   : Factor w/ 18 levels "cvd ~ o3 + temp",..: 1 1 1 2 2 2 2 3 ...
 ##  $ variable: Factor w/ 11 levels "(Intercept)",..: 1 2 3 1 2 3 4 1 ...
 ##  $ mean    : num  52.6066 0.0893 -0.3473 53.8183 ...
-##  $ 2.5%    : num  51.996 0.056 -0.375 53.309 ...
-##  $ 97.5%   : num  53.086 0.117 -0.323 54.49 ...
+##  $ CI.2.5% : num  51.996 0.056 -0.375 53.309 ...
+##  $ CI.97.5%: num  53.086 0.117 -0.323 54.49 ...
 ```
 
 ## O3 exposure model estimates
@@ -296,8 +296,8 @@ show_html_table(df_results[df_results$variable == 'o3', ])
    <th style="text-align:left;"> model </th>
    <th style="text-align:left;"> variable </th>
    <th style="text-align:right;"> mean </th>
-   <th style="text-align:right;"> 2.5% </th>
-   <th style="text-align:right;"> 97.5% </th>
+   <th style="text-align:right;"> CI.2.5% </th>
+   <th style="text-align:right;"> CI.97.5% </th>
   </tr>
  </thead>
 <tbody>
@@ -380,8 +380,8 @@ show_html_table(df_results[df_results$variable == 'pm10', ])
    <th style="text-align:left;"> model </th>
    <th style="text-align:left;"> variable </th>
    <th style="text-align:right;"> mean </th>
-   <th style="text-align:right;"> 2.5% </th>
-   <th style="text-align:right;"> 97.5% </th>
+   <th style="text-align:right;"> CI.2.5% </th>
+   <th style="text-align:right;"> CI.97.5% </th>
   </tr>
  </thead>
 <tbody>

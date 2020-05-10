@@ -176,7 +176,7 @@ Define functions to run models and return a dataframe of model results.
 get_coefs <- function(x, .formula) coef(lm(.formula, x))
 
 get_stats <- function(x, alpha = 0.05) { 
-  c(mean = mean(x), quantile(x, c(alpha/2,1 - alpha/2)))
+  c(mean = mean(x), CI = quantile(x, c(alpha/2,1 - alpha/2)))
 }
 
 get_model_results <- function(.data, .formula, alpha = 0.05) {
