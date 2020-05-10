@@ -236,17 +236,16 @@ dim(boot_samples[[1]])
 ## [1] 5114   15
 ```
 
-## Define a function to run models
+## Run the models
 
-Define functions to run models and return a dataframe of model results.
+Define functions to run the models and combine the results.
 
 
 ```r
 get_coefs <- function(x, .formula) coef(lm(.formula, x))
 
-get_stats <- function(x, alpha = 0.05) { 
+get_stats <- function(x, alpha = 0.05) 
   c(mean = mean(x), CI = quantile(x, c(alpha/2,1 - alpha/2)))
-}
 
 get_model_results <- function(.data, .formula, alpha = 0.05) {
   coefs <- as.data.frame(t(sapply(.data, get_coefs, .formula)))
@@ -256,31 +255,12 @@ get_model_results <- function(.data, .formula, alpha = 0.05) {
 }
 ```
 
-## Run the models
-
-Run all models and combine the results into a dataframe.
+Run the models.
 
 
 ```r
-df_results <- do.call('rbind', lapply(models, function(model) {
-  get_model_results(boot_samples, model)
-}))
-```
-
-View the structure of the results dataframe.
-
-
-```r
-str(df_results, vec.len = 3)
-```
-
-```
-## 'data.frame':	102 obs. of  5 variables:
-##  $ model   : Factor w/ 18 levels "cvd ~ o3 + temp",..: 1 1 1 2 2 2 2 3 ...
-##  $ variable: Factor w/ 11 levels "(Intercept)",..: 1 2 3 1 2 3 4 1 ...
-##  $ mean    : num  52.6066 0.0893 -0.3473 53.8183 ...
-##  $ CI.2.5% : num  51.996 0.056 -0.375 53.309 ...
-##  $ CI.97.5%: num  53.086 0.117 -0.323 54.49 ...
+df_results <- do.call('rbind', lapply(models, function(model)
+  get_model_results(boot_samples, model)))
 ```
 
 ## O3 exposure model estimates

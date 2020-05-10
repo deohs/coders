@@ -168,16 +168,15 @@ length(boot_samples)
 dim(boot_samples[[1]])
 ```
 
-## Define a function to run models
+## Run the models
 
-Define functions to run models and return a dataframe of model results.
+Define functions to run the models and combine the results.
 
-```{r define_get_model_results_function}
+```{r define_functions}
 get_coefs <- function(x, .formula) coef(lm(.formula, x))
 
-get_stats <- function(x, alpha = 0.05) { 
+get_stats <- function(x, alpha = 0.05) 
   c(mean = mean(x), CI = quantile(x, c(alpha/2,1 - alpha/2)))
-}
 
 get_model_results <- function(.data, .formula, alpha = 0.05) {
   coefs <- as.data.frame(t(sapply(.data, get_coefs, .formula)))
@@ -187,20 +186,11 @@ get_model_results <- function(.data, .formula, alpha = 0.05) {
 }
 ```
 
-## Run the models
+Run the models.
 
-Run all models and combine the results into a dataframe.
-
-```{r get_results}
-df_results <- do.call('rbind', lapply(models, function(model) {
-  get_model_results(boot_samples, model)
-}))
-```
-
-View the structure of the results dataframe.
-
-```{r view_str_results}
-str(df_results, vec.len = 3)
+```{r run_models}
+df_results <- do.call('rbind', lapply(models, function(model)
+  get_model_results(boot_samples, model)))
 ```
 
 ## O3 exposure model estimates
