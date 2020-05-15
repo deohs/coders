@@ -176,25 +176,23 @@ One is the primary R session and the other 4 are the sub-processes.
  
 ![](img/top_rsession.png)
 
-## Example: "snow" as Alternative
+## Example: "clusterApply" as Alternative
 
-On Windows, the "snow" package may give better results than the "parallel" package.
+On Windows, the `clusterApply()` function using sockets (type = "SOCK") may give better results than the `mclapply()` function, which is meant for UNIX-style forks, which are not supported in Windows.
 
-```{r snow, warning=FALSE, message=FALSE}
-library(snow)
-cl <- makeCluster(4, type="SOCK")
+```{r sock, warning=FALSE, message=FALSE}
+cl <- makeCluster(4, type = "SOCK")
 
 system.time(clusterApply(cl, 1:100, f))
 
 stopCluster(cl)
-detach(package:snow)
 ```
 
 ## Example: "doParallel" Alternative
 
-And if "snow" does not perform well enough, you can also try "doParallel".
+And if `clusterApply()` does not perform well enough, you can also try the  "doParallel" package.
 
-```{r doParallel, warning=FALSE, message=FALSE}
+```{r psock, warning=FALSE, message=FALSE}
 library(doParallel) 
 cl <- makeCluster(detectCores(), type='PSOCK')
 registerDoParallel(cl)

@@ -131,7 +131,7 @@ system.time(lapply(1:100, f))
 
 ```
 ##    user  system elapsed 
-##    1.72    0.00    1.74
+##    1.86    0.00    1.87
 ```
 
 
@@ -174,7 +174,7 @@ system.time(mclapply(1:100, f))
 
 ```
 ##    user  system elapsed 
-##    0.11    0.06    3.42
+##    0.11    0.07    3.60
 ```
 
 ## Example: Parallel Processing 
@@ -189,31 +189,29 @@ One is the primary R session and the other 4 are the sub-processes.
  
 ![](img/top_rsession.png)
 
-## Example: "snow" as Alternative
+## Example: "clusterApply" as Alternative
 
-On Windows, the "snow" package may give better results than the "parallel" package.
+On Windows, the `clusterApply()` function using sockets (type = "SOCK") may give better results than the `mclapply()` function, which is meant for UNIX-style forks, which are not supported in Windows.
 
 
 ```r
-library(snow)
-cl <- makeCluster(4, type="SOCK")
+cl <- makeCluster(4, type = "SOCK")
 
 system.time(clusterApply(cl, 1:100, f))
 ```
 
 ```
 ##    user  system elapsed 
-##    0.43    0.05    2.67
+##    0.42    0.04    2.86
 ```
 
 ```r
 stopCluster(cl)
-detach(package:snow)
 ```
 
 ## Example: "doParallel" Alternative
 
-And if "snow" does not perform well enough, you can also try "doParallel".
+And if `clusterApply()` does not perform well enough, you can also try the  "doParallel" package.
 
 
 ```r
@@ -226,7 +224,7 @@ system.time(clusterApply(cl, 1:100, f))
 
 ```
 ##    user  system elapsed 
-##    0.31    0.01    2.34
+##    0.25    0.05    2.66
 ```
 
 ```r
@@ -355,7 +353,7 @@ system.time(df.long <- do.call('rbind', lapply(formulas, function(f) {
 
 ```
 ##    user  system elapsed 
-##   25.90    0.00   26.06
+##   28.05    0.11   28.97
 ```
 
 
@@ -384,7 +382,7 @@ system.time(df.long <- do.call('rbind', lapply(formulas, function(f) {
 
 ```
 ##    user  system elapsed 
-##    0.15    0.12   13.31
+##    0.14    0.15   13.03
 ```
 
 
@@ -398,15 +396,15 @@ summaryBy(est ~ formula + variable, data = df.long, FUN = mean.ci.fun)
 
 ```
 ##                 formula    variable    est.mean    est.2.5%    est.97.5%
-## 1             mpg ~ cyl (Intercept) 37.86424143 31.10494166 45.003277606
-## 2             mpg ~ cyl         cyl -2.87450216 -3.89874187 -1.905937943
-## 3      mpg ~ cyl + disp (Intercept) 34.81850350 28.51835988 43.004801134
-## 4      mpg ~ cyl + disp         cyl -1.65311729 -3.52640374 -0.083234341
-## 5      mpg ~ cyl + disp        disp -0.01945965 -0.04583246  0.009436109
-## 6 mpg ~ cyl + disp + hp (Intercept) 34.39668570 27.91918893 42.707214226
-## 7 mpg ~ cyl + disp + hp         cyl -1.22556298 -3.30121054  0.758087594
-## 8 mpg ~ cyl + disp + hp        disp -0.01723243 -0.04362422  0.012074301
-## 9 mpg ~ cyl + disp + hp          hp -0.01905004 -0.07442485  0.016550288
+## 1             mpg ~ cyl (Intercept) 37.82567348 30.99813243 44.942256818
+## 2             mpg ~ cyl         cyl -2.87128811 -3.88535024 -1.901033505
+## 3      mpg ~ cyl + disp (Intercept) 34.80693010 28.56412091 43.009361689
+## 4      mpg ~ cyl + disp         cyl -1.64615304 -3.56154256 -0.106788056
+## 5      mpg ~ cyl + disp        disp -0.01958102 -0.04599641  0.009240637
+## 6 mpg ~ cyl + disp + hp (Intercept) 34.39957990 27.90689949 42.718626240
+## 7 mpg ~ cyl + disp + hp         cyl -1.23206443 -3.32936412  0.833623946
+## 8 mpg ~ cyl + disp + hp        disp -0.01682469 -0.04367781  0.013179478
+## 9 mpg ~ cyl + disp + hp          hp -0.01936829 -0.07509840  0.016430243
 ```
 
 ## Exercises 
