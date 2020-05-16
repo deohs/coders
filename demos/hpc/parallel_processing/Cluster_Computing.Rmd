@@ -88,9 +88,12 @@ The **compute nodes** are where you **run** your jobs and interactive sessions.
 
 You can connect to "deohs-brain" through:
 
-- SSH via terminal app like **PuTTY** or **bash** shell
-- SCP, SFTP via terminal app or GUI app like **CyberDuck**
-- Remote Desktop or X2Go (for interactive "desktop" sessions)
+- SSH via terminal app like [PuTTY](https://www.chiark.greenend.org.uk/~sgtatham/putty/) or from [command-line](https://www.ssh.com/ssh/command/#specifying-a-different-user-name)
+- SCP, SFTP via terminal app or GUI app like [CyberDuck](https://github.com/deohs/ehbrain/wiki/Transferring-Data-to-Brain#desktop-or-laptop-initiated)
+- [Remote Desktop](https://github.com/deohs/ehbrain/wiki/Connecting-to-Brain#xrdp) or [X2Go](https://github.com/deohs/ehbrain/wiki/Connecting-to-Brain#x2go) (for interactive "desktop" sessions)
+  + X2Go will likely be preferred for Windows users, as it will be easier to configure
+  + Mac users will have a better experience using Remote Desktop versus X2Go
+    - Or you can run X2Go from within a Remote Desktop server session
 - Documented in the [wiki](https://github.com/deohs/ehbrain/wiki/Connecting-to-Brain)
 
 ## How to manage jobs
@@ -98,7 +101,7 @@ You can connect to "deohs-brain" through:
 You can launch either interactive sessions or batch jobs:
 
 - Interactive sessions are launched with `qlogin`:
-  + `qlogin -q MYQUEUE.q -pe smp 2`
+  + `qlogin -q MYQUEUE.q -pe smp NUMCORES`
   + Yes, you can [run RStudio on a compute node](https://github.com/deohs/ehbrain/wiki/Quick-Tutorial)
 - Batch jobs are launched with `qsub`
 - Batch jobs can use a single machine (**smp**) or more (**mpi**)
