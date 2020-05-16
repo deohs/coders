@@ -98,7 +98,7 @@ You can connect to "deohs-brain" through:
 You can launch either interactive sessions or batch jobs:
 
 - Interactive sessions are launched with `qlogin`:
-  + `qlogin -q MYQUEUE.q -pe smp NUMCORES`
+  + `qlogin -q QUEUE -pe smp NSLOTS`
   + Yes, you can [run RStudio Desktop on a compute node](https://github.com/deohs/ehbrain/wiki/Quick-Tutorial)
 - Batch jobs are launched with `qsub`
 - Batch jobs can use a single machine (**smp**) or more (**mpi**)
