@@ -17,25 +17,28 @@ library(BiocParallel)
 # Configuration
 # --------------
 
-# Initialize variables
-skip_serial_boot <- TRUE
+# Setup
+RNGkind("L'Ecuyer-CMRG")
 seed <- 123
+skip_serial_boot <- TRUE
+
+# Initialize variables
 cl_type <- ""
 slots <- 0
 R <- 0
 
 # Assign variables from command-line arguments if present and valid
 args <- (commandArgs(TRUE))
-if(length(args) == 0){
+if (length(args) == 0) {
   print("No command-line arguments supplied.")
 } else {
-  for(i in 1:length(args)){
-    eval(parse(text=args[[i]]))
+  for (i in 1:length(args)) {
+    eval(parse(text = args[[i]]))
   }
 }
 
 # If "cl_type" is not valid, use "SOCK"
-if (! (cl_type %in% c("SOCK", "MPI")) ) cl_type <- "SOCK"
+if (!(cl_type %in% c("SOCK", "MPI"))) cl_type <- "SOCK"
 
 # If the number of slots (slaves) is not valid, use 2
 slots <- as.integer(slots)
