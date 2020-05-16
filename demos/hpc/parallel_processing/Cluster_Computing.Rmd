@@ -69,15 +69,18 @@ The **compute nodes** are where you **run** your jobs and interactive sessions.
 <div class="columns-2">
 
 ![](img/brain_queues_and_hosts_55pct.jpg)
+<br/>
 
-|               |             |
-| :------------ | -----------:|
-| Head node     | deohs-brain |
-| # Queues      |          5+ |
-| # Cores       |        500+ |
-| Memory        |       4+ TB |
-| # Cores       |        500+ |
-| Documentation |       [wiki](https://github.com/deohs/ehbrain/wiki) |
+|                    |             |
+| :----------------- | -----------:|
+| Head node          | deohs-brain |
+| # Queues           |          5+ |
+| Total # Cores      |        500+ |
+| # Cores/node       |       24-32 |
+| # Slots/node       |       48-64 |
+| Total Memory (RAM) |       4+ TB |
+| Memory/node        |      384 GB |
+| Documentation      |       [wiki](https://github.com/deohs/ehbrain/wiki) |
 
 </div>
 
