@@ -1,3 +1,3 @@
 "R","workers","cl_type","package","fun","elapsed","2.5%","97.5%"
-100000,2,"MPI","parallel","clusterApply",412.957,0.76985,0.951
-100000,2,"MPI","BiocParallel","bplapply",365.696,0.76985,0.951
+100000,2,"MPI","parallel","clusterApply",318.853,0.76985,0.951
+100000,2,"MPI","BiocParallel","bplapply",362.824,0.76985,0.951

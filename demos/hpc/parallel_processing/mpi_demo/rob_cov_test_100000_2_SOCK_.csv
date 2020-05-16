@@ -1,5 +1,5 @@
 "R","workers","cl_type","package","fun","elapsed","2.5%","97.5%"
-100000,2,"SOCK","parallel","clusterApply",367.775,0.76985,0.951
-100000,2,"FORK","parallel","mclapply",324.697,0.77039,0.95132
-100000,2,"SOCK","BiocParallel","bplapply",342.235,0.76985,0.951
-100000,2,"FORK","BiocParallel","bplapply",340.6,0.77022,0.95079
+100000,2,"SOCK","parallel","clusterApply",324.858,0.76985,0.951
+100000,2,"FORK","parallel","mclapply",317.539,0.77019,0.95117
+100000,2,"SOCK","BiocParallel","bplapply",361.148,0.76985,0.951
+100000,2,"FORK","BiocParallel","bplapply",356.629,0.77039,0.95086
