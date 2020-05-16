@@ -29,15 +29,10 @@ opts_chunk$set(tidy = FALSE, cache = FALSE, echo = TRUE)
 Today's presentation addresses these objectives: 
 
 - Understand what a **compute cluster** is when you would use it
-
 - Differentiate between a **compute node** and the **head node**
-
 - Know the **resources** available on "deohs-brain"
-
 - Know how to **connect** to the compute cluster "deohs-brain"
-
 - Know how to start and **manage jobs** on the cluster
-
 - Know how to use the cluster for **parallel processing**
 
 ## What is a compute cluster?
@@ -45,9 +40,7 @@ Today's presentation addresses these objectives:
 A **compute cluster** is a collection of computers configured with:
 
 - One or more **compute nodes**
-
 - A **head node** that runs a **job scheduler**
-
 - **Access control** to limit access to the cluster
 
 ## When would you use compute cluster?
@@ -55,11 +48,8 @@ A **compute cluster** is a collection of computers configured with:
 You will want to use a compute cluster when:
 
 - Your work is too **resource intensive** for your other systems
-
 - Your work would benefit from **more cores and memory**
-
-- You can configure or modify your software (code) to use more cores
-
+- You can configure your software (code) to use more cores
 - You want to use the resources of **multiple machines simultaneously**
 
 ## What are head and compute nodes?
@@ -67,13 +57,9 @@ You will want to use a compute cluster when:
 The **head node** is where you:
 
 - **Connect** to the cluster
-
 - **Configure** your software environment (e.g., install packages)
-
 - Configure, **launch**, and manage **batch jobs**
-
 - Launch **interactive sessions**
-
 - Transfer data into and out of the cluster
 
 The **compute nodes** are where you **run** your jobs and interactive sessions.
@@ -119,38 +105,29 @@ You can launch either interactive sessions or batch jobs:
 ## Parallel processing on the cluster
 
 - Some software has multicore capabilities built-in. 
-
 - For R, you can use packages like **parallel** and **BiocParallel**.
-
 - Batch jobs run across multiple nodes also need **Rmpi**.
 
 Installation of some packages may be a little tricky. See:
 
 - [Rmpi install script](mpi_demo/install_rmpi_MPICH.sh)
-
 - [BiocParallel install script](mpi_demo/install_BiocParallel.sh)
 
 ## Parallel R performance
 
-With a test [script](mpi_demo/cluster_demo.R), we found:
-
-- Cluster types FORK, SOCK, and MPI are usually comparable
-
-- **BiocParallel** is often slightly slower than **parallel**
-
-General guidelines:
-
 - **MPI** is required for use across multiple nodes (Use: `-pe mpi`)
-
 - **FORK** and **SOCK** only run on single nodes (Use: `-pe smp`)
-
 - The incremental speedup from additional cores will diminish
-
 - Test and tune your code before running full workload
+- Performance varies with communications overhead
+- With a test [script](mpi_demo/cluster_demo.R), we found:
+   + Cluster types FORK, SOCK, and MPI are comparable
+   + **BiocParallel** is slower when using many workers (> 16)
+- **Your code may perform differently so do your own tests.**
 
 ## Parallel R performance
 
-![](mpi_demo/results_50pct.png)
+![](mpi_demo/results_55pct.png)
 
 ## Tips
 
@@ -161,3 +138,4 @@ General guidelines:
 - Run heavy-duty jobs on compute nodes 
 - Clean up your "home" and "scratch" folders regularly
 - Use terminal sessions when you don't really need a GUI
+- If you use a graphical desktop, **log out** when finished

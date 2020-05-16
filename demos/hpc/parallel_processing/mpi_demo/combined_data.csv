@@ -1,4 +1,4 @@
-path,R,slots,cl_type,package,fun,elapsed,2.5%,97.5%
+path,R,workers,cl_type,package,fun,elapsed,2.5%,97.5%
 01/rob_cov_test_100000_16_MPI_.csv,100000,16,none,none,none,628.342,0.76998,0.95107
 01/rob_cov_test_100000_16_MPI_.csv,100000,16,MPI,parallel,clusterApply,78.629,0.76994,0.95119
 01/rob_cov_test_100000_16_MPI_.csv,100000,16,MPI,BiocParallel,bplapply,64.472,0.76994,0.95116

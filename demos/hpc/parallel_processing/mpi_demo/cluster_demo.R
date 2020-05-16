@@ -17,14 +17,21 @@ library(BiocParallel)
 # Configuration
 # --------------
 
-# Setup
+# Setup defaults
+default_cl_type <- "SOCK"
+default_workers <- 10000
+default_R <- 0
+
+# Setup random number generator (RNG)
 RNGkind("L'Ecuyer-CMRG")
 seed <- 123
+
+# Choose to skip serial boot or not
 skip_serial_boot <- TRUE
 
 # Initialize variables
 cl_type <- ""
-slots <- 0
+workers <- 0
 R <- 0
 
 # Assign variables from command-line arguments if present and valid
@@ -37,18 +44,19 @@ if (length(args) == 0) {
   }
 }
 
-# If "cl_type" is not valid, use "SOCK"
-if (!(cl_type %in% c("SOCK", "MPI"))) cl_type <- "SOCK"
+# If "cl_type" is not valid, use default
+if (!(cl_type %in% c("SOCK", "MPI"))) cl_type <- default_cl_type
 
-# If the number of slots (slaves) is not valid, use 2
-slots <- as.integer(slots)
-if (slots <= 0) slots <- 2
+# If the number of workers (slaves) is not valid, use default
+workers <- as.integer(workers)
+if (workers <= 0) workers <- default_workers
 
-# If the number of bootsreaps is not valid, use 10000
+# If the number of bootstraps is not valid, use default
 R <- as.integer(R)
-if (R <= 0) R <- 10000
+if (R <= 0) R <- default_R
 
-results_filename <- paste("rob_cov_test", R, slots, cl_type, ".csv", sep = "_")
+results_filename <- 
+  paste("rob_cov_test", R, workers, cl_type, ".csv", sep = "_")
 
 # -----------------
 # Define Functions
@@ -89,7 +97,7 @@ create_results_df <- function() {
 
 # Combine results into a data frame
 combine_results <- function(cl_type, package, fun, elapsed, ci, dec = 5) {
-  data.frame(R = R, slots = slots, cl_type = cl_type, 
+  data.frame(R = R, workers = workers, cl_type = cl_type, 
              package = package, fun = fun, elapsed = round(elapsed, dec), 
              t(round(ci, dec)), stringsAsFactors = FALSE, check.names = FALSE)
 }
@@ -124,20 +132,20 @@ if (skip_serial_boot == FALSE) {
 # ------------------------------------
 
 # Make a cluster of "slave nodes" with a type of either "SOCK" or "MPI".
-# As a maximum, use one less than the total number of cores (or cluster slots).
+# As a maximum, use one less than the total number of cores (or workers).
 
-cl <- makeCluster(spec = slots, type = cl_type)
+cl <- makeCluster(spec = workers, type = cl_type)
 cl
 
-# Make the data, function and package "robustbase" available for all slots
+# Make the data, function and package "robustbase" available for all workers
 #res <- clusterEvalQ(cl, library("robustbase"))
 #res <- clusterEvalQ(cl, data(Cars93, package = "MASS"))
 #res <- clusterExport(cl, "n")
 
-# Set a random seed for all slots
+# Set a random seed for all workers
 res <- clusterSetRNGStream(cl, iseed = seed)
 
-# Split bootstrap sequence (1:R) into a list of n = slots vectors
+# Split bootstrap sequence (1:R) into a list of n = workers vectors
 X.split <- clusterSplit(cl, 1:R)
 
 # Perform calculation with parallel computing using "parallel::clusterApply()"
@@ -156,7 +164,7 @@ results <- rbind(results,
 # If running with "SOCK", compare with "FORK" using "parallel::mclapply()"
 if (cl_type == "SOCK" && Sys.info()[['sysname']] != "Windows") {
   set.seed(seed)
-  st <- system.time(ci_boot <- mclapply(X = X.split, FUN = f, mc.cores = slots))
+  st <- system.time(ci_boot <- mclapply(X.split, f, mc.cores = workers))
   res <- quant.fun(unlist(ci_boot))
   
   # Combine results
@@ -174,12 +182,12 @@ if (cl_type == "SOCK" && Sys.info()[['sysname']] != "Windows") {
 # of earlier "snow" and "multicore" packages, but with a simpler method of
 # switching between computation backends using a more consistent interface.
 
-# Split bootstrap sequence (1:R) into a list of n = slots vectors
+# Split bootstrap sequence (1:R) into a list of n = workers vectors
 # Similar to: X.split <- clusterSplit(cl, 1:R)
-X.split <- split(1:R, rep_len(1:slots, length(1:R)))
+X.split <- split(1:R, rep_len(1:workers, length(1:R)))
 
 # Perform calculation with parallel computing using "BiocParallel::bplapply()"
-param <- SnowParam(workers = slots, type = cl_type, RNGseed = seed)
+param <- SnowParam(workers = workers, type = cl_type, RNGseed = seed)
 st <- system.time(ci_boot <- bplapply(X = X.split, FUN = f, BPPARAM = param))
 res <- quant.fun(unlist(ci_boot))
 
@@ -191,7 +199,7 @@ results <- rbind(results,
 
 # If running with "SOCK", compare with "FORK", the default for "MulticoreParam"
 if (cl_type == "SOCK" && Sys.info()[['sysname']] != "Windows") {
-  param <- MulticoreParam(workers = slots, RNGseed = seed)
+  param <- MulticoreParam(workers = workers, RNGseed = seed)
   st <- system.time(ci_boot <- bplapply(X = X.split, FUN = f, BPPARAM = param))
   res <- quant.fun(unlist(ci_boot))
 

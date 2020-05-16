@@ -1,4 +1,4 @@
-"R","slots","cl_type","package","fun","elapsed","2.5%","97.5%"
+"R","workers","cl_type","package","fun","elapsed","2.5%","97.5%"
 100000,2,"SOCK","parallel","clusterApply",367.775,0.76985,0.951
 100000,2,"FORK","parallel","mclapply",324.697,0.77039,0.95132
 100000,2,"SOCK","BiocParallel","bplapply",342.235,0.76985,0.951
