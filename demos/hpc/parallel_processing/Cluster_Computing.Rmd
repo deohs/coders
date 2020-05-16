@@ -141,7 +141,7 @@ Installation of some packages may be a little tricky. See:
 
 - Keep track of your sessions and jobs
 - Close any unused/idle sessions and jobs
-- Verify that what you have closed is actually ended
+- Verify that what you have closed has actually ended
 - Install packages on the head node
 - Run heavy-duty jobs on compute nodes 
 - Use one more slot than the number of workers
