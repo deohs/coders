@@ -143,6 +143,7 @@ Installation of some packages may be a little tricky. See:
 - Run heavy-duty jobs on compute nodes 
 - Use one more slot than the number of workers
 - Number of parallel tasks should equal the number of workers
+  + `X.split <- split(1:R, rep_len(1:workers, length(1:R)))`
 - Clean up your "home" and "scratch" folders regularly
 - Use terminal sessions when you don't really need a GUI
 - If you use a graphical desktop, **log out** when finished
