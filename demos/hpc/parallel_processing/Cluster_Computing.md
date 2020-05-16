@@ -141,6 +141,8 @@ Installation of some packages may be a little tricky. See:
 - Verify that what you have closed is actually ended
 - Install packages on the head node
 - Run heavy-duty jobs on compute nodes 
+- Use one more slot than the number of workers
+- Number of parallel tasks should equal the number of workers
 - Clean up your "home" and "scratch" folders regularly
 - Use terminal sessions when you don't really need a GUI
 - If you use a graphical desktop, **log out** when finished
