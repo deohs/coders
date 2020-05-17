@@ -1,6 +1,9 @@
-"pkg","fun","splitlen","elapsed"
-"base","lapply","R",88.698
-"parallel","mclapply","R",13.815
-"parallel","mclapply","workers",9.096
-"BiocParallel","bplapply","R",15.818
-"BiocParallel","bplapply","workers",9.81100000000001
+"pkg","fun","splitlen","elapsed","ci.2.5%","ci.97.5%"
+"base","lapply","R",94.321,0.76782,0.95185
+"parallel","mclapply","R",14.648,0.77245,0.95134
+"parallel","mclapply","workers",9.071,0.77245,0.95134
+"parallel","clusterApply","R",85.563,0.77115,0.95141
+"parallel","clusterApply","workers",9.554,0.77127,0.95134
+"parallel","parLapply","workers",15.269,0.77127,0.95134
+"BiocParallel","bplapply","R",15.696,0.76633,0.95088
+"BiocParallel","bplapply","workers",10.001,0.77098,0.94974

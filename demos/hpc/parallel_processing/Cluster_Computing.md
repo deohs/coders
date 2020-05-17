@@ -144,12 +144,11 @@ Each vehicle has overhead: fuel, maintenance, insurance, congestion, etc. So,
 you want to fit passengers taking the same route at the same time on as few
 vehicles as possible.
 
-## Optimization: splitting by workers
+## Splitting tasks by workers
 
-You can reduce overhead by splitting the number of total replications by the
-number of workers.
-
-That way, each worker only gets initialized once.
+You can reduce overhead by splitting the number of total replications 
+("passengers") by the number of workers ("vehicles"). That way, each worker only 
+gets initialized once.
 
 
 ```r
@@ -165,7 +164,9 @@ X.split <- split(1:R, rep_len(1:workers, length(1:R)))
 mclapply(X.split, f, mc.cores = workers)
 ```
 
-## Optimization: splitting by workers
+Alternatives to using **split** are **clusterSplit** and **parLapply**.
+
+## Splitting tasks by workers
 
 In one [test](mpi_demo/split_test.md), using 8 workers and 10,000 total 
 replications, splitting improved speed by 34-38%. ([CSV](mpi_demo/split_test_results.csv))
@@ -180,11 +181,11 @@ BiocParallel   bplapply   workers       9.811
 
 Scaling up to 100,000 total replications gave similar [results](mpi_demo/split_test_results_100k.csv).
 
-## Optimization: splitting by workers
+## Splitting tasks by workers
 
 ![](mpi_demo/results_splits_log10_55pct.png)
 
-## Optimization: splitting by workers
+## Splitting tasks by workers
 
 ![](mpi_demo/results_splits_55pct.png)
 
