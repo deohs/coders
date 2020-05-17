@@ -25,7 +25,7 @@ output:
 
 Today's presentation addresses these objectives: 
 
-- Understand what a **compute cluster** is when you would use it
+- Know what a **compute cluster** is and when you would use it
 - Differentiate between a **compute node** and the **head node**
 - Know the **resources** available on "deohs-brain"
 - Know how to **connect** to the compute cluster "deohs-brain"
@@ -134,6 +134,43 @@ Installation of some packages may be a little tricky. See:
 
 ![](mpi_demo/results_55pct.png)
 
+
+## Optimization: splitting by workers
+
+You can reduce overhead by splitting the number of total replications by the
+number of workers.
+
+That way, each worker only gets initialized once.
+
+
+```r
+# Setup
+workers <- 8
+R <- 10000
+
+# Total replicates (R) is much greater than the number of workers
+ci_boot <- mclapply(1:R, f, mc.cores = workers)
+
+# Splitting replicates by number of workers will speed up processing
+X.split <- split(1:R, rep_len(1:workers, length(1:R)))
+mclapply(X.split, f, mc.cores = workers)
+```
+
+## Optimization: splitting by workers
+
+In one [test](mpi_demo/split_test.md), using 8 workers and 10,000 total 
+replications, splitting improved speed by 34-38%. 
+
+pkg            fun        splitlen    elapsed
+-------------  ---------  ---------  --------
+base           lapply     R            88.698
+parallel       mclapply   R            13.815
+parallel       mclapply   workers       9.096
+BiocParallel   bplapply   R            15.818
+BiocParallel   bplapply   workers       9.811
+
+Scaling up to 100,000 total replications gave similar results.
+
 ## Optimization: splitting by workers
 
 ![](mpi_demo/results_splits_log10_55pct.png)
@@ -151,7 +188,6 @@ Installation of some packages may be a little tricky. See:
 - Run heavy-duty jobs on compute nodes 
 - Use one more slot than the number of workers
 - Number of parallel tasks should equal the number of workers
-  + `X.split <- split(1:R, rep_len(1:workers, length(1:R)))`
 - Clean up your "home" and "scratch" folders regularly
 - Use terminal sessions when you don't really need a GUI
 - If you use a graphical desktop, **log out** when finished

@@ -6,7 +6,7 @@ library(scales)
 df <- read_csv("combined_data_split.csv")
 
 df_summarized <- df %>%  
-  mutate(splits = factor(splits, ordered = TRUE)) %>% 
+  mutate(splits = factor(sprintf("%d", splits), ordered = TRUE)) %>% 
   group_by(R, splits, split_method, workers, cl_type, fun) %>%
   summarise(t = mean(elapsed, na.rm = TRUE), 
             t_sd = sd(elapsed, na.rm = TRUE)) %>% 
@@ -19,10 +19,10 @@ ggplot(df_summarized, aes(x = splits, y = t, fill = `Split Method`)) +
   #              position=position_dodge(0.05)) +
   scale_y_log10() + 
   facet_wrap(. ~ cl_type, nrow = 1) + 
-  labs(title = paste("Elapsed time per split number and method", 
+  labs(title = paste("Elapsed time per split count and method", 
                      "for workers=8 and replicates(R)=100,000",
                      sep = "\n"),
-       x = "Split Number (count)", y = "Elapsed Time (seconds)")+
+       x = "Split Count", y = "Elapsed Time (seconds)")+
   theme_classic()
 
 ggsave("results_splits_log10.png", width = 5, height = 3)
