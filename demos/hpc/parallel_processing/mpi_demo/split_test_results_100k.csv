@@ -1,0 +1,6 @@
+"pkg","fun","splitlen","elapsed"
+"base","lapply","R",888.181
+"parallel","mclapply","R",138.03
+"parallel","mclapply","workers",82.866
+"BiocParallel","bplapply","R",146.648
+"BiocParallel","bplapply","workers",93.2740000000001

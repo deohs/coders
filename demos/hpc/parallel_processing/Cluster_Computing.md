@@ -159,7 +159,7 @@ mclapply(X.split, f, mc.cores = workers)
 ## Optimization: splitting by workers
 
 In one [test](mpi_demo/split_test.md), using 8 workers and 10,000 total 
-replications, splitting improved speed by 34-38%. 
+replications, splitting improved speed by 34-38%. ([CSV](mpi_demo/split_test_results.csv))
 
 pkg            fun        splitlen    elapsed
 -------------  ---------  ---------  --------
@@ -169,7 +169,7 @@ parallel       mclapply   workers       9.096
 BiocParallel   bplapply   R            15.818
 BiocParallel   bplapply   workers       9.811
 
-Scaling up to 100,000 total replications gave similar results.
+Scaling up to 100,000 total replications gave similar [results](mpi_demo/split_test_results_100k.csv).
 
 ## Optimization: splitting by workers
 
