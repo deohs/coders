@@ -134,6 +134,15 @@ Installation of some packages may be a little tricky. See:
 
 ![](mpi_demo/results_55pct.png)
 
+## Reducing "overhead"
+
+It's like the benefits of mass transit and carpooling...
+
+![](https://ops.fhwa.dot.gov/publications/exemptvehicleshov/images/figure2.jpg)
+
+Each vehicle has overhead: fuel, maintenance, insurance, congestion, etc. So, 
+you want to fit passengers taking the same route at the same time on as few
+vehicles as possible.
 
 ## Optimization: splitting by workers
 
