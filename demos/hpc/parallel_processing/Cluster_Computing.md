@@ -134,11 +134,11 @@ Installation of some packages may be a little tricky. See:
 
 ![](mpi_demo/results_55pct.png)
 
-## Optimization: Splitting
+## Optimization: splitting by workers
 
 ![](mpi_demo/results_splits_log10_55pct.png)
 
-## Optimization: Splitting
+## Optimization: splitting by workers
 
 ![](mpi_demo/results_splits_55pct.png)
 
