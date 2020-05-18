@@ -171,17 +171,17 @@ Alternatives to using **split** are **clusterSplit** and **parLapply**.
 ## Splitting tasks by workers
 
 In one [test](mpi_demo/split_test.md), using 8 workers and 10,000 total 
-replications, splitting improved speed by 34-38%. ([CSV](mpi_demo/split_test_results.csv))
+replications, splitting improved speed by 36-38%. ([CSV](mpi_demo/split_test_results.csv))
 
-pkg            fun        splitlen    elapsed
--------------  ---------  ---------  --------
-base           lapply     R            88.698
-parallel       mclapply   R            13.815
-parallel       mclapply   workers       9.096
-BiocParallel   bplapply   R            15.818
-BiocParallel   bplapply   workers       9.811
+| pkg           | fun           | splitlen  | elapsed |
+| :------------ | :------------ | :-------- | ------: |
+| base          | lapply        | R         |  94.321 |
+| parallel      | mclapply      | R         |  14.648 |
+| parallel      | mclapply      | workers   |   9.071 |
+| BiocParallel  | bplapply      | R         |  15.696 |
+| BiocParallel  | bplapply      | workers   |  10.001 |
 
-Scaling up to 100,000 total replications gave similar [results](mpi_demo/split_test_results_100k.csv).
+(Test results [CSV](mpi_demo/split_test_results.csv))
 
 ## Splitting tasks by workers
 
