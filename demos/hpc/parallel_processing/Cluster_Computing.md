@@ -130,7 +130,7 @@ Installation of some packages may be a little tricky. See:
    + **BiocParallel** is slower when using many workers (> 16)
 - **Your code may perform differently so do your own tests.**
 
-## Parallel R performance
+## Parallel R performance plot
 
 ![](mpi_demo/results_55pct.png)
 
@@ -146,7 +146,7 @@ vehicles as possible.
 
 ## Splitting tasks by workers
 
-You can reduce overhead by splitting the number of total replications 
+You can **reduce overhead** by splitting the number of total replications 
 ("passengers") by the number of workers ("vehicles"). That way, each worker only 
 gets initialized once.
 
@@ -169,7 +169,7 @@ Alternatives to using **split** are **clusterSplit** and **parLapply**.
 ## Splitting tasks by workers
 
 In one [test](mpi_demo/split_test.md), using 8 workers and 10,000 total 
-replications, splitting improved speed by 36-38%. ([CSV](mpi_demo/split_test_results.csv))
+replications, splitting improved speed by 36-38%. 
 
 | pkg           | fun           | splitlen  | elapsed |
 | :------------ | :------------ | :-------- | ------: |
@@ -179,15 +179,20 @@ replications, splitting improved speed by 36-38%. ([CSV](mpi_demo/split_test_res
 | BiocParallel  | bplapply      | R         |  15.696 |
 | BiocParallel  | bplapply      | workers   |  10.001 |
 
-(Test results [CSV](mpi_demo/split_test_results.csv))
-
-## Splitting tasks by workers
+## Splitting tasks by workers plot
 
 ![](mpi_demo/results_splits_log10_55pct.png)
 
-## Splitting tasks by workers
+## Splitting tasks by workers plot
 
 ![](mpi_demo/results_splits_55pct.png)
+
+## Splitting tasks by workers: Conclusions
+
+- Without splitting, MPI can take over 6x longer than single core
+- Splitting will speed-up FORK ("mclapply") by up to 40%
+- Splitting will speed-up SOCK by up to 65%
+- "split" and "clusterSplit"methods perform equally well
 
 ## Tips
 
