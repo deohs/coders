@@ -190,9 +190,9 @@ replications, splitting improved speed by 36-38%.
 ## Splitting tasks by workers: Conclusions
 
 - Without splitting, MPI can take over 6x longer than single core
-  + With splitting, MPI is a little slower than FORK and SOCK
-- Splitting will speed-up FORK ("mclapply") by up to 40%
-- Splitting will speed-up SOCK ("clusterApply") by up to 65%
+  + With splitting, MPI may be slower than FORK and SOCK
+- Splitting may speed-up FORK ("mclapply") 40% or more
+- Splitting may speed-up SOCK ("clusterApply") 65% or more
 - "split" and "clusterSplit" methods perform equally well
   + "parLapply" does the splitting for you, but is slower
 
