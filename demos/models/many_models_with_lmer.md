@@ -17,9 +17,11 @@ editor_options:
 
 ## Objectives
 
-- Run many models with `lme4::lmer()` and `broom.mixed::tidy()` using `future_map()`.
-- Compare results of `lme4::confint.merMod(method = "Wald")` with `broom.mixed::tidy(conf.int = TRUE, conf.method = "Wald")` results.
-- Use the `furrr::future_map()` for parallel processing.
+- Run many models with `lme4::lmer()` and extract estimates with `broom.mixed::tidy()`.
+- Use `furrr::future_map()` for parallel processing.
+- Compare results of:
+    - `lme4::confint.merMod(method = "Wald")`
+    - `broom.mixed::tidy(conf.int = TRUE, conf.method = "Wald")`
 
 ## Setup
 
@@ -91,6 +93,8 @@ formula_df <- formulas %>%
 
 ## Prepare data
 
+Our dataset will be `flights` from the *nycflights13* package.
+
 
 ```r
 # Select only the model variables to minimize parallelization overhead.
@@ -143,7 +147,7 @@ toc()
 ```
 
 ```
-## 25.446 sec elapsed
+## 26.803 sec elapsed
 ```
 
 Display the results.
@@ -226,7 +230,7 @@ toc()
 ```
 
 ```
-## 19.397 sec elapsed
+## 21.379 sec elapsed
 ```
 
 Display the results.
