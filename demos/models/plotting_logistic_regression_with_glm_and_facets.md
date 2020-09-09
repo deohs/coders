@@ -1,5 +1,5 @@
 ---
-title: "Plotting logistic_regression with glm and facets"
+title: "Plotting logistic regression with glm and facets"
 author: "Brian High"
 date: "9/7/2020"
 output: 

@@ -2,11 +2,13 @@
 title: "Many Models with lme4::lmer() and broom.mixed::tidy()"
 author: "Brian High"
 date: "9/7/2020"
-output: 
+output:
+  html_document:
+    df_print: paged
   pdf_document:
     fig_caption: yes
     keep_md: yes
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 
@@ -119,7 +121,7 @@ results_df <- formula_df %>%
   inner_join(est, by = "ID") %>%
   inner_join(CI, by = c("ID", "term")) %>%
   select(-ID, -effect, -std.error, -statistic) %>%
-  arrange(formula, term)
+  arrange(fgroup, formula, term)
 
 # Stop timer.
 toc()
@@ -128,7 +130,7 @@ toc()
 Display the results.
 
 ```{r, fig.cap="Stepwise processing with merge."}
-results_df %>% knitr::kable(digits = 4) %>% kable_styling(font_size = 8)
+results_df %>% knitr::kable(digits = 4) %>% kable_styling(font_size = 10)
 ```
 
 ## Use a single pipeline
@@ -149,7 +151,7 @@ results_df <- formula_df %>%
   select(-model) %>% unnest(cols = everything()) %>%
   filter(is.na(group)) %>% 
   select(-group, -effect, -std.error, -statistic) %>%
-  arrange(formula, term)
+  arrange(fgroup, formula, term)
   
 # Stop timer.
 toc()

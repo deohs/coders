@@ -134,14 +134,14 @@ results_df <- formula_df %>%
   inner_join(est, by = "ID") %>%
   inner_join(CI, by = c("ID", "term")) %>%
   select(-ID, -effect, -std.error, -statistic) %>%
-  arrange(formula, term)
+  arrange(fgroup, formula, term)
 
 # Stop timer.
 toc()
 ```
 
 ```
-## 230.825 sec elapsed
+## 212.242 sec elapsed
 ```
 
 Display the results.
@@ -162,21 +162,13 @@ crude & arr\_delay \textasciitilde{} air\_time + (1|carrier) & (Intercept) & 5.5
 \hline
 crude & arr\_delay \textasciitilde{} air\_time + (1|carrier) & air\_time & 0.0085 & 0.0065 & 0.0105 & 0.0064 & 0.0105\\
 \hline
-min & arr\_delay \textasciitilde{} air\_time + month + (1|carrier) & (Intercept) & 6.9904 & 2.1389 & 11.8419 & 2.0039 & 11.9882\\
-\hline
-min & arr\_delay \textasciitilde{} air\_time + month + (1|carrier) & air\_time & 0.0086 & 0.0066 & 0.0106 & 0.0065 & 0.0106\\
-\hline
-min & arr\_delay \textasciitilde{} air\_time + month + (1|carrier) & month & -0.2262 & -0.2706 & -0.1817 & -0.2706 & -0.1817\\
-\hline
 crude & arr\_delay \textasciitilde{} distance + (1|carrier) & (Intercept) & 8.9182 & 4.8971 & 12.9394 & 4.7848 & 13.0609\\
 \hline
 crude & arr\_delay \textasciitilde{} distance + (1|carrier) & distance & -0.0014 & -0.0016 & -0.0011 & -0.0016 & -0.0011\\
 \hline
-min & arr\_delay \textasciitilde{} distance + air\_time + (1|carrier) & (Intercept) & -3.0548 & -7.0448 & 0.9351 & -7.1450 & 1.0636\\
+crude & arr\_delay \textasciitilde{} month + (1|carrier) & (Intercept) & 8.5815 & 4.1367 & 13.0263 & 4.0154 & 13.1672\\
 \hline
-min & arr\_delay \textasciitilde{} distance + air\_time + (1|carrier) & air\_time & 0.6725 & 0.6608 & 0.6843 & 0.6608 & 0.6843\\
-\hline
-min & arr\_delay \textasciitilde{} distance + air\_time + (1|carrier) & distance & -0.0863 & -0.0878 & -0.0848 & -0.0878 & -0.0848\\
+crude & arr\_delay \textasciitilde{} month + (1|carrier) & month & -0.2242 & -0.2686 & -0.1797 & -0.2686 & -0.1797\\
 \hline
 max & arr\_delay \textasciitilde{} distance + air\_time + month + (1|carrier) & (Intercept) & -2.7542 & -6.7541 & 1.2457 & -6.8528 & 1.3728\\
 \hline
@@ -186,15 +178,23 @@ max & arr\_delay \textasciitilde{} distance + air\_time + month + (1|carrier) & 
 \hline
 max & arr\_delay \textasciitilde{} distance + air\_time + month + (1|carrier) & month & -0.0443 & -0.0881 & -0.0006 & -0.0881 & -0.0006\\
 \hline
+min & arr\_delay \textasciitilde{} air\_time + month + (1|carrier) & (Intercept) & 6.9904 & 2.1389 & 11.8419 & 2.0039 & 11.9882\\
+\hline
+min & arr\_delay \textasciitilde{} air\_time + month + (1|carrier) & air\_time & 0.0086 & 0.0066 & 0.0106 & 0.0065 & 0.0106\\
+\hline
+min & arr\_delay \textasciitilde{} air\_time + month + (1|carrier) & month & -0.2262 & -0.2706 & -0.1817 & -0.2706 & -0.1817\\
+\hline
+min & arr\_delay \textasciitilde{} distance + air\_time + (1|carrier) & (Intercept) & -3.0548 & -7.0448 & 0.9351 & -7.1450 & 1.0636\\
+\hline
+min & arr\_delay \textasciitilde{} distance + air\_time + (1|carrier) & air\_time & 0.6725 & 0.6608 & 0.6843 & 0.6608 & 0.6843\\
+\hline
+min & arr\_delay \textasciitilde{} distance + air\_time + (1|carrier) & distance & -0.0863 & -0.0878 & -0.0848 & -0.0878 & -0.0848\\
+\hline
 min & arr\_delay \textasciitilde{} distance + month + (1|carrier) & (Intercept) & 10.3305 & 6.2897 & 14.3714 & 6.1797 & 14.4933\\
 \hline
 min & arr\_delay \textasciitilde{} distance + month + (1|carrier) & distance & -0.0013 & -0.0016 & -0.0011 & -0.0016 & -0.0011\\
 \hline
 min & arr\_delay \textasciitilde{} distance + month + (1|carrier) & month & -0.2190 & -0.2635 & -0.1745 & -0.2635 & -0.1745\\
-\hline
-crude & arr\_delay \textasciitilde{} month + (1|carrier) & (Intercept) & 8.5815 & 4.1367 & 13.0263 & 4.0154 & 13.1672\\
-\hline
-crude & arr\_delay \textasciitilde{} month + (1|carrier) & month & -0.2242 & -0.2686 & -0.1797 & -0.2686 & -0.1797\\
 \hline
 \end{tabular}
 \endgroup{}
@@ -219,14 +219,14 @@ results_df <- formula_df %>%
   select(-model) %>% unnest(cols = everything()) %>%
   filter(is.na(group)) %>% 
   select(-group, -effect, -std.error, -statistic) %>%
-  arrange(formula, term)
+  arrange(fgroup, formula, term)
   
 # Stop timer.
 toc()
 ```
 
 ```
-## 20.404 sec elapsed
+## 20.795 sec elapsed
 ```
 
 Display the results.
@@ -247,21 +247,13 @@ crude & arr\_delay \textasciitilde{} air\_time + (1|carrier) & (Intercept) & 5.5
 \hline
 crude & arr\_delay \textasciitilde{} air\_time + (1|carrier) & air\_time & 0.0085 & 0.0065 & 0.0105\\
 \hline
-min & arr\_delay \textasciitilde{} air\_time + month + (1|carrier) & (Intercept) & 6.9904 & 2.1389 & 11.8419\\
-\hline
-min & arr\_delay \textasciitilde{} air\_time + month + (1|carrier) & air\_time & 0.0086 & 0.0066 & 0.0106\\
-\hline
-min & arr\_delay \textasciitilde{} air\_time + month + (1|carrier) & month & -0.2262 & -0.2706 & -0.1817\\
-\hline
 crude & arr\_delay \textasciitilde{} distance + (1|carrier) & (Intercept) & 8.9182 & 4.8971 & 12.9394\\
 \hline
 crude & arr\_delay \textasciitilde{} distance + (1|carrier) & distance & -0.0014 & -0.0016 & -0.0011\\
 \hline
-min & arr\_delay \textasciitilde{} distance + air\_time + (1|carrier) & (Intercept) & -3.0548 & -7.0448 & 0.9351\\
+crude & arr\_delay \textasciitilde{} month + (1|carrier) & (Intercept) & 8.5815 & 4.1367 & 13.0263\\
 \hline
-min & arr\_delay \textasciitilde{} distance + air\_time + (1|carrier) & air\_time & 0.6725 & 0.6608 & 0.6843\\
-\hline
-min & arr\_delay \textasciitilde{} distance + air\_time + (1|carrier) & distance & -0.0863 & -0.0878 & -0.0848\\
+crude & arr\_delay \textasciitilde{} month + (1|carrier) & month & -0.2242 & -0.2686 & -0.1797\\
 \hline
 max & arr\_delay \textasciitilde{} distance + air\_time + month + (1|carrier) & (Intercept) & -2.7542 & -6.7541 & 1.2457\\
 \hline
@@ -271,15 +263,23 @@ max & arr\_delay \textasciitilde{} distance + air\_time + month + (1|carrier) & 
 \hline
 max & arr\_delay \textasciitilde{} distance + air\_time + month + (1|carrier) & month & -0.0443 & -0.0881 & -0.0006\\
 \hline
+min & arr\_delay \textasciitilde{} air\_time + month + (1|carrier) & (Intercept) & 6.9904 & 2.1389 & 11.8419\\
+\hline
+min & arr\_delay \textasciitilde{} air\_time + month + (1|carrier) & air\_time & 0.0086 & 0.0066 & 0.0106\\
+\hline
+min & arr\_delay \textasciitilde{} air\_time + month + (1|carrier) & month & -0.2262 & -0.2706 & -0.1817\\
+\hline
+min & arr\_delay \textasciitilde{} distance + air\_time + (1|carrier) & (Intercept) & -3.0548 & -7.0448 & 0.9351\\
+\hline
+min & arr\_delay \textasciitilde{} distance + air\_time + (1|carrier) & air\_time & 0.6725 & 0.6608 & 0.6843\\
+\hline
+min & arr\_delay \textasciitilde{} distance + air\_time + (1|carrier) & distance & -0.0863 & -0.0878 & -0.0848\\
+\hline
 min & arr\_delay \textasciitilde{} distance + month + (1|carrier) & (Intercept) & 10.3305 & 6.2897 & 14.3714\\
 \hline
 min & arr\_delay \textasciitilde{} distance + month + (1|carrier) & distance & -0.0013 & -0.0016 & -0.0011\\
 \hline
 min & arr\_delay \textasciitilde{} distance + month + (1|carrier) & month & -0.2190 & -0.2635 & -0.1745\\
-\hline
-crude & arr\_delay \textasciitilde{} month + (1|carrier) & (Intercept) & 8.5815 & 4.1367 & 13.0263\\
-\hline
-crude & arr\_delay \textasciitilde{} month + (1|carrier) & month & -0.2242 & -0.2686 & -0.1797\\
 \hline
 \end{tabular}
 \endgroup{}
