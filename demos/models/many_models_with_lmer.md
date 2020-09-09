@@ -44,7 +44,6 @@ pacman::p_load(nycflights13,
                tidyr,
                dplyr,
                broom.mixed,
-               modelr,
                purrr,
                furrr,
                lme4,
@@ -143,7 +142,7 @@ toc()
 ```
 
 ```
-## 215.426 sec elapsed
+## 226.818 sec elapsed
 ```
 
 Display the results.
@@ -203,7 +202,7 @@ toc()
 ```
 
 ```
-## 18.815 sec elapsed
+## 19.478 sec elapsed
 ```
 
 Display the results.
