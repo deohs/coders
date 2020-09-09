@@ -5,6 +5,7 @@ date: "9/7/2020"
 output:
   html_document:
     df_print: paged
+    keep_md: yes
   pdf_document:
     fig_caption: yes
     keep_md: yes

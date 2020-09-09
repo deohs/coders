@@ -5,6 +5,7 @@ date: "9/7/2020"
 output:
   html_document:
     df_print: paged
+    keep_md: yes
   pdf_document:
     fig_caption: yes
     keep_md: yes
@@ -42,8 +43,7 @@ pacman::p_load(nycflights13,
                purrr,
                furrr,
                lme4,
-               tictoc,
-               kableExtra)
+               tictoc)
 
 # Show number of available CPU cores.
 availableCores()
@@ -130,7 +130,7 @@ toc()
 Display the results.
 
 ```{r, fig.cap="Stepwise processing with merge."}
-results_df %>% knitr::kable(digits = 4) %>% kable_styling(font_size = 10)
+results_df %>% knitr::kable(digits = 4)
 ```
 
 ## Use a single pipeline
@@ -160,5 +160,5 @@ toc()
 Display the results.
 
 ```{r, fig.cap="Single pipeline processing."}
-results_df %>% knitr::kable(digits = 4) %>% kable_styling(font_size = 10)
+results_df %>% knitr::kable(digits = 4)
 ```

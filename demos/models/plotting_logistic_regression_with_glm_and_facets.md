@@ -2,7 +2,10 @@
 title: "Plotting logistic regression with glm and facets"
 author: "Brian High"
 date: "9/7/2020"
-output: 
+output:
+  html_document:
+    df_print: paged
+    keep_md: yes
   pdf_document:
     fig_caption: yes
     keep_md: yes
@@ -41,7 +44,7 @@ ggplot(train_df, aes(x = Age, y = Survived)) + geom_point() +
   ggtitle('Titanic disaster survival rate by age and passenger class')
 ```
 
-![Facet by Pclass.](plotting_logistic_regression_with_glm_and_facets_files/figure-latex/example_1_plot-1.pdf) 
+![Facet by Pclass.](plotting_logistic_regression_with_glm_and_facets_files/figure-html/example_1_plot-1.png)
 
 We can add additional variables to plot by color or facet.
 
@@ -57,7 +60,7 @@ ggplot(train_df, aes(x = Age, y = Survived, color = Sex)) +
   ggtitle('Titanic disaster survival rate by age, sex and passenger class')
 ```
 
-![Color by sex.](plotting_logistic_regression_with_glm_and_facets_files/figure-latex/example_1a_plot-1.pdf) 
+![Color by sex.](plotting_logistic_regression_with_glm_and_facets_files/figure-html/example_1a_plot-1.png)
 
 
 ```r
@@ -68,7 +71,7 @@ ggplot(train_df, aes(x = Age, y = Survived)) + geom_point(alpha = 0.3) +
   ggtitle('Titanic disaster survival rate by age, sex and passenger class')
 ```
 
-![Facet by Pclass and sex.](plotting_logistic_regression_with_glm_and_facets_files/figure-latex/example_1b_plot-1.pdf) 
+![Facet by Pclass and sex.](plotting_logistic_regression_with_glm_and_facets_files/figure-html/example_1b_plot-1.png)
 
 ## Method #2: Perform calculations before plotting
 
@@ -183,4 +186,4 @@ ggplot(train_df, aes(x = Age, y = Survived)) +
   ggtitle('Titanic disaster survival rate by age and passenger class')
 ```
 
-![Smooth line from predict().](plotting_logistic_regression_with_glm_and_facets_files/figure-latex/example_2_plot-1.pdf) 
+![Smooth line from predict().](plotting_logistic_regression_with_glm_and_facets_files/figure-html/example_2_plot-1.png)
