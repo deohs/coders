@@ -19,9 +19,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Objectives
 
-- Run multiple models with `lmer()`, `tidy()` and `confint()` using `future_map()`.
-- Compare `confint()` results with `tidy(conf.int = TRUE)` results.
-- Use furrr package to provide `future_map()` for parallel processing.
+- Run many models with `lme4::lmer()` and `broom.mixed::tidy()` using `future_map()`.
+- Compare results of `lme4::confint.merMod(method = "Wald")` with `broom.mixed::tidy(conf.int = TRUE, conf.method = "Wald")` results.
+- Use the `furrr::future_map()` for parallel processing.
 
 ## Setup
 
@@ -89,9 +89,10 @@ data_df <-
 We could use `nest()` for the following steps in a single pipeline, using 
 `tidy()` for confidence intervals, but the terms might be misaligned. 
 
-Instead, using a stepwise approach, we retain the term names, use `confint()` 
-to get confidence intervals, join on the terms and the formula number, and 
-show the results to compare the two methods of getting confidence intervals.
+Instead, using a stepwise approach, we retain the term names, use 
+`confint.merMod()` to get confidence intervals, join on the terms 
+and the formula number, and show the results to compare the two 
+methods of getting confidence intervals.
 
 ```{r, message=FALSE}
 # Start timer.
@@ -103,14 +104,14 @@ model_fit_list <- formula_df$formula %>% future_map(lmer, data = data_df)
 # Extract the estimates with broom.mixed::tidy().
 est <- 
   model_fit_list %>%
-  future_map(tidy, conf.int = TRUE, conf.level = 0.95) %>%
+  future_map(tidy, conf.int = TRUE, conf.method = "Wald", conf.level = 0.95) %>%
   bind_rows(.id = "ID") %>%
   select(-group)
 
-# Calculate confidence intervals with confint().
+# Calculate confidence intervals with confint.merMod().
 CI <-  
   model_fit_list %>%
-  future_map(confint, level = 0.95) %>%
+  future_map(confint.merMod, method = "Wald", level = 0.95) %>%
   future_map(as_tibble, rownames = "term") %>%
   bind_rows(.id = "ID")
 
@@ -132,11 +133,21 @@ Display the results.
 results_df %>% knitr::kable(digits = 4)
 ```
 
+### Compare confidence intervals
+
+Determine whether or not the two methods of calculating the confidence 
+intervals produce identical results.
+
+```{r}
+identical(results_df$conf.low, results_df$`2.5 %`)
+identical(results_df$conf.high, results_df$`97.5 %`)
+```
+
 ## Use a single pipeline
 
 Since the results showed the two methods for producing confidence intervals are
-mostly equivalent (except for the Intercept, for some reason), we will now use a 
-single pipeline, without running `confint()`, so we can compare performance.
+equivalent, we will now use a single pipeline, without running `confint.merMod()`, 
+so we can compare performance.
 
 ```{r}
 # Start timer.
@@ -146,7 +157,8 @@ tic()
 # with broom.mixed::tidy() using future_map() for multicore processing.
 results_df <- formula_df %>% 
   mutate(model = future_map(formula, lmer, data = data_df)) %>%
-  mutate(est = future_map(model, tidy, conf.int = TRUE, conf.level = 0.95)) %>%
+  mutate(est = future_map(model, tidy, conf.int = TRUE, conf.method = "Wald", 
+                          conf.level = 0.95)) %>%
   select(-model) %>% unnest(cols = everything()) %>%
   filter(is.na(group)) %>% 
   select(-group, -effect, -std.error, -statistic) %>%
