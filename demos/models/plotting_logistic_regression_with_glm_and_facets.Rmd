@@ -22,8 +22,10 @@ This document provides two methods of plotting a logistic regression using
 
 ## Method #1: Let ggplot() do all of the work
 
-This version only uses the "training" dataset. Code was modified from 
-https://stackoverflow.com/questions/42361672/.
+This version only uses the "training" dataset. Code was modified from this
+Stackoverflow thread:
+
+- [multiple log regression models ggplot2](https://stackoverflow.com/questions/42361672/)
 
 ```{r example_1_plot, message=FALSE, fig.height=3, fig.cap="Facet by Pclass."}
 # Load pacman, installing if needed.
@@ -69,8 +71,10 @@ ggplot(train_df, aes(x = Age, y = Survived)) + geom_point(alpha = 0.3) +
 ## Method #2: Perform calculations before plotting
 
 This version uses both "training" and "testing" datasets. Code was modified 
-from https://stackoverflow.com/questions/8662018/ and 
-https://stackoverflow.com/questions/14423325/.
+from these Stackoverflow threads:
+
+- [ggplot2: stat_smooth for logistic outcomes with facet_wrap returning 'full' or 'subset' glm models](https://stackoverflow.com/questions/8662018/) 
+- [Confidence intervals for predictions from logistic regression](https://stackoverflow.com/questions/14423325/)
 
 ### Setup
 
@@ -105,11 +109,7 @@ Calculate estimates and predictions.
 df <- df_nest %>% 
   mutate(model = map(train, ~glm("Survived ~ Age", "binomial", .x))) %>% 
   mutate(est = map(model, tidy, conf.int = TRUE, conf.level = 0.95)) %>%
-  mutate(preds = map2(model, test, 
-                      ~predict.glm(.x, 
-                                   newdata = .y, 
-                                   type = "link", 
-                                   se.fit = TRUE)))
+  mutate(preds = map2(model, test, predict.glm, type = "link", se.fit = TRUE))
 
 # Run unnest() to prepare a dataset of estimates.
 res <- df %>% select(-train, -test, -model, -preds) %>% unnest(everything()) %>%
