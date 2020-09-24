@@ -25,7 +25,7 @@ awarded to other organizations at the UW.
 # Load packages, installing as needed
 repo <- 'https://cloud.r-project.org'
 if (!require(pacman)) install.packages('pacman', repos = repo)
-pacman::p_load(readr, tidyr, dplyr, here, qgraph, BBmisc, purrr, RColorBrewer)
+pacman::p_load(readr, tidyr, dplyr, qgraph, BBmisc, purrr, RColorBrewer)
 
 # Import summary data
 summary_df <- read_csv(file.path('results', 'summary.csv'))
