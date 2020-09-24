@@ -33,47 +33,29 @@ summary_df <- read_csv(file.path('results', 'summary.csv'))
 
 ## View dataset
 
+We will view the dataset as a table in wide form for better display on the screen.
+
 
 ```r
-knitr::kable(summary_df)
+summary_df %>% 
+  pivot_wider(id_cols = Org, names_from = `Partner Org Unit`, values_from = Count) %>% 
+  knitr::kable()
 ```
 
 
 
-|Org                    |Partner Org Unit | Count|
-|:----------------------|:----------------|-----:|
-|COLL ARTS & SCIENCES   |BIOSTATS         |     3|
-|COLL ARTS & SCIENCES   |HSERV            |     1|
-|COLLEGE OF ENGINEERING |BIOSTATS         |     1|
-|COLLEGE OF ENGINEERING |DEOHS            |     2|
-|COLLEGE OF ENGINEERING |DGH              |     2|
-|COLLEGE OF ENVIRONMENT |DEOHS            |     4|
-|COLLEGE OF ENVIRONMENT |EPI              |     2|
-|HEALTH SCIENCES ADMIN  |DEOHS            |     6|
-|HEALTH SCIENCES ADMIN  |EPI              |     1|
-|SCH OF PUBLIC HEALTH   |BIOSTATS         |  2433|
-|SCH OF PUBLIC HEALTH   |DEOHS            |   514|
-|SCH OF PUBLIC HEALTH   |DGH              |   296|
-|SCH OF PUBLIC HEALTH   |EPI              |   362|
-|SCH OF PUBLIC HEALTH   |HSERV            |   308|
-|SCHOOL OF DENTISTRY    |BIOSTATS         |     1|
-|SCHOOL OF DENTISTRY    |DGH              |     1|
-|SCHOOL OF DENTISTRY    |HSERV            |     2|
-|SCHOOL OF MEDICINE     |BIOSTATS         |   487|
-|SCHOOL OF MEDICINE     |DEOHS            |    46|
-|SCHOOL OF MEDICINE     |DGH              |   205|
-|SCHOOL OF MEDICINE     |EPI              |    77|
-|SCHOOL OF MEDICINE     |HSERV            |    43|
-|SCHOOL OF NURSING      |BIOSTATS         |    14|
-|SCHOOL OF NURSING      |DEOHS            |     2|
-|SCHOOL OF NURSING      |DGH              |     5|
-|SCHOOL OF NURSING      |EPI              |     1|
-|SCHOOL OF NURSING      |HSERV            |     1|
-|SCHOOL OF PHARMACY     |BIOSTATS         |    16|
-|SCHOOL OF PHARMACY     |DEOHS            |     4|
-|SCHOOL OF PHARMACY     |DGH              |     1|
-|SCHOOL OF SOCIAL WORK  |BIOSTATS         |     3|
-|SCHOOL OF SOCIAL WORK  |EPI              |     1|
+|Org                    | BIOSTATS| HSERV| DEOHS| DGH| EPI|
+|:----------------------|--------:|-----:|-----:|---:|---:|
+|COLL ARTS & SCIENCES   |        3|     1|    NA|  NA|  NA|
+|COLLEGE OF ENGINEERING |        1|    NA|     2|   2|  NA|
+|COLLEGE OF ENVIRONMENT |       NA|    NA|     4|  NA|   2|
+|HEALTH SCIENCES ADMIN  |       NA|    NA|     6|  NA|   1|
+|SCH OF PUBLIC HEALTH   |     2433|   308|   514| 296| 362|
+|SCHOOL OF DENTISTRY    |        1|     2|    NA|   1|  NA|
+|SCHOOL OF MEDICINE     |      487|    43|    46| 205|  77|
+|SCHOOL OF NURSING      |       14|     1|     2|   5|   1|
+|SCHOOL OF PHARMACY     |       16|    NA|     4|   1|  NA|
+|SCHOOL OF SOCIAL WORK  |        3|    NA|    NA|  NA|   1|
 
 ## Set the scaling variables
 

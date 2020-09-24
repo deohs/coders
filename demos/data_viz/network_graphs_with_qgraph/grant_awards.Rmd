@@ -34,8 +34,12 @@ summary_df <- read_csv(file.path('results', 'summary.csv'))
 
 ## View dataset
 
+We will view the dataset as a table in wide form for better display on the screen.
+
 ```{r}
-knitr::kable(summary_df)
+summary_df %>% 
+  pivot_wider(id_cols = Org, names_from = `Partner Org Unit`, values_from = Count) %>% 
+  knitr::kable()
 ```
 
 ## Set the scaling variables
