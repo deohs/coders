@@ -101,13 +101,9 @@ edgelist <- summary_df %>% filter(Org != "SCH OF PUBLIC HEALTH") %>%
   mutate(Count = ifelse(Count > upper_threshold, upper_threshold, Count)) %>% 
   mutate(Count = ifelse(Count < lower_threshold, NA, Count)) %>% 
   drop_na(Count) %>% 
-  mutate(Org = gsub('COLL ', 'COLLEGE OF ', 
-                    Org), 
-         Org = gsub('(COLLEGE OF |SCHOOL OF |HEALTH SCIENCES )', '\\1\n', 
-                    Org)) %>% 
-  rename(origin = 'Org', 
-         destination = 'Partner Org Unit', 
-         weight = 'Count') %>% 
+  mutate(Org = gsub('COLL ', 'COLLEGE OF ', Org), 
+         Org = gsub('(COLLEGE OF |SCHOOL OF |HEALTH SCIENCES )', '\\1\n', Org)) %>% 
+  rename(origin = 'Org', destination = 'Partner Org Unit', weight = 'Count') %>% 
   mutate(weight = normalize(log10(weight * scaling_factor), method = 'scale'))
 ```
 
