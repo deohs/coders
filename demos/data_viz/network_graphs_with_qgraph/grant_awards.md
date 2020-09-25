@@ -74,7 +74,8 @@ lower_threshold <- 0
 
 We will reshape our dataset and scale the weights to prepare the data for 
 use with `qgraph`. The result is called the "edge list". Edges are the lines
-that connect the nodes in the graph.
+that connect the nodes in the graph. The weights will determine the relative 
+line thickness and darkness of the edges.
 
 
 ```r
@@ -92,7 +93,9 @@ edgelist <- summary_df %>% filter(Org != "SCH OF PUBLIC HEALTH") %>%
 ## Configure colors
 
 We will color the nodes and edges for the SPH departments and leave the other 
-organizations with a default node color of grey.
+organizations with a default node color of grey. The color palette comes from 
+the RColorBewer package. We use a dark palette to make the thinner edges easier 
+to see.
 
 
 ```r
