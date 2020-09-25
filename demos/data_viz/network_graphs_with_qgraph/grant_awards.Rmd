@@ -53,7 +53,7 @@ quantiles <- quantile(summary_df$Count)
 
 # Set threshold value and scaling factor to control weights (edge thickness)
 upper_threshold <- quantiles['75%']
-scaling_factor <- 1 + abs(log(quantiles['75%'] / quantiles['25%']))
+scaling_factor <- 1 + log(quantiles['75%'] / quantiles['25%'])
 ```
 
 ## Make the edge list
