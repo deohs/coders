@@ -59,15 +59,17 @@ summary_df %>%
 
 ## Set the scaling variables
 
-To control line thickness and number of nodes represented, we will set three
+To control line thickness and number of nodes represented, we will set two
 variables to be used in the next section.
 
 
 ```r
-# Set scaling factor and threshold values to control weights (edge thickness)
-scaling_factor <- 5
-upper_threshold <- 50
-lower_threshold <- 0
+# Calculate quantiles to use for thresholds and scaling
+quantiles <- quantile(summary_df$Count)
+
+# Set threshold value and scaling factor to control weights (edge thickness)
+upper_threshold <- quantiles['75%']
+scaling_factor <- 1 + abs(log(quantiles['75%'] / quantiles['25%']))
 ```
 
 ## Make the edge list
@@ -80,14 +82,13 @@ line thickness and darkness of the edges.
 
 ```r
 # Make edgelist for plotting
-edgelist <- summary_df %>% filter(Org != "SCH OF PUBLIC HEALTH") %>% 
-  mutate(Count = ifelse(Count > upper_threshold, upper_threshold, Count)) %>% 
-  mutate(Count = ifelse(Count < lower_threshold, NA, Count)) %>% 
-  drop_na(Count) %>% 
+edgelist <- summary_df %>% 
+  filter(Org != "SCH OF PUBLIC HEALTH") %>% 
   mutate(Org = gsub('COLL ', 'COLLEGE OF ', Org), 
          Org = gsub('(COLLEGE OF |SCHOOL OF |HEALTH SCIENCES )', '\\1\n', Org)) %>% 
   rename(origin = 'Org', destination = 'Partner Org Unit', weight = 'Count') %>% 
-  mutate(weight = normalize(log10(weight * scaling_factor), method = 'scale'))
+  mutate(weight = ifelse(weight > upper_threshold, upper_threshold, weight),
+         weight = normalize(log(weight * scaling_factor), method = 'scale'))
 ```
 
 ## Configure colors
@@ -122,13 +123,14 @@ labels. The sizes of the various components have been adjusted for readability.
 
 
 ```r
-qgraph(edgelist, directed = FALSE, esize = 5, layout = 'circle', 
-       shape = 'ellipse', node.width = 2, node.height = 1, 
-       color = colors_node, edge.color = colors_edge, label.color = 'white', 
-       label.scale.equal = TRUE, label.cex = 1.2, borders = FALSE, 
-       title = 'SPH Grant Awards\nby Department')
+# Make plot and save as PNG
+qgraph(edgelist, directed = FALSE, esize = 5, node.width = 2, 
+       shape = 'ellipse', node.height = 1, edge.color = colors_edge,
+       color = colors_node, label.color = 'white', 
+       label.scale.equal = TRUE, label.cex = 1.2, layout = 'circle', 
+       borders = FALSE, title = 'SPH Grant Awards\nby Department', 
+       title.cex = 1, filetype = 'png', width = 8, height = 5,
+       filename = file.path('figures', 'grant_awards_by_dept'))
 ```
 
-![](grant_awards_files/figure-html/make_graph-1.png)<!-- -->
-
-A [larger version](figures/grant_awards_by_dept.jpg) that is easier to read is also available.
+![](figures/grant_awards_by_dept.jpg)
