@@ -105,13 +105,13 @@ labels. The sizes of the various components have been adjusted for readability.
 
 ```{r save_plot_as_png}
 # Make plot and save as PNG
-qgraph(edgelist, directed = FALSE, esize = 5, node.width = 2, 
-       shape = 'ellipse', node.height = 1, edge.color = colors_edge,
-       color = colors_node, label.color = 'white', 
-       label.scale.equal = TRUE, label.cex = 1.2, layout = 'circle', 
-       borders = FALSE, title = 'SPH Grant Awards\nby Department', 
+qgraph(edgelist, layout = 'circle', directed = FALSE, esize = 5, 
+       shape = 'ellipse', node.width = 2, node.height = 1, 
+       color = colors_node, edge.color = colors_edge, label.color = 'white', 
+       label.scale.equal = TRUE, label.cex = 1.2, borders = FALSE, 
+       title = 'SPH Grant Awards\nby Department', 
        title.cex = 1, filetype = 'png', width = 8, height = 5,
        filename = file.path('figures', 'grant_awards_by_dept'))
 ```
 
-![](figures/grant_awards_by_dept.jpg)
+![](figures/grant_awards_by_dept.png)
