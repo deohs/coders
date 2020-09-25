@@ -14,7 +14,7 @@ output:
 We will make a network graph showing collaboration between various organizations 
 at the University of Washington (UW) and the UW School of Public Health (SPH).
 
-The dataset is an aggregated  summary of the number of collaborators from the 
+The dataset is an aggregated summary of the number of collaborators from the 
 UW School of Public Health (SPH) who receive some funding from research grants 
 awarded to other organizations at the UW.
 
@@ -114,16 +114,19 @@ colors_node <- unlist(c(rep(default_color, length(origins)),
                         map(destinations, ~color_palette[[.x]])))
 ```
 
-## Make the graph
+## Plot the graph
+
+We will plot the nodes in a circle and use non-directed edges (i.e., no 
+arrowheads). The node shape will be equal-sized ellipses with equal-sized 
+labels. The sizes of the various components have been adjusted for readability.
 
 
 ```r
-# Make plot
-qgraph(edgelist, directed = FALSE, esize = 5, node.width = 2, 
-       shape = 'ellipse', node.height = 1, edge.color = colors_edge,
-       color = colors_node, label.color = 'white', 
-       label.scale.equal = TRUE, label.cex = 1.2, layout = 'circle', 
-       borders = FALSE, title = 'SPH Grant Awards\nby Department')
+qgraph(edgelist, directed = FALSE, esize = 5, layout = 'circle', 
+       shape = 'ellipse', node.width = 2, node.height = 1, 
+       color = colors_node, edge.color = colors_edge, label.color = 'white', 
+       label.scale.equal = TRUE, label.cex = 1.2, borders = FALSE, 
+       title = 'SPH Grant Awards\nby Department')
 ```
 
 ![](grant_awards_files/figure-html/make_graph-1.png)<!-- -->
