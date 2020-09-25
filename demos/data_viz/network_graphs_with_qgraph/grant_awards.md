@@ -124,3 +124,5 @@ qgraph(edgelist, directed = FALSE, esize = 5, node.width = 2,
 ```
 
 ![](grant_awards_files/figure-html/make_graph-1.png)<!-- -->
+
+A [larger version](figures/grant_awards_by_dept.jpg) that is easier to read is also available.

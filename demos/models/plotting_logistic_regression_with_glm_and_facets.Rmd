@@ -161,3 +161,4 @@ ggplot(train_df, aes(x = Age, y = Survived)) +
   facet_wrap(~ Pclass) + 
   ggtitle('Titanic disaster survival rate by age and passenger class')
 ```
+

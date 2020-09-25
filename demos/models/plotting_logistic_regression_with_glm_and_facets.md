@@ -187,3 +187,4 @@ ggplot(train_df, aes(x = Age, y = Survived)) +
 ```
 
 ![Smooth line from predict().](plotting_logistic_regression_with_glm_and_facets_files/figure-html/example_2_plot-1.png)
+
