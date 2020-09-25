@@ -57,38 +57,28 @@ summary_df %>%
 |SCHOOL OF PHARMACY     |       16|     0|     4|   1|   0|
 |SCHOOL OF SOCIAL WORK  |        3|     0|     0|   0|   1|
 
-## Set the scaling variables
-
-To control line thickness and number of nodes represented, we will set two
-variables to be used in the next section.
-
-
-```r
-# Calculate quantiles to use for thresholds and scaling
-quantiles <- quantile(summary_df$Count)
-
-# Set threshold value and scaling factor to control weights (edge thickness)
-upper_threshold <- quantiles['75%']
-scaling_factor <- 1 + log(quantiles['75%'] / quantiles['25%'])
-```
-
 ## Make the edge list
 
 We will reshape our dataset and scale the weights to prepare the data for 
 use with `qgraph`. The result is called the "edge list". Edges are the lines
-that connect the nodes in the graph. The weights will determine the relative 
-line thickness and darkness of the edges.
+that connect the nodes in the graph. The weights and scaling factor will be 
+used to set the relative line thickness and darkness of the edges.
 
 
 ```r
+# Calculate quantiles to use for scaling
+quantiles <- quantile(summary_df$Count)
+
+# Set scaling factor for weights to allow better visibility of thinner edges
+scaling_factor <- 1 + log(quantiles['75%'] / quantiles['25%'])
+
 # Make edgelist for plotting
 edgelist <- summary_df %>% 
   filter(Org != "SCH OF PUBLIC HEALTH") %>% 
   mutate(Org = gsub('COLL ', 'COLLEGE OF ', Org), 
          Org = gsub('(COLLEGE OF |SCHOOL OF |HEALTH SCIENCES )', '\\1\n', Org)) %>% 
   rename(origin = 'Org', destination = 'Partner Org Unit', weight = 'Count') %>% 
-  mutate(weight = ifelse(weight > upper_threshold, upper_threshold, weight),
-         weight = normalize(log(weight * scaling_factor), method = 'scale'))
+  mutate(weight = normalize(log(weight * scaling_factor), method = 'scale'))
 ```
 
 ## Configure colors
@@ -119,16 +109,16 @@ colors_node <- unlist(c(rep(default_color, length(origins)),
 
 We will plot the nodes in a circle and use non-directed edges (i.e., no 
 arrowheads). The node shape will be equal-sized ellipses with equal-sized 
-labels. The sizes of the various components have been adjusted for readability.
+labels. The sizes of the various components have been adjusted for readability. 
 
 
 ```r
 # Make plot and save as PNG
-qgraph(edgelist, layout = 'circle', directed = FALSE, esize = 5, 
+qgraph(edgelist, layout = 'circle', directed = FALSE, esize = 8, 
        shape = 'ellipse', node.width = 2, node.height = 1, 
        color = colors_node, edge.color = colors_edge, label.color = 'white', 
        label.scale.equal = TRUE, label.cex = 1.2, borders = FALSE, 
-       title = 'SPH Grant Awards\nby Department', 
+       title = 'SPH Grant Awards\nby Department', details = FALSE, 
        title.cex = 1, filetype = 'png', width = 8, height = 5,
        filename = file.path('figures', 'grant_awards_by_dept'))
 ```
