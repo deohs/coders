@@ -39,23 +39,23 @@ We will view the dataset as a table in wide form for better display on the scree
 ```r
 summary_df %>% 
   pivot_wider(id_cols = Org, names_from = `Partner Org Unit`, values_from = Count) %>% 
-  knitr::kable()
+  mutate(across(where(is.numeric), replace_na, replace = 0)) %>% knitr::kable()
 ```
 
 
 
 |Org                    | BIOSTATS| HSERV| DEOHS| DGH| EPI|
 |:----------------------|--------:|-----:|-----:|---:|---:|
-|COLL ARTS & SCIENCES   |        3|     1|    NA|  NA|  NA|
-|COLLEGE OF ENGINEERING |        1|    NA|     2|   2|  NA|
-|COLLEGE OF ENVIRONMENT |       NA|    NA|     4|  NA|   2|
-|HEALTH SCIENCES ADMIN  |       NA|    NA|     6|  NA|   1|
+|COLL ARTS & SCIENCES   |        3|     1|     0|   0|   0|
+|COLLEGE OF ENGINEERING |        1|     0|     2|   2|   0|
+|COLLEGE OF ENVIRONMENT |        0|     0|     4|   0|   2|
+|HEALTH SCIENCES ADMIN  |        0|     0|     6|   0|   1|
 |SCH OF PUBLIC HEALTH   |     2433|   308|   514| 296| 362|
-|SCHOOL OF DENTISTRY    |        1|     2|    NA|   1|  NA|
+|SCHOOL OF DENTISTRY    |        1|     2|     0|   1|   0|
 |SCHOOL OF MEDICINE     |      487|    43|    46| 205|  77|
 |SCHOOL OF NURSING      |       14|     1|     2|   5|   1|
-|SCHOOL OF PHARMACY     |       16|    NA|     4|   1|  NA|
-|SCHOOL OF SOCIAL WORK  |        3|    NA|    NA|  NA|   1|
+|SCHOOL OF PHARMACY     |       16|     0|     4|   1|   0|
+|SCHOOL OF SOCIAL WORK  |        3|     0|     0|   0|   1|
 
 ## Set the scaling variables
 
