@@ -19,3 +19,7 @@ Here are some slide presentation from earlier meetings...
 * Building R Packages ([with RStudio and Roxygen](demos/packages/building_packages/building_r_packages.md))
 * Parallel Processing in R (on a single machine with [forking and sockets](demos/hpc/parallel_processing/Parallel_Example_CrossPlatform.md))
 * Cluster Computing with R (with [forking, sockets, and MPI](demos/hpc/parallel_processing/Cluster_Computing.md))
+* Plotting logistic regression (with [`glm` and facets](demos/models/plotting_logistic_regression_with_glm_and_facets.md))
+* Running many models (with [`lmer`](demos/models/many_models_with_lmer.md))
+* Network graphs (with [`qgraph`](demos/data_viz/network_graphs_with_qgraph/grant_awards.md))
+
