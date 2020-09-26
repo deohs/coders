@@ -44,25 +44,19 @@ summary_df %>%
 
 ## Make the edge list
 
-We will reshape our dataset and scale the weights to prepare the data for 
-use with `qgraph`. The result is called the "edge list". Edges are the lines
-that connect the nodes in the graph. The weights and scaling factor will be 
-used to set the relative line thickness and darkness of the edges.
+We will reshape our dataset to prepare for plotting with `qgraph`. The 
+result is called the "edge list". Edges are the lines that connect the nodes 
+in the graph. The counts are scaled into weights which will be used to set the 
+relative line thickness and darkness of the edges.
 
 ```{r make_edgelist}
-# Calculate quantiles to use for scaling
-quantiles <- quantile(summary_df$Count)
-
-# Set scaling factor for weights to allow better visibility of thinner edges
-scaling_factor <- 1 + log(quantiles['75%'] / quantiles['25%'])
-
 # Make edgelist for plotting
 edgelist <- summary_df %>% 
   filter(Org != "SCH OF PUBLIC HEALTH") %>% 
   mutate(Org = gsub('COLL ', 'COLLEGE OF ', Org), 
          Org = gsub('(COLLEGE OF |SCHOOL OF |HEALTH SCIENCES )', '\\1\n', Org)) %>% 
   rename(origin = 'Org', destination = 'Partner Org Unit', weight = 'Count') %>% 
-  mutate(weight = normalize(log(weight * scaling_factor), method = 'scale'))
+  mutate(weight = normalize(log(weight * 5), method = 'scale'))
 ```
 
 ## Configure colors
