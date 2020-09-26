@@ -72,7 +72,7 @@ edgelist <- summary_df %>%
   mutate(Org = gsub('COLL ', 'COLLEGE OF ', Org), 
          Org = gsub('(COLLEGE OF |SCHOOL OF |HEALTH SCIENCES )', '\\1\n', Org)) %>% 
   rename(origin = 'Org', destination = 'Partner Org Unit', weight = 'Count') %>% 
-  mutate(weight = normalize(log(weight * 5), method = 'scale'))
+  mutate(weight = normalize(log(weight), method = 'range', range(.2, 1)))
 ```
 
 ## Configure colors
