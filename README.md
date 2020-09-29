@@ -1,9 +1,22 @@
 # coders
-Demos, tutorials, examples, and wiki for Coding Community of Practice ("coders")
 
-# Demos
+This the code repository for the Coding Community of Practice ("coders"), 
+founded in 2019 by the Department of Environmental and Occupational Health 
+Sciences (DEOHS) at the University of Washington (UW) School of Public 
+Health (SPH).
 
-Here are some slide presentation from earlier meetings...
+This community fosters a culture of coding excellence by encouraging coders 
+to improve their skills and the quality of their code. We meet regularly to 
+provide coding demonstrations, engage in workshops, and participate in code 
+review. We also share our experience and knowledge through a mentoring program 
+for UW students.
+
+This repository contains some demonstrations (listed below). Additional 
+resources may be found in the [wiki](wiki).
+
+## Demos
+
+Here are some slide presentations from earlier meetings...
 
 * Getting and Cleaning data with Regex in R Part 1 ([WA WQI with Tidyverse](demos/data_import/wa_wqi/get_wa_wqi.md))
 * Getting and Cleaning data with Regex in R Part 2 ([WA WQI Alternate Dataset](demos/data_import/wa_wqi/get_wa_wqi_alt.md) and [Base-R Variations](demos/data_import/wa_wqi/get_wa_wqi_2013_with_base_R.md))
