@@ -26,7 +26,7 @@ Here are some slide presentations from earlier meetings...
 * Web Scraping with RCurl and jsonlite in R (_Historical Pollen Index_)
 * Using a web API with jsonlite in R (_EPA AQS API_)
 * Plotting in R with ggplot2 ([Earthquake Events in the PNW](demos/data_viz/ggplot2%20Presentation/ggplot_presentation_output.md))
-* Mapping with R ([Measles Outbreak 2019](demos/data_viz/mapping_wa_measles_outbreak_2019/wa_measles_outbreak_2019.Rmd))
+* Mapping with R ([Measles Outbreak 2019](demos/data_viz/mapping_wa_measles_outbreak_2019/wa_measles_outbreak_2019.Rmd)) - [slides](https://staff.washington.edu/high/wa_measles_outbreak_2019.html)
 * R Markdown Presentations ([with Custom Themes](demos/pres/pres_demo/Presentations_with_R.md))
 * Many Models ([in Base-R](demos/models/bootstrapping/chicago_pollution.md)) and background processing
 * Building R Packages ([with RStudio and Roxygen](demos/packages/building_packages/building_r_packages.md))
