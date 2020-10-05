@@ -14,6 +14,14 @@ for UW students.
 This repository contains some demonstrations (listed below). Additional 
 resources may be found in the [wiki](wiki).
 
+## R onramp
+
+To help you get a head start, we created an "onramp" series designed to teach 
+you the basics, from navigating the RStudio interface to creating figures. 
+We cover R language basics, data wrangling, creating scripts and more!
+
+- [R onramp](https://github.com/deohs/r_onramp)
+
 ## Demos
 
 Here are some slide presentations from earlier meetings...
