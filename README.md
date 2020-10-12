@@ -1,5 +1,7 @@
 # coders
 
+![](coders_logo.png)
+
 This the code repository for the Coding Community of Practice ("coders"), 
 founded in 2019 by the Department of Environmental and Occupational Health 
 Sciences (DEOHS) at the University of Washington (UW) School of Public 
