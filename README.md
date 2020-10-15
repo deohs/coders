@@ -1,6 +1,6 @@
 # coders
 
-![](coders_logo_sm.png)
+![](images/coders_logo_color_small.png)
 
 This the code repository for the Coding Community of Practice ("coders"), 
 founded in 2019 by the Department of Environmental and Occupational Health 
