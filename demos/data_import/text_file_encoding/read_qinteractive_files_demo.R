@@ -6,13 +6,15 @@
 
 # Challenges for this file type:
 #
-# 1. File suffix is "CSV" but it contains multiple sections and headings.
-# 2. File is not encoded as expected (ANSI or UTF-8) for a text file.
-# 3- File contains "null-terminated strings" and a "BOM"
+# 1. File suffix is ".csv" but it contains multiple sections and headings.
+# 2- read.csv() causes a "multibyte string" error and "embedded nulls" warnings.
+# 3. File is not encoded as expected (ASCII, ANSI, or UTF-8) for a text file.
 
 # See:
 # https://en.wikipedia.org/wiki/Comma-separated_values
 # https://en.wikipedia.org/wiki/Character_encoding
+# https://en.wikipedia.org/wiki/ASCII
+# https://en.wikipedia.org/wiki/UTF-8
 # https://en.wikipedia.org/wiki/Null-terminated_string
 # https://en.wikipedia.org/wiki/Byte_order_mark
 
