@@ -56,7 +56,7 @@ clean_up_names <- function(x) {
 qintread_sect_base <- function(df, pattern, nrows = 3, keep = c("V1", "V3")) {
   # Read a section of a file. Assume each section is nrows long, incl. header.
   df_rows <- seq(grep(pattern, df[[keep[2]]])[1], length.out = nrows)
-  df_out <- df[df_rows[2:3], keep]
+  df_out <- df[df_rows[2:nrows], keep]
   df_out[, 2] <- as.numeric(df_out[, 2])
   names(df_out) <- df[df_rows[1], keep]
   df_out
@@ -122,7 +122,8 @@ qintread_dt <- function(fn) {
 
 # Prepare a list of files to import
 data_dir <- 'data'
-files <- list.files(data_dir, recursive = TRUE, full.names = TRUE)
+files <- list.files(data_dir, pattern = "\\.csv$", recursive = TRUE, 
+                    full.names = TRUE)
 
 # Import data from files and combine into a single dataframe
 df <- do.call("rbind", lapply(files, qintread_base))
