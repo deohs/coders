@@ -1,0 +1,166 @@
+,,An asterisk represents scores that were derived from unresolved flagged items.
+,,A blank represents subtests that were not administered.
+,,A dash represents subtests that were administered but could not be scored.
+
+
+RAW SCORES
+
+Subtest,,Raw score
+Matrix Reasoning,,12
+Digit Span,,18
+
+SCALED SCORES
+
+Subtest,,Scaled score
+Matrix Reasoning,,7
+Digit Span,,8
+
+CONTEXTUAL EVENTS
+
+Subtest,Type,Total
+Matrix Reasoning,DK,0
+Matrix Reasoning,NR,0
+Matrix Reasoning,SC,0
+Matrix Reasoning,SV,0
+Digit Span,DK,0
+Digit Span,NR,0
+Digit Span,RR,0
+Digit Span,SC,0
+
+SUBTEST COMPLETION TIMES
+
+Subtest,,Completion Time (seconds)
+Matrix Reasoning,,243.441
+Digit Span,,null
+
+RULES TRIGGERED
+
+Subtest,Type,Yes/No
+Matrix Reasoning, Discontinue, Yes
+Matrix Reasoning, Reverse, No
+Digit Span, Discontinue, Yes
+Digit Span, Reverse, No
+
+
+Z SCORES
+
+Item,Score
+
+Z SCORES: ITEM LEVEL SCORES
+
+Item,Score
+
+ITEM-LEVEL RAW SCORES
+
+Item,,Raw score
+"Matrix Reasoning Sample Item A (Matrix)",,I
+"Matrix Reasoning Sample Item B (Serial Order)",,C
+"Matrix Reasoning Item 1",,1
+"Matrix Reasoning Item 2",,1
+"Matrix Reasoning Item 3",,1
+"Matrix Reasoning Item 4",,0
+"Matrix Reasoning Item 5",,1
+"Matrix Reasoning Item 6",,1
+"Matrix Reasoning Item 7",,1
+"Matrix Reasoning Item 8",,1
+"Matrix Reasoning Item 9",,1
+"Matrix Reasoning Item 10",,1
+"Matrix Reasoning Item 11",,1
+"Matrix Reasoning Item 12",,0
+"Matrix Reasoning Item 13",,1
+"Matrix Reasoning Item 14",,0
+"Matrix Reasoning Item 15",,1
+"Matrix Reasoning Item 16",,0
+"Matrix Reasoning Item 17",,0
+"Matrix Reasoning Item 18",,0
+"Matrix Reasoning Item 19",, 
+"Matrix Reasoning Item 20",, 
+"Matrix Reasoning Item 21",, 
+"Matrix Reasoning Item 22",, 
+"Matrix Reasoning Item 23",, 
+"Matrix Reasoning Item 24",, 
+"Matrix Reasoning Item 25",, 
+"Matrix Reasoning Item 26",, 
+"Matrix Reasoning Item 27",, 
+"Matrix Reasoning Item 28",, 
+"Matrix Reasoning Item 29",, 
+"Matrix Reasoning Item 30",, 
+"Matrix Reasoning Item 31",, 
+"Matrix Reasoning Item 32",, 
+"Digit Span Forward Item 1 Trial 1",,1
+"Digit Span Forward Item 1 Trial 2",,1
+"Digit Span Forward Item 2 Trial 1",,1
+"Digit Span Forward Item 2 Trial 2",,1
+"Digit Span Forward Item 3 Trial 1",,1
+"Digit Span Forward Item 3 Trial 2",,1
+"Digit Span Forward Item 4 Trial 1",,1
+"Digit Span Forward Item 4 Trial 2",,1
+"Digit Span Forward Item 5 Trial 1",,0
+"Digit Span Forward Item 5 Trial 2",,0
+"Digit Span Forward Item 6 Trial 1",, 
+"Digit Span Forward Item 6 Trial 2",, 
+"Digit Span Forward Item 7 Trial 1",, 
+"Digit Span Forward Item 7 Trial 2",, 
+"Digit Span Forward Item 8 Trial 1",, 
+"Digit Span Forward Item 8 Trial 2",, 
+"Digit Span Forward Item 9 Trial 1",, 
+"Digit Span Forward Item 9 Trial 2",, 
+"Digit Span Backward Sample Item Trial 1",,C
+"Digit Span Backward Sample Item Trial 2",,C
+"Digit Span Backward Item 1 Trial 1",,1
+"Digit Span Backward Item 1 Trial 2",,1
+"Digit Span Backward Item 2 Trial 1",,1
+"Digit Span Backward Item 2 Trial 2",,1
+"Digit Span Backward Item 3 Trial 1",,1
+"Digit Span Backward Item 3 Trial 2",,0
+"Digit Span Backward Item 4 Trial 1",,1
+"Digit Span Backward Item 4 Trial 2",,0
+"Digit Span Backward Item 5 Trial 1",,0
+"Digit Span Backward Item 5 Trial 2",,0
+"Digit Span Backward Item 6 Trial 1",, 
+"Digit Span Backward Item 6 Trial 2",, 
+"Digit Span Backward Item 7 Trial 1",, 
+"Digit Span Backward Item 7 Trial 2",, 
+"Digit Span Backward Item 8 Trial 1",, 
+"Digit Span Backward Item 8 Trial 2",, 
+"Digit Span Backward Item 9 Trial 1",, 
+"Digit Span Backward Item 9 Trial 2",, 
+"Digit Span Sequencing Qualifying Item",,I
+"Digit Span Sequencing Sample Item A Trial 1",,C
+"Digit Span Sequencing Sample Item A Trial 2",,C
+"Digit Span Sequencing Sample Item B Trial 1",,C
+"Digit Span Sequencing Sample Item B Trial 2",,C
+"Digit Span Sequencing Item 1 Trial 1",,1
+"Digit Span Sequencing Item 1 Trial 2",,1
+"Digit Span Sequencing Item 2 Trial 1",,1
+"Digit Span Sequencing Item 2 Trial 2",,1
+"Digit Span Sequencing Item 3 Trial 1",,0
+"Digit Span Sequencing Item 3 Trial 2",,0
+"Digit Span Sequencing Item 4 Trial 1",, 
+"Digit Span Sequencing Item 4 Trial 2",, 
+"Digit Span Sequencing Item 5 Trial 1",, 
+"Digit Span Sequencing Item 5 Trial 2",, 
+"Digit Span Sequencing Item 6 Trial 1",, 
+"Digit Span Sequencing Item 6 Trial 2",, 
+"Digit Span Sequencing Item 7 Trial 1",, 
+"Digit Span Sequencing Item 7 Trial 2",, 
+"Digit Span Sequencing Item 8 Trial 1",, 
+"Digit Span Sequencing Item 8 Trial 2",, 
+"Digit Span Sequencing Item 9 Trial 1",, 
+"Digit Span Sequencing Item 9 Trial 2",, 
+
+Additional Measures (Primary and Combined and Process)
+
+Scoring Type,,Scores
+Matrix Reasoning,,7
+Total Raw Score,,12
+Digit Span,,8
+Digit Span Total,,18
+Digit Span Forward,,8
+Digit Span Backward,,6
+Digit Span Sequencing,,4
+
+Composite Score
+
+Name,
+

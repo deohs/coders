@@ -1,0 +1,68 @@
+# Examining the CSV file using Bash and shell utilities
+
+$ file 0001_scores.csv
+0001_scores.csv: Little-endian UTF-16 Unicode text, with CRLF, CR line terminators
+$ hexdump -C -n 40 0001_scores.csv 
+00000000  ff fe 2c 00 2c 00 41 00  6e 00 20 00 61 00 73 00  |..,.,.A.n. .a.s.|
+00000010  74 00 65 00 72 00 69 00  73 00 6b 00 20 00 72 00  |t.e.r.i.s.k. .r.|
+00000020  65 00 70 00 72 00 65 00                           |e.p.r.e.|
+00000028
+
+$ tr -d '\000' < 0001_scores.csv > 0001_scores.txt
+$ file 0001_scores.txt
+0001_scores.txt: Little-endian UTF-16 Unicode text, with very long lines, with no line terminators
+$ hexdump -C -n 40 0001_scores.txt
+00000000  ff fe 2c 2c 41 6e 20 61  73 74 65 72 69 73 6b 20  |..,,An asterisk |
+00000010  72 65 70 72 65 73 65 6e  74 73 20 73 63 6f 72 65  |represents score|
+00000020  73 20 74 68 61 74 20 77                           |s that w|
+00000028
+$ head -3 0001_scores.txt 
+
+$ iconv -f UTF16LE -t UTF-8 0001_scores.csv > 0001_scores.txt
+$ file 0001_scores.txt
+0001_scores.txt: UTF-8 Unicode (with BOM) text, with CRLF line terminators
+$ hexdump -C -n 40 0001_scores.txt
+00000000  ef bb bf 2c 2c 41 6e 20  61 73 74 65 72 69 73 6b  |...,,An asterisk|
+00000010  20 72 65 70 72 65 73 65  6e 74 73 20 73 63 6f 72  | represents scor|
+00000020  65 73 20 74 68 61 74 20                           |es that |
+00000028
+$ head -3 0001_scores.txt 
+﻿,,An asterisk represents scores that were derived from unresolved flagged items.
+,,A blank represents subtests that were not administered.
+,,A dash represents subtests that were administered but could not be scored.
+
+$ sed -i $'1s/^\uFEFF//' 0001_scores.txt 
+$ file 0001_scores.txt
+0001_scores.txt: ASCII text, with CRLF line terminators
+$ hexdump -C -n 40 0001_scores.txt
+00000000  2c 2c 41 6e 20 61 73 74  65 72 69 73 6b 20 72 65  |,,An asterisk re|
+00000010  70 72 65 73 65 6e 74 73  20 73 63 6f 72 65 73 20  |presents scores |
+00000020  74 68 61 74 20 77 65 72                           |that wer|
+00000028
+$ head -3 0001_scores.txt 
+,,An asterisk represents scores that were derived from unresolved flagged items.
+,,A blank represents subtests that were not administered.
+,,A dash represents subtests that were administered but could not be scored.
+
+$ hexdump -C -n 100 0001_scores.txt
+00000000  2c 2c 41 6e 20 61 73 74  65 72 69 73 6b 20 72 65  |,,An asterisk re|
+00000010  70 72 65 73 65 6e 74 73  20 73 63 6f 72 65 73 20  |presents scores |
+00000020  74 68 61 74 20 77 65 72  65 20 64 65 72 69 76 65  |that were derive|
+00000030  64 20 66 72 6f 6d 20 75  6e 72 65 73 6f 6c 76 65  |d from unresolve|
+00000040  64 20 66 6c 61 67 67 65  64 20 69 74 65 6d 73 2e  |d flagged items.|
+00000050  0d 0a 2c 2c 41 20 62 6c  61 6e 6b 20 72 65 70 72  |..,,A blank repr|
+00000060  65 73 65 6e                                       |esen|
+00000064
+
+$ file 0001_scores.txt 
+0001_scores.txt: ASCII text
+$ perl -pi -e 's/\r\n/\n/g' 0001_scores.txt 
+$ hexdump -C -n 100 0001_scores.txt
+00000000  2c 2c 41 6e 20 61 73 74  65 72 69 73 6b 20 72 65  |,,An asterisk re|
+00000010  70 72 65 73 65 6e 74 73  20 73 63 6f 72 65 73 20  |presents scores |
+00000020  74 68 61 74 20 77 65 72  65 20 64 65 72 69 76 65  |that were derive|
+00000030  64 20 66 72 6f 6d 20 75  6e 72 65 73 6f 6c 76 65  |d from unresolve|
+00000040  64 20 66 6c 61 67 67 65  64 20 69 74 65 6d 73 2e  |d flagged items.|
+00000050  0a 2c 2c 41 20 62 6c 61  6e 6b 20 72 65 70 72 65  |.,,A blank repre|
+00000060  73 65 6e 74                                       |sent|
+00000064
