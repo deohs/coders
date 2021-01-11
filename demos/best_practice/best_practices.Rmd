@@ -1,0 +1,276 @@
+---
+title: "Best Practices"
+subtitle: "Using the Diesel Exhaust in Miners Study (DEMS) Data"
+author: "Nancy Carmona"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+    html_document:
+        df_paged: true
+---
+
+# Setup
+```{r setup, include=TRUE}
+#-----setup----
+
+#set knitr options
+knitr::opts_chunk$set(
+    echo = TRUE,
+    cache = FALSE,
+    cache.comments = FALSE,
+    message = FALSE,
+    warning = FALSE
+)
+
+# Clear workspace of all objects and unload all extra (non-base) packages
+rm(list = ls(all = TRUE))
+if (!is.null(sessionInfo()$otherPkgs)) {
+    res <- suppressWarnings(
+        lapply(paste('package:', names(sessionInfo()$otherPkgs), sep=""),
+               detach, character.only=TRUE, unload=TRUE, force=TRUE))
+   
+}
+
+# Load pacman into memory, installing as needed
+my_repo <- 'http://cran.r-project.org'
+if (!require("pacman")) {install.packages("pacman", repos = my_repo)}
+
+# Load the other packages, installing as needed.
+pacman::p_load(dplyr, ggplot2, knitr, Hmisc, tidyr, purrr, broom)
+
+
+```
+
+```{r set.file.paths}
+#-----set file paths----
+
+# create a variable for the project path
+project_path <- getwd()
+
+# create a variable for the data path
+data_path <- file.path(project_path, "data")
+
+# create directory, if one does not already exist
+dir.create(data_path, showWarnings = FALSE, recursive = TRUE)
+
+```
+
+```{r read.data, eval=TRUE}
+#-----read data----
+
+# # Nancy? option to simplify? 
+# DEMS <- readRDS(file.path(data_path, "DEMSCombinedPersonal.rds"))
+
+# first, specify file name and path
+DEMS_file <- "DEMSCombinedPersonal.rds"
+DEMS_path <- file.path(data_path, DEMS_file)
+
+# Only download the file if it's not already present
+if (!file.exists(DEMS_path)) {
+    url <- paste("https://staff.washington.edu/high/envh556/Datasets", 
+                 DEMS_file, sep = '/')
+    download.file(url = url, destfile = DEMS_path)
+}
+
+# Output a warning message if the file cannot be found
+if (file.exists(DEMS_path)) {
+    DEMS <- readRDS(file = DEMS_path)
+} else warning(paste("Can't find", DEMS_file, "!"))
+
+# remove temporary variables
+rm(url, DEMS_file, DEMS_path)
+
+```
+
+
+# Goal
+
+The goal of this `.Rmd` is to demonstrate the implementation of coding best practices. For our example, we'll use an example dataset from the "Diesel Exhaust in Miners Study (DEMS)" borrowed from ENVH 556.
+
+---
+
+# Data Description
+
+The underlying data to be used in the lab is from the DEMS study and is
+described in [Coble et al 2010](https://academic.oup.com/annweh/article/54/7/747/202635).  We are focusing on the personal data collected
+by NIOSH between 1998 and 2001.  In this lab we will mostly use the `ecdata`
+variable which is a measurement of exposure to respirable elemental carbon, also
+called REC.
+
+
+## Data Exploration
+
+Check the data out at a high level.
+
+```{r data.description.1}
+#-----data description 1---------- 
+
+# check class
+class(DEMS) 
+
+# get dataframe dimensions
+dim(DEMS) 
+
+# dataframe varible names
+names(DEMS) 
+
+# This gives us details on the type of each variable in the dataset
+sapply(DEMS, class) 
+
+```
+
+# Data Wrangling 
+
+```{r data.description.2}
+#-----data description 2----
+
+# make DEMS a tibble
+DEMS <- as_tibble(DEMS) %>%
+
+  # focus on the key exposure data
+  select(facilityno, u_s, ecdata, nodata, no2data) %>% 
+  
+  # data transformations
+  mutate(ln_ecdata = log(ecdata), 
+         log10_ecdata = log10(ecdata), 
+         u_s = case_when(u_s == "u" ~ "underground", 
+                         u_s == "s" ~ "surface", 
+                         u_s == "m" ~ "mixed"), 
+         u_s = factor(u_s, levels = c("surface", "mixed", "underground"))
+         )
+
+# first few rows and ALL variables (columns):
+head(DEMS) 
+
+# a basic summary of each variable
+summary(DEMS) 
+
+# a different basic summary of each variable from `Hmisc`
+describe(DEMS) 
+
+# tallies of the number of observations by facilityno
+xtabs( ~ facilityno, data = DEMS) 
+
+```
+
+# Basic Data Description
+
+Using the `tidyverse` `dplyr` package.
+
+```{r table.with.dplyr}
+#-----table with dplyr------
+
+# create summary dataframe 
+facility_ec <- DEMS %>% 
+  group_by(facilityno) %>% 
+  summarise(N = sum(!is.na(ecdata)),
+            Nmiss = sum(is.na(ecdata)),
+            mean = mean(ecdata, na.rm = TRUE),
+            sd = sd(ecdata, na.rm = TRUE),
+            se = sd/sqrt(N), 
+            .groups = "drop" ) %>% 
+  mutate_if(is.double, round, digits = 2)
+
+# show tibble
+facility_ec
+
+# And here is the same result printed using kable
+kable(facility_ec)
+```
+
+# Data Inference 
+
+```{r regression.modeling.tidy}
+no2_mods <- DEMS %>% 
+  
+  # group by facility
+  group_by(facilityid) %>%
+  
+  # sum missing & filter out facilities with all missing data
+  mutate(N = sum(!is.na(no2data))) %>% 
+  filter(N != 0) %>% 
+  
+  # nest the tibble
+  nest() %>% 
+  
+  # run regression model for each group, clean up with `tidy()`
+  mutate(model = map(data, ~lm(ecdata ~ no2data, data = .x)), 
+         tidied = map(model, tidy) 
+         ) %>% 
+  
+  # unnest
+  unnest(tidied) %>% 
+  
+  # filter to just NO2, our term of interest
+  filter(term == "no2data")
+
+```
+
+
+## Data Visualization 
+
+```{r hist.in.tidyverse, warning=FALSE, message=FALSE}
+#-----hist in tidyverse---------
+
+# histogram with density base plot
+p <- ggplot(data=DEMS, aes(ecdata, na.rm=TRUE)) + 
+  geom_histogram(aes(y=..density..), colour="black", fill="white", binwidth=20) + 
+  geom_density(alpha=.2, fill="red") + 
+  labs(x = "REC (ug/m3)") +
+  scale_y_continuous(expand = expand_scale(mult = c(0, .1))) +
+  theme_classic()
+
+p
+```
+
+```{r scatterplot.in.tidyverse, echo=TRUE, warning=FALSE, message=FALSE}
+#-----scatterplot in tidyverse------------
+
+# Plot facets with free scales. 
+# Note 1:  the smoother for facility E is behaving strangely because so many 
+# of the values are equal to zero. 
+# Note 2: with facets, you see facility D21 has no `nodata`
+ggplot(data = DEMS, aes(nodata, ecdata, color = u_s)) +
+    geom_point() +
+    facet_wrap(~ facilityno, nrow = 2, scales = "free") + 
+    geom_smooth(se = FALSE) +
+    labs(
+    title = "Scatterplot of the DEMS NO (ppm) vs. REC (ug/m3) data \nby facility, colored by measurement location",
+    x = "NO (ppm)",
+    y = "REC (ug/m3)",
+    color = "Measurement\nlocation"
+    ) + 
+  scale_color_brewer(palette = "Dark2") +
+  theme_bw()
+    
+```
+
+# Session Information, Code, and Functions
+
+The next three chunks should be included in the appendix of every R Markdown so 
+that you document your session information, code, and functions defined in the 
+document. This supports the reproducibility of your work.
+
+```{r session.info}
+#-----session information: beginning of Appendix -----------
+
+# This promotes reproducibility by documenting the version of R and every package
+# you used.
+sessionInfo()
+
+```
+
+```{r appendix, ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE, include=TRUE}
+#-----appendix------------
+```
+
+```{r functions.defined.in.this.Rmd, eval = TRUE}
+#-----functions defined in this Rmd ------------
+
+# Show the names of all functions defined in the .Rmd
+# (e.g. loaded in the environment)
+lsf.str()
+
+# Show the definitions of all functions loaded into the current environment  
+lapply(c(lsf.str()), getAnywhere)
+
+```

@@ -1,0 +1,315 @@
+---
+title: "Worst Practices"
+subtitle: "Using the Diesel Exhaust in Miners Study (DEMS) Data"
+author: "Nancy Carmona"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output: 
+    html_document:
+        df_paged: true
+---
+
+# Setup
+```{r setup, include=TRUE}
+#-----setup----
+
+#set knitr options
+knitr::opts_chunk$set(
+    echo = TRUE,
+    cache = FALSE,
+    cache.comments = FALSE,
+    message = FALSE,
+    warning = FALSE
+)
+
+# Clear workspace of all objects and unload all extra (non-base) packages
+rm(list = ls(all = TRUE))
+if (!is.null(sessionInfo()$otherPkgs)) {
+    res <- suppressWarnings(
+        lapply(paste('package:', names(sessionInfo()$otherPkgs), sep=""),
+               detach, character.only=TRUE, unload=TRUE, force=TRUE))
+   
+}
+
+# Load packages
+library(ggplot2)
+library(Hmisc)
+library(dplyr)
+library(knitr)
+library(lubridate)
+
+### Some of the worst practices this chunk ### 
+# Load all packages at once 
+# Assuming all packages were previously installed 
+# Loading packages that are not needed 
+# Not loading all packages that will be used in the analysis 
+
+```
+
+```{r read.data, eval=TRUE}
+#-----read data----
+
+# read data 
+  DEMS <- DEMSCombinedPersonal <- readRDS("~/Coders group/Prep/nancy_best_practice/data/DEMSCombinedPersonal.rds")
+
+# first, specify file name and path
+DEMS_file <- "DEMSCombinedPersonal.rds"
+DEMS_path <- file.path(data_path, DEMS_file)
+
+# Only download the file if it's not already present
+if (!file.exists(DEMS_path)) {
+    url <- paste("https://staff.washington.edu/high/envh556/Datasets", 
+                 DEMS_file, sep = '/')
+    download.file(url = url, destfile = DEMS_path)
+}
+
+# Output a warning message if the file cannot be found
+if (file.exists(DEMS_path)) {
+    DEMS <- readRDS(file = DEMS_path)
+} else warning(paste("Can't find", DEMS_file, "!"))
+
+# remove temporary variables
+#rm(url, DEMS_file, DEMS_path)
+
+
+### Some of the worst practices this chunk ### 
+# not using file.path() to construct directories 
+# read data from absolute path instead of using directories 
+# plat-form specific paths (Mac vs. Windows)
+# large objects should be removed to reduce memory being used 
+
+```
+
+
+# Goal
+
+The goal of this `.Rmd` is to demonstrate the implementation of coding best practices. For our example, we'll use an example dataset from the "Diesel Exhaust in Miners Study (DEMS)" borrowed from ENVH 556.
+
+---
+
+# Data Description
+
+The underlying data to be used in the lab is from the DEMS study and is
+described in [Coble et al 2010](https://academic.oup.com/annweh/article/54/7/747/202635).  We are focusing on the personal data collected
+by NIOSH between 1998 and 2001.  In this lab we will mostly use the `ecdata`
+variable which is a measurement of exposure to respirable elemental carbon, also
+called REC.
+
+
+## Data Exploration
+
+Check the data out at a high level.
+
+```{r data.description.1}
+#-----data description 1---------- 
+
+class(DEMS)  # check class
+
+dim(DEMS) # get dataframe dimensions
+
+names(DEMS) # dataframe varible names
+
+
+sapply(DEMS, class) # This gives us details on the type of each variable in the dataset
+
+View(DEMS) 
+# view data
+
+ 
+### Some of the worst practices this chunk ### 
+# commenting at end of lines or after the code it refers to 
+# having a large chunk instead separating data descriptions 
+# combined "Data Wranging" and "Data Exploration" 
+# adding comments at the end of lines or after the code 
+# including "View" in the script 
+
+#-----data description 2----
+
+# make DEMS a tibble
+DEMS <- as_tibble(DEMS) %>%
+
+  # focus on the key exposure data
+  select(facilityno, u_s, ecdata, nodata, no2data) %>% 
+  
+  # data transformations
+  mutate(ln_ecdata = log(ecdata), 
+         log10_ecdata = log10(ecdata), 
+         u_s = case_when(u_s == "u" ~ "underground", 
+                         u_s == "s" ~ "surface", 
+                         u_s == "m" ~ "mixed"), 
+         u_s = factor(u_s, levels = c("surface", "mixed", "underground"))
+         )
+
+# first few rows and ALL variables (columns):
+head(DEMS) 
+
+# a basic summary of each variable
+summary(DEMS) 
+
+# a different basic summary of each variable from `Hmisc`
+describe(DEMS) 
+
+# tallies of the number of observations by facilityno
+xtabs( ~ facilityno, data = DEMS) 
+
+
+```
+
+# Basic Data Description
+
+
+```{r table.with.baseR}
+# make dataframes for different facilities
+DEMSa <- filter(DEMS, facilityid == "A")
+DEMSb <- filter(DEMS, facilityid == "B")
+DEMSc <- filter(DEMS, facilityid == "C")
+DEMSd <- filter(DEMS, facilityid == "D")
+DEMSg <- filter(DEMS, facilityid == "D")
+DEMSh <- filter(DEMS, facilityid == "H")
+DEMSi <- filter(DEMS, facilityid == "I")
+
+# calculate stats for facility A
+a_N <- dim(DEMSa)[1]
+a_miss <- sum(is.na(DEMSa$ecdata))
+a_mean <- mean(DEMSa$ecdata, na.rm = TRUE)
+a_sd <- sd(DEMSa$ecdata, na.rm = TRUE)
+
+# calculate stats for facility B
+b_N <- dim(DEMSb)[1]
+b_miss <- sum(is.na(DEMSb$ecdata))
+b_mean <- mean(DEMSa$ecdata, na.rm = TRUE)
+b_sd <- sd(DEMSb$ecdata, na.rm = TRUE)
+
+# calculate stats for facility C
+c_N <- dim(DEMSb)[1]
+c_miss <- sum(is.na(DEMSb$ecdata))
+c_mean <- mean(DEMSa$ecdata, na.rm = TRUE)
+c_sd <- sd(DEMSb$ecdata, na.rm = TRUE)
+
+# caluate for facility D
+d_N <- dim(DEMSd)[1]
+d_miss <- sum(is.na(DEMSd$ecdata))
+d_mean <- mean(DEMSd$ecdata, na.rm = TRUE)
+d_sd <- sd(DEMSd$ecdata, na.rm = TRUE)
+
+# calculate stats for facility E
+g_N <- dim(DEMSg)[1]
+g_miss <- sum(is.na(DEMSg$ecdata))
+g_mean <- mean(DEMSg$ecdata, na.rm = TRUE)
+g_sd <- sd(DEMSg$ecdata, na.rm = TRUE)
+
+# calculate stats for facility H
+h_N <- dim(DEMSh)[1]
+h_miss <- sum(is.na(DEMSg$ecdata))
+h_mean <- mean(DEMSg$ecdata, na.rm = TRUE)
+h_sd <- sd(DEMSh$ecdata, na.rm = TRUE)
+
+# calculate stats for facility I
+i_N <- dim(DEMSi)[1]
+i_miss <- sum(is.na(DEMSi$ecdata))
+i_mean <- mean(DEMSi$ecdata, na.rm = TRUE)
+i_sd <- sd(DEMSi$ecdata, na.rm = TRUE)
+
+# you've still got to put this all together?! 
+
+
+### Some of the worst practices this chunk ### 
+# easier to make mistakes when we copy and paste 
+# it is easier to use tidyverse and dplyr packages 
+# using group_by() and summarise() this code is much simpler 
+
+```
+
+ 
+# Data Inference 
+
+```{r regression.modeling.baseR}
+# linear regression for each model 
+a_mod <- summary(lm(data = DEMSa, ecdata ~ no2data))$coefficients
+b_mod <- summary(lm(data = DEMSb, ecdata ~ no2data))$coefficients
+e_mod <- summary(lm(data = DEMSe, ecdata ~ no2data))$coefficients
+g_mod <- summary(lm(data = DEMSg, ecdata ~ no2data))$coefficients
+h_mod <- summary(lm(data = DEMSh, ecdata ~ no2data))$coefficients
+i_mod <- summary(lm(data = DEMSi, ecdata ~ no2data))$coefficients
+
+### Some of the worst practices this chunk ### 
+# massive subsetting into new variables instead of using group_by
+# using a lot of copy/paste and repetition
+# not using functions or pipelines to reduce copy/paste
+```
+
+ 
+
+## Data Visualization 
+
+```{r hist.in.tidyverse}
+
+#-----hist in tidyverse---------
+# load packages in random places 
+library(ggplot2)
+
+# histogram with density base plot
+p <- ggplot(data=DEMS, aes(ecdata, na.rm=TRUE)) + geom_histogram(aes(y=..density..), colour="black", fill="white", binwidth=20) + geom_density(alpha=.2, fill="red") + labs(x = "REC (ug/m3)") +         scale_y_continuous(expand = expand_scale(mult = c(0, .1))) + theme_classic()
+
+p
+
+### Some of the worst practices this chunk ### 
+# using poor code spacing, layout, indentation, etc., making code hard to read
+# loading a package randomly 
+
+```
+
+```{r scatterplot.in.tidyverse, echo=TRUE }
+ #-----scatterplot in tidyverse------------
+
+# Plot facets with free scales. 
+# Note 1:  the smoother for facility E is behaving strangely because so many 
+# of the values are equal to zero. 
+# Note 2: with facets, you see facility D21 has no `nodata`
+ggplot(data = DEMS, aes(nodata, ecdata, color = u_s)) +
+geom_point() +
+facet_wrap(~ facilityno, nrow = 2, scales = "free") 
++  geom_smooth(se = FALSE) +  labs(
+    title = "Scatterplot of the DEMS NO (ppm) vs. REC (ug/m3) data \n by facility, colored by measurement location",
+    x = "NO (ppm)",
+    y = "REC (ug/m3)",
+    color = "Measurement\nlocation"
+    ) + 
+  scale_color_brewer(palette = "Dark2") +
+  theme_bw()
+    
+### Some of the worst practices this chunk ### 
+# not following + at beginning of each attribute 
+# ignoring warnings 
+
+```
+
+# Session Information, Code, and Functions
+
+The next three chunks should be included in the appendix of every R Markdown so 
+that you document your session information, code, and functions defined in the 
+document. This supports the reproducibility of your work.
+
+```{r session.info}
+#-----session information: beginning of Appendix -----------
+
+# This promotes reproducibility by documenting the version of R and every package
+# you used.
+sessionInfo()
+
+```
+
+```{r appendix, ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE, include=TRUE}
+#-----appendix------------
+```
+
+```{r functions.defined.in.this.Rmd, eval = TRUE}
+#-----functions defined in this Rmd ------------
+
+# Show the names of all functions defined in the .Rmd
+# (e.g. loaded in the environment)
+lsf.str()
+
+# Show the definitions of all functions loaded into the current environment  
+lapply(c(lsf.str()), getAnywhere)
+
+```
