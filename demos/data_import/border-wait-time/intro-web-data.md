@@ -118,7 +118,7 @@ We often face the following challenges when web sites:
 - Requires authentication, cookies, and Javascript to navigate
 - Requires clicking through numerous pages to get content
 - APIs are not documented or not supported by libraries
-- Have poorly formatted (e.g., tables are not HTML tables)
+- Have poor HTML (e.g., tables are not HTML tables)
 - Tables are not tidy (e.g., multiple column headings)
 - Dynamic content is not embedded in the page itself
 - Data result page does not have specific URL
