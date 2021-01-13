@@ -1,0 +1,10 @@
+port_number,border,port_name,crossing_name,hours,date,port_status,commercial_automation_type,passenger_automation_type,pedestrain_automation_type,update_time,operational_status,delay_minutes,lanes_open,lane_type
+250401,Mexican Border,San Ysidro,NA,24 hrs/day,1/12/2021,Open,Manual,Manual,Manual,NA,N/A,NA,NA,commercial_vehicle_lanes
+250401,Mexican Border,San Ysidro,NA,24 hrs/day,1/12/2021,Open,Manual,Manual,Manual,At 3:00 pm PST,delay,55,6,passenger_vehicle_lanes
+250401,Mexican Border,San Ysidro,NA,24 hrs/day,1/12/2021,Open,Manual,Manual,Manual,At 3:00 pm PST,delay,35,11,pedestrian_lanes
+250409,Mexican Border,San Ysidro,Cross Border Express,24 hrs/day,1/12/2021,Open,Manual,Manual,Manual,NA,N/A,NA,NA,commercial_vehicle_lanes
+250409,Mexican Border,San Ysidro,Cross Border Express,24 hrs/day,1/12/2021,Open,Manual,Manual,Manual,NA,N/A,NA,NA,passenger_vehicle_lanes
+250409,Mexican Border,San Ysidro,Cross Border Express,24 hrs/day,1/12/2021,Open,Manual,Manual,Manual,At 2:00 pm PST,no delay,5,3,pedestrian_lanes
+250407,Mexican Border,San Ysidro,PedWest,24 hrs/day,1/12/2021,Open,Manual,Manual,Manual,NA,N/A,NA,NA,commercial_vehicle_lanes
+250407,Mexican Border,San Ysidro,PedWest,24 hrs/day,1/12/2021,Open,Manual,Manual,Manual,NA,N/A,NA,NA,passenger_vehicle_lanes
+250407,Mexican Border,San Ysidro,PedWest,24 hrs/day,1/12/2021,Open,Manual,Manual,Manual,NA,Lanes Closed,NA,NA,pedestrian_lanes
