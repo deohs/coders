@@ -15,8 +15,8 @@ url <- 'https://sph.washington.edu/faculty/sphcore'
 doc <- read_html(url)
 nodes <- doc %>% html_nodes("div.faculty-tile-text-wrap")
 names <- nodes %>% html_node("h3") %>% html_text()
-titles <- doc %>% html_nodes("p.fac-title") %>% html_text()
-degrees <- doc %>% html_nodes("p.fac-deg") %>% html_text()
+titles <- nodes %>% html_node("p.fac-title") %>% html_text()
+degrees <- nodes %>% html_node("p.fac-deg") %>% html_text()
 df <- tibble(fac_name = names, fac_title = titles, fac_degree = degrees) %>%
   mutate(fac_name = gsub(' \\/.*$', '', fac_name))
 
