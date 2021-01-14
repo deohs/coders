@@ -36,4 +36,4 @@ pm_df <- df %>%
   separate(fac_name, c('fac_lname', 'fac_fname'), ", ", extra = "merge")
 
 # Save results
-write_csv(pm_df, file.path("data", "sph_core_faculty_pubmed_search_results.csv"))
+write_csv(pm_df, file.path(data_dir, "sph_core_faculty_pubmed_search_results.csv"))
