@@ -2,7 +2,7 @@
 
 # Load packages, installing as needed
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(rvest, readr, dplyr, purrr, easyPubMed)
+pacman::p_load(rvest, readr, dplyr, tidyr, purrr, easyPubMed)
 
 # Setup data folder
 data_dir <- "data"
@@ -17,24 +17,21 @@ nodes <- doc %>% html_nodes("div.faculty-tile-text-wrap")
 names <- nodes %>% html_node("h3") %>% html_text()
 titles <- doc %>% html_nodes("p.fac-title") %>% html_text()
 degrees <- doc %>% html_nodes("p.fac-deg") %>% html_text()
-df <- tibble(fac_name = names, fac_title = titles, fac_degree = degrees)
-
-# Define function to retrieve results from a Pubmed author search
-get_articles <- function(aut) {
-  # Retrieve PubMed data and return a list of articles
-  my_query <- paste0(aut, "[Author]")
-  my_query <- get_pubmed_ids(pubmed_query_string = my_query)
-  my_data <- fetch_pubmed_data(my_query, encoding = "ASCII")
-  articles_to_list(my_data)
-}
+df <- tibble(fac_name = names, fac_title = titles, fac_degree = degrees) %>%
+  mutate(fac_name = gsub(' \\/.*$', '', fac_name))
 
 # Query Pubmed for articles with SPH core faculty members as authors
-df <- df %>% mutate(fac_name = gsub(' \\/.*$', '', fac_name))
-pm_df <- lapply(df$fac_name, function(aut) { 
-    map(get_articles(aut), article_to_df, getAuthors = FALSE) %>% 
-    bind_rows() %>% mutate(fac_name = aut) %>%
-    select(-keywords, -lastname, -firstname, -address, -email)
-}) %>% 
+pm_df <- df %>% 
+  pull(fac_name) %>% 
+  lapply(function(aut) { 
+    paste0(aut, "[Author]") %>%
+      get_pubmed_ids() %>% 
+      fetch_pubmed_data(encoding = "ASCII") %>% 
+      articles_to_list() %>% 
+      map(article_to_df, getAuthors = FALSE) %>% 
+      bind_rows() %>% mutate(fac_name = aut) %>%
+      select(-keywords, -lastname, -firstname, -address, -email)
+  }) %>% 
   bind_rows() %>% left_join(df, by = "fac_name") %>%
   separate(fac_name, c('fac_lname', 'fac_fname'), ", ", extra = "merge")
 
