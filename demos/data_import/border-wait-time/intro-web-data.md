@@ -47,8 +47,8 @@ Sample code will be provided.
 
 We commonly need to extract data from:
 
-- "Static" web pages where content is embedded in HTML
-- "Dynamic" web pages are displayed on demand
+- "Static" web pages where content is stored in HTML files
+- "Dynamic" pages that show data from databases on demand
 - Document files available for download from a web server
 
 Ideally, we can just download data as files. If not, we must extract it.
