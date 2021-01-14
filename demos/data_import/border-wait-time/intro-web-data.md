@@ -25,10 +25,10 @@ output:
 
 Today we will become familiar with:
 
-- Web data sources (static and dynamic web pages, and files)
+- Web data sources (web pages and files)
 - Web data extraction (web-scraping, RSS, APIs)
 - Web data formats (HTML, XML, JSON)
-- R Tools (RCurl, xml2, rvest, RSelenium, jsonlite, etc.). 
+- R Tools (RCurl, xml2, rvest, jsonlite, etc.). 
 - Common challenges
 
 ## Example web site
@@ -51,15 +51,22 @@ We commonly need to extract data from:
 - "Dynamic" pages that show data from databases on demand
 - Document files available for download from a web server
 
-Ideally, we can just download data as files. If not, we must extract it.
+Ideally, we can download data as well-structured files.
+
+If not, we must extract it from web pages.
 
 ## Web data extraction
 
-If we cannot simply download data files, we will need to extract using:
+Most web data extraction uses one of these methods:
 
 - Web-scraping: parsing web pages to extract content
 - RSS: pulling data from a "feed" using a specific URL
 - APIs: using a function library or crafting URLs to pull data
+
+Notes:
+
+- [RSS](https://en.wikipedia.org/wiki/RSS) stands for "Really Simple Syndication".
+- [API](https://en.wikipedia.org/wiki/API) stands for "application programming interface".
 
 ## Web data formats
 
@@ -72,7 +79,7 @@ Web content is most commonly presented through text data formats:
 Which will I use?
 
 - If you pull data with RSS, you will usually get XML.
-- If you pull data with APIs, you will often get JSON.
+- If you pull data with APIs, you will usually get XML or JSON.
 - If you can't do any of the above, then you "web scrape" HTML.
 
 ## Example: Inspect a web site
@@ -93,10 +100,12 @@ Try to find border wait times for San Ysidro as presented in ...
 We can use the following R packages:
 
 - RCurl and httr: For web requests, supporting cookies, etc.
-- XML and xml2: To get and parse XML content
-- rvest: To parse HTML and XML content
-- RSelenium: To automate the operation of a web browser
-- rjson and jsonlite: To get and parse JSON
+- xml2 and rvest: To get and parse XML and HTML content
+- jsonlite and rjson: To get and parse JSON
+
+There is some overlap in functionality of these packages.
+
+Usually rvest, xml2, and jsonlite will be sufficient.
 
 ## Sample code
 
