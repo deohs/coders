@@ -117,13 +117,13 @@ Since the BWT site does not offer a good web-scraping example, we use the CBP si
 
 We often face the following challenges when web sites:
 
-- Are designed only for viewing information with human eyes
-- Requires authentication, cookies, and Javascript to navigate
-- Requires clicking through numerous pages to get content
-- APIs are not documented or not supported by libraries
+- Are designed for viewing information with human eyes only
+- Require authentication, cookies, and Javascript to navigate
+- Require clicking through numerous pages to get content
+- Have undocumented APIs or APIs without R package support
 - Have poor HTML (e.g., tables are not HTML tables)
-- Tables are not tidy (e.g., multiple column headings)
-- Dynamic content is not embedded in the page itself
-- Data result page does not have specific URL
-- Data are not formatted as advertised (e.g., CSV is not CSV)
-- Site policy does not allow automated data collection
+- Have untidy tables (e.g., multiple column headings)
+- Have content that is passed dynamically through Javascript
+- Have data result pages without specific URLs
+- Have data not formatted as advertised (e.g., CSV is not CSV)
+- Have policies not allowing automated data collection
