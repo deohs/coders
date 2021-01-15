@@ -1,4 +1,4 @@
-# Find articles in Pubmed authored by UW SPH Core Faculty
+# Find articles in Pubmed authored by UW SPH Core Faculty and make plots
 
 # Load packages, installing as needed
 if (!require("pacman")) install.packages("pacman")
@@ -20,21 +20,30 @@ degrees <- nodes %>% html_node("p.fac-deg") %>% html_text()
 df <- tibble(fac_name = names, fac_title = titles, fac_degree = degrees) %>%
   mutate(fac_name = gsub(' \\/.*$', '', fac_name))
 
-# Query Pubmed for articles with SPH core faculty members as authors
-pm_df <- map(.x = df$fac_name, 
-             .f = ~{paste0(.x, "[Author]") %>%
-                      get_pubmed_ids() %>% 
-                      fetch_pubmed_data(encoding = "ASCII") %>% 
-                      articles_to_list() %>% 
-                      map(article_to_df, getAuthors = FALSE) %>% 
-                      bind_rows() %>% mutate(fac_name = .x) %>%
-                      select(-keywords, -lastname, -firstname, -address, -email)
-                  }) %>% 
-        bind_rows() %>% left_join(df, by = "fac_name") %>%
-        separate(fac_name, c('fac_lname', 'fac_fname'), ", ", extra = "merge")
+# Query Pubmed for articles unless this information already exists in a file
+pm_file <- "sph_core_faculty_pubmed_articles.csv"
+pm_filepath <- file.path(data_dir, pm_file)
 
-# Save results
-write_csv(pm_df, file.path(data_dir, "sph_core_faculty_pubmed_articles.csv"))
+if(file.exists(pm_filepath)) {
+  # Read the file if it exists
+  pm_df <- read_csv(pm_filepath)
+} else {
+  # Query Pubmed for articles with SPH core faculty members as authors
+  pm_df <- map(.x = df$fac_name, 
+               .f = ~{paste0(.x, "[Author]") %>%
+                   get_pubmed_ids() %>% 
+                   fetch_pubmed_data(encoding = "ASCII") %>% 
+                   articles_to_list() %>% 
+                   map(article_to_df, getAuthors = FALSE) %>% 
+                   bind_rows() %>% mutate(fac_name = .x) %>%
+                   select(-keywords, -lastname, -firstname, -address, -email)
+               }) %>% 
+    bind_rows() %>% left_join(df, by = "fac_name") %>%
+    separate(fac_name, c('fac_lname', 'fac_fname'), ", ", extra = "merge")
+  
+  # Save results
+  write_csv(pm_df, pm_filepath)
+} 
 
 # Plot article counts as a histogram
 pm_df %>% mutate(Author = paste(fac_fname, fac_lname)) %>% 
@@ -48,4 +57,3 @@ pm_df %>% mutate(Name = paste(fac_fname, fac_lname)) %>%
   group_by(fac_title, Name) %>% summarise(`Article Count` = n()) %>%
   ggplot(aes(reorder(fac_title, `Article Count`), `Article Count`)) + 
   geom_boxplot() + coord_flip() + theme(axis.title.y = element_blank())
-
