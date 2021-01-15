@@ -2,7 +2,7 @@
 
 # Load packages, installing as needed
 if (!require("pacman")) install.packages("pacman")
-pacman::p_load(rvest, readr, dplyr, tidyr, purrr, easyPubMed)
+pacman::p_load(rvest, readr, dplyr, tidyr, purrr, easyPubMed, ggplot2)
 
 # Setup data folder
 data_dir <- "data"
@@ -35,3 +35,9 @@ pm_df <- map(.x = df$fac_name,
 
 # Save results
 write_csv(pm_df, file.path(data_dir, "sph_core_faculty_pubmed_articles.csv"))
+
+# Plot article counts as a histogram
+pm_df %>% mutate(Name = paste(fac_fname, fac_lname)) %>% 
+  group_by(Name) %>% summarise(N = n()) %>% arrange(desc(N)) %>%
+  mutate(Name = reorder(Name, N)) %>% 
+  ggplot(aes(x = Name, y = N)) + geom_bar(stat = "identity") + coord_flip()
