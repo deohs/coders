@@ -37,10 +37,11 @@ pm_df <- map(.x = df$fac_name,
 write_csv(pm_df, file.path(data_dir, "sph_core_faculty_pubmed_articles.csv"))
 
 # Plot article counts as a histogram
-pm_df %>% mutate(Name = paste(fac_fname, fac_lname)) %>% 
-  group_by(Name) %>% summarise(N = n()) %>% 
-  mutate(Name = reorder(Name, N)) %>% 
-  ggplot(aes(x = Name, y = N)) + geom_bar(stat = "identity") + coord_flip()
+pm_df %>% mutate(Author = paste(fac_fname, fac_lname)) %>% 
+  group_by(Author) %>% summarise(`Article Count` = n()) %>% 
+  mutate(Author = reorder(Author, `Article Count`)) %>% 
+  ggplot(aes(x = Author, y = `Article Count`)) + geom_bar(stat = "identity") + 
+  coord_flip()
 
 # Plot article counts as a boxplot
 pm_df %>% mutate(Name = paste(fac_fname, fac_lname)) %>%
