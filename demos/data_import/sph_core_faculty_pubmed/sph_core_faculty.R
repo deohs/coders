@@ -16,6 +16,35 @@ if(!dir.exists(fig_dir)) {
   dir.create(fig_dir, showWarnings = FALSE, recursive = TRUE)
 }
 
+# Define functions
+
+get_sph_faculty <- function(n = 1) {
+  url <- paste0("https://sph.washington.edu/faculty/sphcore/", n, 
+                "?_wrapper_format=drupal_ajax")
+  doc <- read_json(url)[[1]][['data']]
+  if (doc != "") {
+    doc <- read_html(doc)
+    nodes <- doc %>% html_nodes("div.faculty-tile-text-wrap")
+    names <- nodes %>% html_node("h3") %>% html_text()
+    titles <- nodes %>% html_node("p.fac-title") %>% html_text()
+    degrees <- nodes %>% html_node("p.fac-deg") %>% html_text()
+    tibble(fac_name = names, fac_title = titles, fac_degree = degrees) %>%
+      mutate(fac_name = gsub(' \\/.*$', '', fac_name))
+  } else { NULL }
+}
+
+get_pubmed_articles_by_author <- function(author) {
+  ids <- get_pubmed_ids(paste0(author, "[Author]"))
+  if (as.numeric(ids$Count) > 0) {
+    fetch_pubmed_data(ids, encoding = "ASCII") %>% 
+      articles_to_list() %>% 
+      map(article_to_df, getAuthors = FALSE) %>% 
+      bind_rows() %>% mutate(fac_name = author) %>%
+      mutate(date = paste(year, month, day, sep = "-")) %>%
+      select(pmid, doi, title, date, jabbrv, fac_name)
+  } else { NULL }
+}
+
 # Get list of UW SPH core faculty from website unless data exists in local file
 
 # Set filepath
@@ -26,21 +55,10 @@ if(file.exists(ws_filepath)) {
   df <- read_csv(ws_filepath)
 } else {
   # Extract SPH faculty member information from HTML contained in JSON data.
-  # The page has a "Load More Results" button which appends more results.
-  # These results come from JSON. We simulate this operation with 5 page hits.
-  df <- map(
-    .x = 1:5, 
-    .f = ~ {
-      url <- paste0("https://sph.washington.edu/faculty/sphcore/", .x, 
-                    "?_wrapper_format=drupal_ajax")
-      doc <- read_json(url) %>% .[[1]] %>% .[['data']] %>% read_html()
-      nodes <- doc %>% html_nodes("div.faculty-tile-text-wrap")
-      names <- nodes %>% html_node("h3") %>% html_text()
-      titles <- nodes %>% html_node("p.fac-title") %>% html_text()
-      degrees <- nodes %>% html_node("p.fac-deg") %>% html_text()
-      tibble(fac_name = names, fac_title = titles, fac_degree = degrees) %>%
-        mutate(fac_name = gsub(' \\/.*$', '', fac_name))
-    }) %>% bind_rows()
+  # The page has a "Load More Results" button which appends more JSON results.
+  # We need to repeat this at least five times to get all of the faculty. 
+  # We will code this for nine times just in case the number of faculty grows.
+  df <- map(1:9, get_sph_faculty) %>% bind_rows()
   
   # Save results
   write_csv(df, ws_filepath)
@@ -59,19 +77,7 @@ if(file.exists(pm_filepath)) {
   # Edit author names as needed to better match Pubmed database.
   df[df$fac_name == "Fretts, Mandy", "fac_name"] <- "Fretts, Amanda M."
   df[df$fac_name == "Mooney, Steve J.", "fac_name"] <- "Mooney, Stephen J."
-  pm_df <-  map(
-    .x  = df$fac_name, 
-    .f = ~ {
-      ids <- get_pubmed_ids(paste0(.x, "[Author]"))
-      if (as.numeric(ids$Count) > 0) {
-        fetch_pubmed_data(ids, encoding = "ASCII") %>% 
-          articles_to_list() %>% 
-          map(article_to_df, getAuthors = FALSE) %>% 
-          bind_rows() %>% mutate(fac_name = .x) %>%
-          mutate(date = paste(year, month, day, sep = "-")) %>%
-          select(pmid, doi, title, date, jabbrv, fac_name)
-        } else { NULL }
-    }) %>% 
+  pm_df <-  map(df$fac_name, get_pubmed_articles_by_author) %>% 
     bind_rows() %>% inner_join(df, by = "fac_name") %>%
     separate(fac_name, c('fac_lname', 'fac_fname'), ", ", extra = "merge")
   
