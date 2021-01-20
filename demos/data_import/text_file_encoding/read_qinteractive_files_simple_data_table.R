@@ -10,13 +10,13 @@ if (!require("pacman")) {install.packages("pacman", repos = my_repo)}
 # Load the other packages, installing as needed
 pacman::p_load(data.table)
 
-qintread_dt <- function(fn) {
+qintread_dt <- function(fn, num.rows = 2) {
   # Read file into a string vector, read sections as CSVs, and combine
   qint <- scan(fn, 'raw', fileEncoding = 'UTF-16LE', sep = '\n', quiet = TRUE)
   skip.strings <- c('Raw score', 'Scaled score', 'Completion Time (seconds)')
   dt <- dcast.data.table(rbindlist(lapply(skip.strings, function(x) {
-    dt <- fread(text = qint, skip = x, nrows = 2, header = TRUE, drop = 'V2',
-          blank.lines.skip = TRUE, na.strings = c("null", "-", ""),
+    dt <- fread(text = qint, skip = x, nrows = num.rows, header = TRUE, 
+          drop = 'V2', blank.lines.skip = TRUE, na.strings = c("null", "-", ""),
           check.names = TRUE, col.names = c('Subtest', x))
     melt.data.table(dt, id.vars = 1, measure.vars = 2)
   })), formula = 'Subtest ~ variable')  
