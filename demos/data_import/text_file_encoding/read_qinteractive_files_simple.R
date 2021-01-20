@@ -7,11 +7,11 @@ read.qint <- function(fn, num.rows = 2) {
                       stringsAsFactors = FALSE, na.strings = c('null', '-', ''))
   
   # Set column name patterns to extract
-  col.names <- c('Raw score', 'Scaled score', 'Completion Time')
+  col.names <- c('Raw score', 'Scaled score', 'Completion Time (seconds)')
   
   # Search for the column names and store the row numbers for their data values
   row.nums <- lapply(col.names, function(pattern) {
-    seq(grep(pattern, df$V3)[1] + 1, length.out = num.rows)
+    seq(grep(pattern, df$V3, fixed = TRUE)[1] + 1, length.out = num.rows)
   })
   
   # Extract the values from the row numbers and store as columns in a dataframe
