@@ -16,21 +16,29 @@ read.qint <- function(fn) {
   
   # Find section rows
   section.rows <- lapply(1:length(start), function(x) {
-    df[start[x]:end[x], c(1, 3)]
+    V0 <- c('Section Name', rep(section.names[x], end[x] - start[x]))
+    cbind( df[start[x]:end[x], c(1, 3)], V0)
   })
   
-  # Find sections
-  sections <- lapply(section.rows, function(x) {
+  # Subset sections of interest and convert subsets to long format
+  keep.sections <- c('RAW SCORES', 'SCALED SCORES', 'SUBTEST COMPLETION TIMES')
+  keep.rows <- section.rows[section.names %in% keep.sections]
+  sections <- lapply(keep.rows, function(x) {
     df <- data.frame(x[2:nrow(x),], stringsAsFactors = FALSE)
     names(df) <- x[1, ]
-    df
+    names(df)[3] <- 'Section Name'
+    reshape(df, timevar = "variable", v.names = "value", 
+            idvar = names(df)[1], varying = names(df)[2], 
+            times = names(df)[2], direction = "long")
   })
   
-  # Merge sections
-  names(sections) <- section.names
-  df.merged <- merge(merge(sections[['RAW SCORES']], 
-    sections[['SCALED SCORES']], by = 'Subtest'),
-    sections[['SUBTEST COMPLETION TIMES']], by = 'Subtest')
+  # Combine section subsets and reshape to wide format
+  df.merged <- do.call("rbind", sections)
+  row.names(df.merged) <- NULL
+  df.merged$`Section Name` <- NULL
+  df.merged <- reshape(df.merged, direction = "wide", idvar = 'Subtest', 
+                       v.names = "value", timevar = "variable")
+  names(df.merged) <- gsub('^value\\.', '', names(df.merged))
   
   # Add filename column
   Filename <- rep(basename(fn), nrow(df.merged))
@@ -43,3 +51,6 @@ files <- list.files('data', pattern = "\\.csv$", recursive = TRUE,
 
 # Import data and combine into a single data frame
 df <- do.call('rbind', lapply(files, read.qint))
+
+# View the result
+df

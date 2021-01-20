@@ -31,3 +31,6 @@ files <- list.files('data', pattern = "\\.csv$", recursive = TRUE,
 
 # Import data and combine into a single data frame
 df <- do.call('rbind', lapply(files, read.qint))
+
+# View the result
+df
