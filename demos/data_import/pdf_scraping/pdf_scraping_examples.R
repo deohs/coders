@@ -122,11 +122,12 @@ df <- cbind(meta_data, transpose(gen_site, make.names = 1))
 
 # Extract the Adjudications table from page 7 of the Monthly Statistics Report 
 # from the National Vaccine Injury Compensation Program of the US 
-# Health Resources and Services Administration (https://www.hrsa.gov/).
+# Health Resources and Services Administration (https://www.hrsa.gov/). 
+# Plot the results using ggplot() and geom_area().
 
 # Load packages
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(dplyr, tabulizer)
+pacman::p_load(dplyr, tidyr, tabulizer, ggplot2, RColorBrewer)
 
 # Extract Adjudications table (#5), remove Total row, and convert to numeric
 url <- paste0('https://www.hrsa.gov/sites/default/files/hrsa/', 
@@ -135,3 +136,14 @@ lst <- extract_tables(url, output = "data.frame")
 adjudications <- lst[[5]]
 adjudications <- adjudications %>% filter(Fiscal.Year != "Total") %>% 
   mutate(across(everything(), function(x){ as.numeric(gsub('\\D', '', x)) }))
+
+# Prepare for plotting
+adjudications.long <- adjudications %>% select(-Total) %>% 
+  pivot_longer(cols = c(Compensable, Dismissed), 
+               names_to = "Type", values_to = "Count")
+
+# Plot the results
+ggplot(adjudications.long, aes(x = Fiscal.Year, y = Count, fill = Type)) +
+  scale_fill_brewer(palette = "Set2") + geom_area() + theme_classic() + 
+  ggtitle(label = "US Vaccine Adjudications by Fiscal Year", 
+          subtitle = "Source: National Vaccine Injury Compensation Program")
