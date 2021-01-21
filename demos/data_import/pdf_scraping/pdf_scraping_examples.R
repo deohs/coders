@@ -121,7 +121,8 @@ df <- cbind(meta_data, transpose(gen_site, make.names = 1))
 # ----------
 
 # Extract the Adjudications table from page 7 of the Monthly Statistics Report 
-# from the National Vaccine Injury Compensation Program of the US 
+# from the National Vaccine Injury Compensation Program 
+# (https://www.hrsa.gov/vaccine-compensation/data/index.html) of the US 
 # Health Resources and Services Administration (https://www.hrsa.gov/). 
 # Plot the results using ggplot() and geom_area().
 
