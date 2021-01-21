@@ -147,3 +147,4 @@ ggplot(adjudications.long, aes(x = Fiscal.Year, y = Count, fill = Type)) +
   scale_fill_brewer(palette = "Set2") + geom_area() + theme_classic() + 
   ggtitle(label = "US Vaccine Adjudications by Fiscal Year", 
           subtitle = "Source: National Vaccine Injury Compensation Program")
+ggsave(file.path("images", "vaccine_adjudication.png"), height = 3, width = 6)
