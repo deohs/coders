@@ -130,16 +130,37 @@ df <- cbind(meta_data, transpose(gen_site, make.names = 1))
 if (!require(pacman)) install.packages("pacman")
 pacman::p_load(dplyr, tidyr, tabulizer, ggplot2, RColorBrewer)
 
-# Extract Adjudications table (#5), remove Total row, and convert to numeric
-url <- paste0('https://www.hrsa.gov/sites/default/files/hrsa/', 
-              'vaccine-compensation/data/data-statistics-report.pdf')
-lst <- extract_tables(url, output = "data.frame")
-adjudications <- lst[[5]]
+# Prepare data folder
+data_dir <- "data"
+if (!dir.exists(data_dir)) {
+  dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+}
+
+# Prepare images folder
+images_dir <- "images"
+if (!dir.exists(images_dir)) {
+  dir.create(images_dir, showWarnings = FALSE, recursive = TRUE)
+}
+
+# Download the PDF file if not already present
+pdf_filepath <- file.path(data_dir, "hrsa.pdf")
+if (!file.exists(pdf_filepath)) {
+  url <- paste0('https://www.hrsa.gov/sites/default/files/hrsa/', 
+                'vaccine-compensation/data/data-statistics-report.pdf')
+  download.file(url, pdf_filepath)
+}
+
+# Extract Adjudications table from page 7 of PDF
+table_lst <- extract_tables(pdf_filepath, output = "data.frame", pages = 7)
+adjudications <- table_lst[[1]]
+
+# Clean up data: remove extra rows & symbols; convert values to numeric
 adjudications <- adjudications %>% filter(Fiscal.Year != "Total") %>% 
   mutate(across(everything(), function(x){ as.numeric(gsub('\\D', '', x)) }))
 
-# Prepare for plotting
+# Prepare for plotting: remove extra columns & rows; reshape to long format
 adjudications.long <- adjudications %>% select(-Total) %>% 
+  filter(Fiscal.Year != year(today())) %>%
   pivot_longer(cols = c(Compensable, Dismissed), 
                names_to = "Type", values_to = "Count")
 
@@ -148,4 +169,63 @@ ggplot(adjudications.long, aes(x = Fiscal.Year, y = Count, fill = Type)) +
   scale_fill_brewer(palette = "Set2") + geom_area() + theme_classic() + 
   ggtitle(label = "US Vaccine Adjudications by Fiscal Year", 
           subtitle = "Source: National Vaccine Injury Compensation Program")
-ggsave(file.path("images", "vaccine_adjudication.png"), height = 3, width = 6)
+ggsave(file.path(images_dir, "vaccine_adjudication.png"), height = 3, width = 6)
+
+# ----------
+# Example 5
+# ----------
+
+# Extract the Awards Paid table from pages 8-9 of the Monthly Statistics Report 
+# from the National Vaccine Injury Compensation Program 
+# (https://www.hrsa.gov/vaccine-compensation/data/index.html) of the US 
+# Health Resources and Services Administration (https://www.hrsa.gov/). 
+# Plot Total Outlays per Fiscal Year using ggplot().
+
+# Load packages
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(readr, dplyr, tabulizer, ggplot2, lubridate)
+
+# Prepare data folder
+data_dir <- "data"
+if (!dir.exists(data_dir)) {
+  dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+}
+
+# Prepare images folder
+images_dir <- "images"
+if (!dir.exists(images_dir)) {
+  dir.create(images_dir, showWarnings = FALSE, recursive = TRUE)
+}
+
+# Download the PDF file if not already present
+pdf_filepath <- file.path(data_dir, "hrsa.pdf")
+if (!file.exists(pdf_filepath)) {
+  url <- paste0('https://www.hrsa.gov/sites/default/files/hrsa/', 
+                'vaccine-compensation/data/data-statistics-report.pdf')
+  download.file(url, pdf_filepath)
+}
+
+# Extract lines of text from the PDF file
+hrsa_lines <- read_lines(extract_text(file = pdf_filepath, pages = 8:9))
+
+# Subset for only those lines starting with "FY "
+awards_paid_lines <- grep('^FY ', hrsa_lines, value = TRUE)
+
+# Extract the data from lines of text into a data frame
+awards_paid_df <- read_delim(awards_paid_lines, delim = " ", trim_ws = TRUE, 
+           col_names = c('X1', 'fiscal_year', 'num_awards', 'pet_award_amt', 
+                         'fees_paid', 'num_paid', 'fees_paid_diss', 
+                         'num_paid_int', 'int_fees_paid', 'tot_outlays', 'X2'))
+
+# Clean up data: remove extra columns, rows & symbols; convert values to numeric
+awards_paid_df <- awards_paid_df %>% select(-X1, -X2) %>% 
+  filter(fiscal_year != year(today())) %>%
+  mutate(across(everything(), function(x){ as.numeric(gsub('\\D', '', x)) }))
+
+# Plot the results
+ggplot(awards_paid_df, aes(x = fiscal_year, y = tot_outlays/1000000000)) + 
+  geom_line() + theme_classic() + 
+  xlab("Fiscal Year") + ylab("Total Outlays (Billion USD)") +
+  ggtitle(label = "US Vaccine Awards Paid by Fiscal Year", 
+          subtitle = "Source: National Vaccine Injury Compensation Program")
+ggsave(file.path(images_dir, "vaccine_awards.png"), height = 3, width = 6)
