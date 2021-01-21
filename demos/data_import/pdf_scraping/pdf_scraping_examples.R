@@ -213,9 +213,9 @@ awards_paid_lines <- grep('^FY ', hrsa_lines, value = TRUE)
 
 # Extract the data from lines of text into a data frame
 awards_paid_df <- read_delim(awards_paid_lines, delim = " ", trim_ws = TRUE, 
-           col_names = c('X1', 'fiscal_year', 'num_awards', 'pet_award_amt', 
+           col_names = c('X1', 'fiscal_year', 'num_awards', 'award_amt', 
                          'fees_paid', 'num_paid', 'fees_paid_diss', 
-                         'num_paid_int', 'int_fees_paid', 'tot_outlays', 'X2'))
+                         'num_paid_int', 'fees_paid_int', 'tot_outlays', 'X2'))
 
 # Clean up data: remove extra columns, rows & symbols; convert values to numeric
 awards_paid_df <- awards_paid_df %>% select(-X1, -X2) %>% 
