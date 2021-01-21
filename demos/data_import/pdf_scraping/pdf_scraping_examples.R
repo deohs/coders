@@ -167,7 +167,7 @@ adjudications.long <- adjudications %>% select(-Total) %>%
 # Plot the results
 ggplot(adjudications.long, aes(x = Fiscal.Year, y = Count, fill = Type)) +
   scale_fill_brewer(palette = "Set2") + geom_area() + theme_classic() + 
-  ggtitle(label = "US Vaccine Adjudications by Fiscal Year", 
+  ggtitle(label = "US Vaccine Injury Adjudications by Fiscal Year", 
           subtitle = "Source: National Vaccine Injury Compensation Program")
 ggsave(file.path(images_dir, "vaccine_adjudication.png"), height = 3, width = 6)
 
@@ -226,6 +226,6 @@ awards_paid_df <- awards_paid_df %>% select(-X1, -X2) %>%
 ggplot(awards_paid_df, aes(x = fiscal_year, y = tot_outlays/1000000000)) + 
   geom_line() + theme_classic() + 
   xlab("Fiscal Year") + ylab("Total Outlays (Billion USD)") +
-  ggtitle(label = "US Vaccine Awards Paid by Fiscal Year", 
+  ggtitle(label = "US Vaccine Injury Awards Paid by Fiscal Year", 
           subtitle = "Source: National Vaccine Injury Compensation Program")
 ggsave(file.path(images_dir, "vaccine_awards.png"), height = 3, width = 6)
