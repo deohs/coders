@@ -115,3 +115,23 @@ gen_site$V1 <- c('site', 'components', 'effluent', 'watertight', 'encroachment',
 
 # Combine first dataframe with second (transposed) dataframe using cbind()
 df <- cbind(meta_data, transpose(gen_site, make.names = 1))
+
+# ----------
+# Example 4
+# ----------
+
+# Extract the Adjudications table from page 7 of the Monthly Statistics Report 
+# from the National Vaccine Injury Compensation Program of the US 
+# Health Resources and Services Administration (https://www.hrsa.gov/).
+
+# Load packages
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(dplyr, tabulizer)
+
+# Extract Adjudications table (#5), remove Total row, and convert to numeric
+url <- paste0('https://www.hrsa.gov/sites/default/files/hrsa/', 
+              'vaccine-compensation/data/data-statistics-report.pdf')
+lst <- extract_tables(url, output = "data.frame")
+adjudications <- lst[[5]]
+adjudications <- adjudications %>% filter(Fiscal.Year != "Total") %>% 
+  mutate(across(everything(), function(x){ as.numeric(gsub('\\D', '', x)) }))
