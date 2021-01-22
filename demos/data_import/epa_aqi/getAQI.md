@@ -293,8 +293,7 @@ ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) +
 Purple Air offers current data from several sampling stations, but no clear way 
 to get historical data.
 
-However, we can run R code hourly to collect PM2.5 data from the Laurelhurst 
-station (48167) over time.
+However, we can run this R code hourly to collect PM2.5 data over time:
 
 
 ```r
