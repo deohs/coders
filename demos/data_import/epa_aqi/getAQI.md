@@ -29,7 +29,7 @@ editor_options:
 This demo is an example of how to automate real-time data collection from the 
 web.
 
-We will get recent PM2.5 data from Seattle sampling stations from two web sites: 
+We will get recent PM2.5 data from Seattle sampling stations from three web sites: 
 
 * EPA's "Airnow" site: https://airnow.gov/
 * WA Ecology's Air Monitoring Network site: https://enviwa.ecology.wa.gov/
