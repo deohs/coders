@@ -297,10 +297,10 @@ However, we can run this R code hourly to collect PM2.5 data over time:
 
 
 ```r
-df <- jsonlite::fromJSON("https://www.purpleair.com/json?show=48167")$results
-df <- df[df$Label == "L-hurst", c('ID', 'Label', 'PM2_5Value', 'LastSeen')]
+df <- jsonlite::fromJSON("https://www.purpleair.com/json?show=74419")$results
+df <- df[df$Label == "Laurelhurst Hilltop", c('Label', 'PM2_5Value', 'LastSeen')]
 df$LastSeen <- lubridate::as_datetime(df$LastSeen)
-readr::write_csv(df, file.path("data", "seattle_pm25.csv"), append = TRUE)
+readr::write_csv(df, file.path("data", "seattle_74419_pm25.csv"), append = TRUE)
 ```
 
 We can save this to a script file and then execute that file hourly using 
