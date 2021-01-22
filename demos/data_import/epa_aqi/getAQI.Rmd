@@ -256,7 +256,7 @@ station (48167) over time.
 df <- jsonlite::fromJSON("https://www.purpleair.com/json?show=48167")$results
 df <- df[df$Label == "L-hurst", c('ID', 'Label', 'PM2_5Value', 'LastSeen')]
 df$LastSeen <- lubridate::as_datetime(df$LastSeen)
-readr::write_csv(df, "seattle_pm25.csv", append = TRUE)
+readr::write_csv(df, file.path("data", "seattle_pm25.csv"), append = TRUE)
 ```
 
 We can save this to a script file and then execute that file hourly using 
