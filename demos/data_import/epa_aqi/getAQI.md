@@ -33,6 +33,7 @@ We will get recent PM2.5 data from Seattle sampling stations from two web sites:
 
 * EPA's "Airnow" site: https://airnow.gov/
 * WA Ecology's Air Monitoring Network site: https://enviwa.ecology.wa.gov/
+* Purple Air: https://www.purpleair.com/
 
 ## Setup
 
@@ -286,3 +287,29 @@ ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) +
 ```
 
 ![](getAQI_files/figure-html/enviwa_plot-1.png)<!-- -->
+
+## Data collection on a schedule
+
+Purple Air offers current data from several sampling stations, but no clear way 
+to get historical data.
+
+However, we can run R code hourly to collect PM2.5 data from the Laurelhurst 
+station (48167) over time.
+
+
+```r
+df <- jsonlite::fromJSON("https://www.purpleair.com/json?show=48167")$results
+df <- df[df$Label == "L-hurst", c('ID', 'Label', 'PM2_5Value', 'LastSeen')]
+df$LastSeen <- lubridate::as_datetime(df$LastSeen)
+readr::write_csv(df, "seattle_pm25.csv", append = TRUE)
+```
+
+We can save this to a script file and then execute that file hourly using 
+the "cron" utility. Here is an example "crontab" entry which would do this.
+
+```
+00 * * * * (cd ~/Documents/coders/demos/data_import/epa_aqi; Rscript get_pm25.R)
+```
+
+Note: The "cron" utility comes with most Unix and Linux systems. Windows users 
+have similar options.
