@@ -92,7 +92,7 @@ We will get historical air quality data from this page:
 ## Should web "web-scrape"?
 
 We could use Chrome's "Inspect" feature to open the "DevTools" window to the 
-HTML element we want. Then we could extract the data using a package like `rvest`.
+HTML element we want. Then we might extract the data using a package like `rvest`.
 
 ![](img/inspect_airnow_historical.png)
 
