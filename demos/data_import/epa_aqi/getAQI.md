@@ -18,6 +18,10 @@ editor_options:
   chunk_output_type: console
 ---
 
+<style>
+.forceBreak { -webkit-column-break-after: always; break-after: column; }
+</style>
+
 
 
 
@@ -56,13 +60,25 @@ We are loading:
 * `lubridate` -- `as_datetime()` -- for date manipulation
 * `httr` -- `GET()`, `POST()` -- for sending requests to web servers
 * `jsonlite` -- `fromJSON()` -- for extracting JSON from web responses
-* `styler` -- `style_text()` -- to format R code for better disoplay
+* `styler` -- `style_text()` -- to format R code for better display
 
-## Airnow data by date
+## Airnow air quality data {.columns-2}
 
 We will get historical air quality data from this page: 
 
 - https://www.airnow.gov/state/?name=washington
+
+Instead of web-scraping the page that we see in the browser, we can download 
+the data in JSON format, which is better structured for data extraction.
+
+We find the JSON URL using Chrome's built-in "Developer tools" feature as we load the 
+"Historical Air Quality" page for [Washington](https://www.airnow.gov/state/?name=washington).
+
+<p class="forceBreak"></p>
+
+![](img/devtools_airnow_copy_link_address.png)
+
+## Airnow data by date
 
 The "Historical Air Quality" tab has a place to enter a date. We will need
 to create a sequence of dates to get the data for each date.
@@ -78,11 +94,9 @@ dates <- seq(from = start_date, to = end_date, by = 1)
 ```
 
 We will use these dates to query the Airnow "API" by incorporating the date
-into the web address (URL). Here is an example URL that returns JSON data:
+into the web address (URL) we use to get the data. Here is an example:
 
-- https://airnowgovapi.com/andata/States/Washington/2021/1/21.json
-
-We find the URL using Chrome's built-in "Developer tools" feature.
+- https://airnowgovapi.com/andata/States/Washington/2021/1/22.json
 
 ## What does JSON look like?
 
@@ -90,25 +104,25 @@ Here are the first 400 characters of the JSON returned from a request.
 
 
 ```r
-url <- 'https://airnowgovapi.com/andata/States/Washington/2021/1/21.json'
+url <- 'https://airnowgovapi.com/andata/States/Washington/2021/1/22.json'
 substr(prettify(fromJSON(url)), 1, 400)
 ```
 
 ```
 ## {
 ##     "state": "Washington",
-##     "fileWrittenDateTime": "20210123T160609Z",
+##     "fileWrittenDateTime": "20210123T160631Z",
 ##     "reportingAreas": [
 ##         {
 ##             "Ritzville": {
-##                 "pm25": 25.0,
+##                 "pm25": 12.0,
 ##                 "pm10": -999.0,
 ##                 "ozone": -999.0
 ##             }
 ##         },
 ##         {
 ##             "Clarkston": {
-##                 "pm25": 54.0,
+##                 "pm25": 48.0,
 ##                 "pm10": -999.0,
 ##                 "ozone": -999.0
 ##             }
@@ -116,7 +130,8 @@ substr(prettify(fromJSON(url)), 1, 400)
 
 ## Get Airnow data
 
-We will use this date sequence to automate the extraction of data using `lapply()`.
+We will use this date sequence to automate the extraction of data using `lapply()`. 
+This allows us to repeat the request for each date in a sequence.
 
 The data is in JSON format so we will use `fromJSON()` to parse the JSON into
 a list. Then we can use `lapply()` again to transform the list items into 
