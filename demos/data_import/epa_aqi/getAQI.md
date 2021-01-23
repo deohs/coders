@@ -1,7 +1,7 @@
 ---
 title: 'Air Quality Web Data'
 author: "Brian High"
-date: "22 January, 2021"
+date: "23 January, 2021"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -45,7 +45,7 @@ Load packages with `pacman` to auto-install any missing packages.
 if (! suppressPackageStartupMessages(require(pacman))) {
   install.packages('pacman', repos = 'http://cran.us.r-project.org')
 }
-pacman::p_load(dplyr, tidyr, ggplot2, lubridate, httr, jsonlite)
+pacman::p_load(dplyr, tidyr, ggplot2, lubridate, httr, jsonlite, styler)
 ```
 
 We are loading:
@@ -56,10 +56,11 @@ We are loading:
 * `lubridate` -- `as_datetime()` -- for date manipulation
 * `httr` -- `GET()`, `POST()` -- for sending requests to web servers
 * `jsonlite` -- `fromJSON()` -- for extracting JSON from web responses
+* `styler` -- `style_text()` -- to format R code for better disoplay
 
 ## Airnow data by date
 
-We will get history air quality data from this page: 
+We will get historical air quality data from this page: 
 
 - https://www.airnow.gov/state/?name=washington
 
@@ -81,6 +82,8 @@ into the web address (URL). Here is an example URL that returns JSON data:
 
 - https://airnowgovapi.com/andata/States/Washington/2021/1/21.json
 
+We find the URL using Chrome's built-in "Developer tools" feature.
+
 ## What does JSON look like?
 
 Here are the first 400 characters of the JSON returned from a request.
@@ -94,7 +97,7 @@ substr(prettify(fromJSON(url)), 1, 400)
 ```
 ## {
 ##     "state": "Washington",
-##     "fileWrittenDateTime": "20210122T160629Z",
+##     "fileWrittenDateTime": "20210123T160609Z",
 ##     "reportingAreas": [
 ##         {
 ##             "Ritzville": {
@@ -170,11 +173,96 @@ sea_df <- enviwa_df %>% filter(name == "Seattle-10th & Weller")
 StationId <- sea_df %>% pull(serialCode)
 channel <- sea_df %>% select(monitors) %>% unnest(monitors) %>% 
   filter(name == "BAM_PM25") %>% pull(channel)
+paste("StationId =", StationId, "; channel =", channel)
 ```
+
+```
+## [1] "StationId = 163 ; channel = 32"
+```
+
+## Where do we get the URL?
+
+We navigate in the WA Ecology web site to Reports > Sites. This loads this page:
+
+- https://enviwa.ecology.wa.gov/report/SingleStationReport
+
+We find the URL using Chrome's built-in "Developer tools" feature. 
+
+![](img/devtools_enviwa_reports_sites.png)
+
+Right click the "Name" -> then "Copy" -> then "Copy link address".
+
+## Making the site report request
+
+After navigating to Reports > Sites, we fill out the request form like this:
+
+![](img/devtools_enviwa_site_report.png)
+
+## Where do we get the request format?
+
+We find the request format using the "Copy as cURL (bash)" feature in Chrome's 
+built-in "Developer tools" feature.
+
+![](img/devtools_enviwa_site_report_copy_as_curl.png)
+
+## What is Copy as cURL (bash)?
+
+This is the cURL command you could paste into a Bash prompt to make the request.
+
+```
+curl 'https://enviwa.ecology.wa.gov/report/GetStationReportData' \
+  -H 'Connection: keep-alive' \
+  -H 'sec-ch-ua: "Google Chrome";v="87", " Not;A Brand";v="99", "Chromium";v="87"' \
+  -H 'Accept: */*' \
+  -H 'X-Requested-With: XMLHttpRequest' \
+  -H 'sec-ch-ua-mobile: ?0' \
+  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 
+  (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36' \
+  -H 'Content-Type: application/json; charset=UTF-8' \
+  -H 'Origin: https://enviwa.ecology.wa.gov' \
+  -H 'Sec-Fetch-Site: same-origin' \
+  -H 'Sec-Fetch-Mode: cors' \
+  -H 'Sec-Fetch-Dest: empty' \
+  -H 'Referer: https://enviwa.ecology.wa.gov/report/SingleStationReport' \
+  -H 'Accept-Language: en-US,en;q=0.9' \
+  -H 'Cookie: Enviwadev.ecology.wa.gov=dlmljqqniqiq2u20x4nnsfve' \
+  --data-binary '{"StationId":163,"MonitorsChannels":[32],
+  "reportName":"station report","startDateAbsolute":"1/23/2021 00:00",
+  "endDateAbsolute":"1/23/2021 23:00","startDate":"1/23/2021 00:00",
+  "endDate":"1/23/2021 23:00","reportType":"Average","fromTb":60,"toTb":60}' \
+  --compressed
+```
+
+## Request parameters as a list
+
+The cURL command shows the request parameters are sent in a JSON string.
+
+We can convert this to a list that we can more easily use this in our script.
+
+
+```r
+json <- '{"StationId":163,"MonitorsChannels":[32],
+  "reportName":"station report","startDateAbsolute":"1/23/2021 00:00",
+ "endDateAbsolute":"1/23/2021 23:00","startDate":"1/23/2021 00:00",
+  "endDate":"1/23/2021 23:00","reportType":"Average","fromTb":60,"toTb":60}'
+style_text(deparse(fromJSON(json)))
+```
+
+```
+## list(
+##   StationId = 163L, MonitorsChannels = 32L, reportName = "station report",
+##   startDateAbsolute = "1/23/2021 00:00", endDateAbsolute = "1/23/2021 23:00",
+##   startDate = "1/23/2021 00:00", endDate = "1/23/2021 23:00",
+##   reportType = "Average", fromTb = 60L, toTb = 60L
+## )
+```
+
+You will notice the dates are supplied in M/D/YYYY format. In R this is '%-m/%-d/%Y'.
 
 ## Format query dates
 
-To query for our dates of interest, we need them in the format the web site expects.
+We will request data for the past two weeks. We need to calculate the start and 
+end dates of this time period and format them as the web site expects.
 
 
 ```r
@@ -187,7 +275,7 @@ start_date
 ```
 
 ```
-## [1] "1/8/2021"
+## [1] "1/9/2021"
 ```
 
 ```r
@@ -195,7 +283,7 @@ end_date
 ```
 
 ```
-## [1] "1/21/2021"
+## [1] "1/22/2021"
 ```
 
 ## Create list of request parameters
@@ -216,6 +304,9 @@ body_lst <- list(StationId = as.character(StationId),
                  toTb = 60)
 ```
 
+Through experimentation, we find that we can omit "startDate" and "endDate", 
+since "startDateAbsolute" and "endDateAbsolute" appear to be sufficient.
+
 ## Get WA Ecology JSON
 
 Now that our request is in a list, we can send that list to the web site.
@@ -232,6 +323,10 @@ response <- POST(
 json_txt <- content(response, "text")
 ```
 
+By experimenting with the cURL command found earlier, we find that no other
+special request headers, such as "Cookie" or "Referer", will be needed. If they
+were, we would send them using the POST function.
+
 ## What does this JSON look like?
 
 Here are the first 400 characters of this JSON data string.
@@ -246,7 +341,7 @@ substr(prettify(json_txt), 1, 400)
 ##     "StationId": 163,
 ##     "data": [
 ##         {
-##             "datetime": "2021-01-08T00:00:00-08:00",
+##             "datetime": "2021-01-09T00:00:00-08:00",
 ##             "Originaldatetime": "/Date(-62135568000000)/",
 ##             "channels": [
 ##                 {
@@ -254,7 +349,7 @@ substr(prettify(json_txt), 1, 400)
 ##                     "id": 32,
 ##                     "name": "BAM_PM25",
 ##                     "alias": null,
-##                     "value": 8.0,
+##                     "value": 6.0,
 ## 
 ```
 

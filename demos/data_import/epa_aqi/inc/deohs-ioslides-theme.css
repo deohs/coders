@@ -1,0 +1,47 @@
+/* Change title font to bold purple. */
+
+slides > slide.title-slide hgroup h1 {
+    color: #483777;
+    font-weight: bold;
+    font-size: 200%;
+}
+
+slides > slide hgroup h2 {
+    color: #483777;
+    font-weight: bold;
+    font-size: 150%;
+}
+
+slides > slide hgroup h3 {
+    font-weight: bold;
+    font-size: 150%;
+}
+
+/* Add custom banner image. Note: Now done in deohs-default-ioslides.html. */
+
+/*
+slides > slide.title-slide {
+   background: url(../img/DEOHS-Logo-Line-Purple-Print-Transparency.png);
+   background-size: 625px 35px;
+   background-repeat: no-repeat;
+   background-position: top left;
+   border-radius: 0;
+}
+*/
+
+/* Remove grey gradient background in slide footer. */
+
+slides > slide {
+  background: linear-gradient(#ffffff, #ffffff 85%, #ffffff);
+  background-color: white;
+}
+
+/* Adjust margins and font size of code blocks. */
+
+pre, code {
+  width: 100%; /* 106%; */
+  left: 0; /* -60px; */
+  padding: 10px 15px 10px 15px; /* 10px 0 10px 60px; */
+  font-size: 18px;
+}
+
