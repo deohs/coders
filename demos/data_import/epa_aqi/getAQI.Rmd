@@ -81,26 +81,50 @@ We are loading:
 * `jsonlite` -- `fromJSON()` -- for extracting JSON from web responses
 * `styler` -- `style_text()` -- to format R code for better display
 
-## Airnow air quality data {.columns-2}
+## Airnow air quality data
 
 We will get historical air quality data from this page: 
 
 - https://www.airnow.gov/state/?name=washington
 
-Instead of web-scraping the page that we see in the browser, we can download 
-the data in JSON format, which is better structured for data extraction.
+![](img/airnow_historical_pick_date.png)
 
-We find the JSON URL using Chrome's built-in "Developer tools" feature as we load the 
-"Historical Air Quality" page for [Washington](https://www.airnow.gov/state/?name=washington).
+## Should web "web-scrape"?
 
-<p class="forceBreak"></p>
+We could use Chrome's "Inspect" feature to open the "DevTools" window to the 
+HTML element we want. Then we could extract the data using a package like `rvest`.
+
+![](img/inspect_airnow_historical.png)
+
+But this is the AQI and we want PM2.5 values. Where can we find it?
+
+## Get the web address for JSON data
+
+Instead of web-scraping the web page, we can download the data in JSON format, 
+which is better structured for data extraction and has the PM2.5 data we want.
+
+We find the JSON web address (URL) using Chrome's built-in "Developer tools" 
+feature as we load the "Historical Air Quality" page for [Washington](https://www.airnow.gov/state/?name=washington).
 
 ![](img/devtools_airnow_copy_link_address.png)
 
+## What does JSON look like?
+
+Here are the first 400 characters of the JSON returned when using this link.
+
+```{r}
+url <- 'https://airnowgovapi.com/andata/States/Washington/2021/1/22.json'
+substr(prettify(fromJSON(url)), 1, 400)
+```
+
 ## Airnow data by date
 
-The "Historical Air Quality" tab has a place to enter a date. We will need
-to create a sequence of dates to get the data for each date.
+The "Historical Air Quality" tab has a place to enter a date. This date is also 
+present in the URL for the JSON data. Here is an example:
+
+- https://airnowgovapi.com/andata/States/Washington/2021/1/22.json
+
+We will need to create a sequence of dates to get the data for each date.
 
 ```{r}
 # Calculate date sequence
@@ -112,18 +136,7 @@ dates <- seq(from = start_date, to = end_date, by = 1)
 ```
 
 We will use these dates to query the Airnow "API" by incorporating the date
-into the web address (URL) we use to get the data. Here is an example:
-
-- https://airnowgovapi.com/andata/States/Washington/2021/1/22.json
-
-## What does JSON look like?
-
-Here are the first 400 characters of the JSON returned from a request.
-
-```{r}
-url <- 'https://airnowgovapi.com/andata/States/Washington/2021/1/22.json'
-substr(prettify(fromJSON(url)), 1, 400)
-```
+into the URL we use to get the data.
 
 ## Get Airnow data
 
@@ -305,6 +318,8 @@ json_txt <- content(response, "text")
 By experimenting with the cURL command found earlier, we find that no other
 special request headers, such as "Cookie" or "Referer", will be needed. If they
 were, we would send them using the POST function.
+
+We use `encode = "json"` to convert the "body" (parameter list) to JSON.
 
 ## What does this JSON look like?
 
