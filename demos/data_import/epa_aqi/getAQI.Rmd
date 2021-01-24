@@ -358,7 +358,7 @@ ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) +
 ## Purple Air sensor data
 
 Similar to WA Ecology's website, Purple Air also has a nice map interface where 
-you find a sensor and click on it to see the current data. Here data from "Montlake":
+you find a sensor and click on it to see the current data. Here's data from "Montlake":
 
 ![](img/purple_air_montlake.png)
 
