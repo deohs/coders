@@ -413,19 +413,28 @@ ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) +
 
 ![](getAQI_files/figure-html/enviwa_plot-1.png)<!-- -->
 
+## Purple Air sensor data
+
+Similar to WA Ecology's website, Purple Air also has a nice map interface where 
+you find a sensor, click on it, and see the current data. Here is data from 
+the Montlake station.
+
+![](img/purple_air_montlake.png)
+
 ## Data collection on a schedule
 
-Purple Air offers current data from several sampling stations, but no clear way 
-to get historical data.
+If we "mouse over" the "Get This Widget" text we see a popup with a JSON link to 
+the current data. We can use that link from R. We see no immediately obvious 
+way to get historical data.
 
 However, we can run this R code hourly to collect PM2.5 data over time:
 
 
 ```r
-df <- jsonlite::fromJSON("https://www.purpleair.com/json?show=74419")$results
-df <- df[df$Label == "Laurelhurst Hilltop", c('Label', 'PM2_5Value', 'LastSeen')]
+df <- jsonlite::fromJSON("https://www.purpleair.com/json?show=84023")$results
+df <- df[df$Label == "Montlake", c('Label', 'PM2_5Value', 'LastSeen')]
 df$LastSeen <- lubridate::as_datetime(df$LastSeen)
-readr::write_csv(df, file.path("data", "seattle_74419_pm25.csv"), append = TRUE)
+readr::write_csv(df, file.path("data", "seattle_84023_pm25.csv"), append = TRUE)
 ```
 
 We can save this to a script file and then execute that file hourly using 
@@ -437,3 +446,52 @@ the "cron" utility. Here is an example "crontab" entry which would do this.
 
 Note: The "cron" utility comes with most Unix and Linux systems. Windows users 
 have similar options.
+
+## Historical data using Thingspeak's API
+
+Although it's not immediately obvious, there is a way to get historical data.
+
+If you read the [FAQ](https://www.purpleair.com/faq) and study the 
+[API documentation](https://www.mathworks.com/help/thingspeak/readdata.html), 
+you will find we can get historical data with a carefully crafted query.
+
+We can query the Montlake station with this information:
+
+
+```r
+url <- "https://www.purpleair.com/json?show=84023"
+df <- jsonlite::fromJSON("https://www.purpleair.com/json?show=84023")$results
+df <- df[df$Label == "Montlake", 
+  c('ID', 'Label', 'THINGSPEAK_PRIMARY_ID', 'THINGSPEAK_PRIMARY_ID_READ_KEY')]
+ts_id <- df$THINGSPEAK_PRIMARY_ID
+ts_api_key <- df$THINGSPEAK_PRIMARY_ID_READ_KEY
+```
+
+## Get JSON data from Thingspeak
+
+Now we cat get the past week of hourly data for the Montlake sensor.
+
+
+```r
+url <- paste('https://thingspeak.com/channels', ts_id, 'feeds.json', sep = "/")
+query_list <- list(api_key = ts_api_key, days = "7", timescale = "60")
+response <- GET(url, query = query_list)
+json_txt <-content(response, "text")
+meta_lst <- fromJSON(json_txt, simplifyVector = FALSE)[[1]] 
+field_names <- meta_lst[grepl('^field\\d+$', names(meta_lst))]
+df <- as_tibble(fromJSON(json_txt)[['feeds']])
+names(df)[names(df) %in% names(field_names)] <- unlist(field_names)
+plot_df <- df %>% select(datetime = "created_at", pm25 = "PM2.5 (ATM)") %>%
+  mutate(datetime = as_datetime(datetime), pm25 = as.numeric(pm25))
+```
+
+## Plot Purle Air PM2.5 data for Seattle
+
+
+```r
+plot_title <- "Seattle (Montlake) PM2.5 from WA Ecology"
+ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) + 
+  geom_smooth(formula = "y ~ x", method = "loess") + theme_classic()
+```
+
+![](getAQI_files/figure-html/purple_air_plot-1.png)<!-- -->
