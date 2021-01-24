@@ -96,7 +96,7 @@ HTML element we want. Then we might extract the data using a package like `rvest
 
 ![](img/inspect_airnow_historical.png)
 
-But this is the AQI and we want PM2.5 values. Where can we find it?
+It would be easier and more reliable to download a data file. But how?
 
 ## Get the web address for JSON data
 
