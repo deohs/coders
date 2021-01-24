@@ -1,7 +1,7 @@
 ---
 title: 'Air Quality Web Data'
 author: "Brian High"
-date: "23 January, 2021"
+date: "24 January, 2021"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -102,7 +102,7 @@ substr(prettify(fromJSON(url)), 1, 400)
 ```
 ## {
 ##     "state": "Washington",
-##     "fileWrittenDateTime": "20210123T160631Z",
+##     "fileWrittenDateTime": "20210124T160607Z",
 ##     "reportingAreas": [
 ##         {
 ##             "Ritzville": {
@@ -303,7 +303,7 @@ start_date
 ```
 
 ```
-## [1] "1/9/2021"
+## [1] "1/10/2021"
 ```
 
 ```r
@@ -311,7 +311,7 @@ end_date
 ```
 
 ```
-## [1] "1/22/2021"
+## [1] "1/23/2021"
 ```
 
 ## Create list of request parameters
@@ -371,7 +371,7 @@ substr(prettify(json_txt), 1, 400)
 ##     "StationId": 163,
 ##     "data": [
 ##         {
-##             "datetime": "2021-01-09T00:00:00-08:00",
+##             "datetime": "2021-01-10T00:00:00-08:00",
 ##             "Originaldatetime": "/Date(-62135568000000)/",
 ##             "channels": [
 ##                 {
@@ -379,7 +379,7 @@ substr(prettify(json_txt), 1, 400)
 ##                     "id": 32,
 ##                     "name": "BAM_PM25",
 ##                     "alias": null,
-##                     "value": 6.0,
+##                     "value": 12.0,
 ## 
 ```
 
@@ -422,11 +422,15 @@ you find a sensor and click on it to see the current data. Here's data from "Mon
 
 ## Data collection on a schedule
 
-If we "mouse over" the "Get This Widget" text we see a popup with a JSON link to 
-the current data. We can use that link from R. We see no immediately obvious 
-way to get historical data.
+If we "mouse over" the "Get This Widget" text we see a popup with links to 
+"Download", "JSON", and "JSON.DATA". The Download link gives you a form where 
+you can select dates, average minutes, and stations. There is no immediately 
+obvious way to automate this from R to get historical data. 
 
-However, we can run this R code hourly to collect PM2.5 data over time:
+The JSON links get the current data. We can use the JSON links directly from R. 
+We see no immediately obvious way to get historical data from the JSON links.
+
+However, we could run this R code hourly to collect PM2.5 data over time:
 
 
 ```r
@@ -436,19 +440,17 @@ df$LastSeen <- lubridate::as_datetime(df$LastSeen)
 readr::write_csv(df, file.path("data", "seattle_84023_pm25.csv"), append = TRUE)
 ```
 
-We can save this to a script file and then execute that file hourly using 
+We could save this to a script file and then execute that file hourly using 
 the "cron" utility. Here is an example "crontab" entry which would do this.
 
 ```
 00 * * * * (cd ~/Documents/coders/demos/data_import/epa_aqi; Rscript get_pm25.R)
 ```
 
-Note: The "cron" utility comes with most Unix and Linux systems. Windows users 
-have similar options.
+## Historical JSON data using Thingspeak's API
 
-## Historical data using Thingspeak's API
-
-Although it's not immediately obvious, there is a way to get historical data.
+Although it's not immediately obvious, there is a way to automate collection of 
+Purple Air historical data as JSON.
 
 If you read the [FAQ](https://www.purpleair.com/faq) and study the 
 [API documentation](https://www.mathworks.com/help/thingspeak/readdata.html), 
@@ -466,18 +468,22 @@ df <- df[df$Label == "Montlake",
 
 # Extract values we need from dataframe
 ts_id <- df$THINGSPEAK_PRIMARY_ID
-ts_api_key <- df$THINGSPEAK_PRIMARY_ID_READ_KEY
+ts_key <- df$THINGSPEAK_PRIMARY_ID_READ_KEY
 ```
 
 ## Get JSON data from Thingspeak
 
-Now we can get the past week of hourly data for the Montlake sensor.
+Now we can get the past two weeks of hourly data for the Montlake sensor.
 
 
 ```r
+# Calculate start and end dates
+start <- paste(Sys.Date() - 14, "00:00:00")
+end <- paste(Sys.Date() - 1, "00:00:00")
+
 # Make web request
 url <- paste('https://thingspeak.com/channels', ts_id, 'feeds.json', sep = "/")
-query_list <- list(api_key = ts_api_key, days = "7", timescale = "60")
+query_list <- list(api_key = ts_key, start = start, end = end, timescale = "60")
 response <- GET(url, query = query_list)
 
 # Extract data from JSON into a dataframe
@@ -504,3 +510,24 @@ ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) +
 ```
 
 ![](getAQI_files/figure-html/purple_air_plot-1.png)<!-- -->
+
+## Exercises 
+
+### Get historical CSV data from Purple Air
+
+Use the DevTools in your web browser to find the link used to deliver the 
+CSV download files when you follow a Purple Air "Download" link from the 
+"Montlake" sensor (Seattle).
+
+Modify the link to pull the past two weeks of data as a single CSV file.
+
+Is this better than getting JSON data? Why or why not?
+
+### Get more parameters from multiple sensor locations
+
+Modify one of the examples provided here to get temperature, humidity, and 
+ozone (O<sub>3</sub>) as well as PM2.5, if they are available. Then modify 
+further to  collect from multiple sites using a loop, lapply, etc. to avoid 
+copying and pasting code. Assemble the results into a single dataframe and  
+save as a CSV file. Include the current date in the filename in ISO format 
+(YYYY-MM-DD). 
