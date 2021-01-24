@@ -454,21 +454,20 @@ ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) +
 
 ## Exercises 
 
-### Get historical CSV data from Purple Air
+### A. Get historical CSV data from Purple Air
 
-Use the DevTools in your web browser to find the link used to deliver the 
+1. Use the DevTools in your web browser to find the link used to deliver the 
 CSV download files when you follow a Purple Air "Download" link from the 
 "Montlake" sensor (Seattle).
+2. Modify the link to pull the past two weeks of data as a single CSV file.
+3. Is this better than getting JSON data? Why or why not?
 
-Modify the link to pull the past two weeks of data as a single CSV file.
+### B. Get more parameters from multiple sensor locations
 
-Is this better than getting JSON data? Why or why not?
-
-### Get more parameters from multiple sensor locations
-
-Modify one of the examples provided here to get temperature, humidity, and 
-ozone (O<sub>3</sub>) as well as PM2.5, if they are available. Then modify 
-further to  collect from multiple sites using a loop, lapply, etc. to avoid 
-copying and pasting code. Assemble the results into a single dataframe and  
+1. Modify one of the examples provided here to get temperature, humidity, and 
+ozone (O<sub>3</sub>) as well as PM2.5, if they are available. 
+2. Then modify further to  collect from multiple sites using a loop, lapply, etc. 
+to avoid copying and pasting code. 
+3. Assemble the results into a single dataframe and 
 save as a CSV file. Include the current date in the filename in ISO format 
 (YYYY-MM-DD). 
