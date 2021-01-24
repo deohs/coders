@@ -426,7 +426,7 @@ It is usually easy to download data as files, but it can be hard to
 find the download links or buttons.
 
 If we "mouse over" the "Get This Widget" text we see a popup with links to 
-"Download", "JSON", and "JSON.DATA". 
+"Download", "JSON", and "DATA.JSON". 
 
 ![](img/purple_air_montlake_2.png)
 
