@@ -498,7 +498,7 @@ plot_df <- df %>% select(datetime = "created_at", pm25 = "PM2.5 (ATM)") %>%
 
 
 ```r
-plot_title <- "Seattle (Montlake) PM2.5 from WA Purple Air"
+plot_title <- "Seattle (Montlake) PM2.5 from Purple Air"
 ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) + 
   geom_smooth(formula = "y ~ x", method = "loess") + theme_classic()
 ```
