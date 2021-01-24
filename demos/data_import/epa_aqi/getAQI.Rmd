@@ -50,8 +50,8 @@ if (.Platform$OS.type == "windows" & length(grep(' ', template_pkg) > 0)) {
 
 ## Get air quality data from web sites
 
-This demo is an example of how to automate real-time data collection from the 
-web.
+This demo is an example of how to automate data collection from the 
+web using R.
 
 We will get recent PM2.5 data from Seattle sampling stations from three web sites: 
 
