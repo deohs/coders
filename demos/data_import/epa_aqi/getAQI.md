@@ -418,17 +418,22 @@ ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) +
 Similar to WA Ecology's website, Purple Air also has a nice map interface where 
 you find a sensor and click on it to see the current data. Here's data from "Montlake":
 
-![](img/purple_air_montlake.png)
+![](img/purple_air_montlake_1.png)
+
+## Finding data download links
+
+It is usually easy to download data as files, but it can be hard to 
+find the download links or buttons.
+
+If we "mouse over" the "Get This Widget" text we see a popup with links to 
+"Download", "JSON", and "JSON.DATA". 
+
+![](img/purple_air_montlake_2.png)
 
 ## Data collection on a schedule
 
-If we "mouse over" the "Get This Widget" text we see a popup with links to 
-"Download", "JSON", and "JSON.DATA". The Download link gives you a form where 
-you can select dates, average minutes, and stations. There is no immediately 
-obvious way to automate this from R to get historical data. 
-
-The JSON links get the current data. We can use the JSON links directly from R. 
-We see no immediately obvious way to get historical data from the JSON links.
+We can use the JSON link to get current data into R, but we see no immediately 
+obvious way to get historical data from the JSON link.
 
 However, we could run this R code hourly to collect PM2.5 data over time:
 
