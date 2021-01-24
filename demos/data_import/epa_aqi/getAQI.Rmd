@@ -423,7 +423,7 @@ Now we can get the past two weeks of hourly data for the Montlake sensor.
 ```{r}
 # Calculate start and end dates
 start <- paste(Sys.Date() - 14, "00:00:00")
-end <- paste(Sys.Date() - 1, "00:00:00")
+end <- paste(Sys.Date() - 1, "23:59:59")
 
 # Make web request
 url <- paste('https://thingspeak.com/channels', ts_id, 'feeds.json', sep = "/")
