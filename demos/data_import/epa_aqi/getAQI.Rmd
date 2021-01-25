@@ -56,6 +56,7 @@ web using R.
 We will get recent PM2.5 data from Seattle sampling stations from three web sites: 
 
 * EPA's "Airnow" site: https://airnow.gov/
+* EPA's AQS site: https://www.epa.gov/outdoor-air-quality-data
 * WA Ecology's Air Monitoring Network site: https://enviwa.ecology.wa.gov/
 * Purple Air: https://www.purpleair.com/
 
@@ -68,7 +69,7 @@ Load packages with `pacman` to auto-install any missing packages.
 if (! suppressPackageStartupMessages(require(pacman))) {
   install.packages('pacman', repos = 'http://cran.us.r-project.org')
 }
-pacman::p_load(dplyr, tidyr, ggplot2, lubridate, httr, jsonlite, styler, maps)
+pacman::p_load(dplyr, tidyr, ggplot2, lubridate, httr, jsonlite, rvest, styler)
 ```
 
 We are loading:
@@ -79,6 +80,7 @@ We are loading:
 * `lubridate` -- `as_datetime()` -- for date manipulation
 * `httr` -- `GET()`, `POST()` -- for sending requests to web servers
 * `jsonlite` -- `fromJSON()` -- for extracting JSON from web responses
+* `rvest` -- `read_html()`, `html_node()`, `html_attr()` -- for web-scraping
 * `styler` -- `style_text()` -- to format R code for better display
 
 ## Airnow air quality data
@@ -188,7 +190,7 @@ geographic area you want and then extract the data you want from those files.
 If you want to be more specific in what you download, you can use their 
 [API](https://aqs.epa.gov/aqsweb/documents/data_api.html) to 
 get data in JSON format for, e.g., a specific site and parameter. But you can't 
-get recent data from this source, unfortunately.
+get recent data from this API, as far as we can tell.
 
 We will get PM2.5 data for the "Seattle-10th & Weller" site for a two week 
 period from this time last year.
@@ -253,9 +255,62 @@ ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) +
   geom_smooth(formula = "y ~ x", method = "loess") + theme_classic()
 ```
 
+## Current data from EPA AQS
+
+The EPA offers current data with it's [download daily data](https://www.epa.gov/outdoor-air-quality-data/download-daily-data) page.
+
+You can fill out that form and get the data link using DevTools as shown earlier, 
+but you will need the Monitor Site ID.
+
+![](img/epa_aqs_download_daily.png)
+
+## Get EPQ AQS Daily Data
+
+We can obtain the Monitor Site ID from our previous EPA AQS example.
+
+```{r}
+paste(monitor[, c(1, 2, 3)], collapse = "")
+```
+
+If you load the URL in your web browser, you see that it returns HTML with a
+temporary link that expires in 10 minutes. So, we need to "web-scrape" to extract 
+that link.
+
+```{r}
+url <- 'https://www3.epa.gov/cgi-bin/broker?_service=data&_debug=0&_program=dataprog.ad_data_daily_airnow.sas&querytext=&areaname=&areacontacts=&areasearchurl=&typeofsearch=epa&result_template=2col.ftl&poll=88101%27%2C%2788502&year=2021&state=-1&cbsa=42660&county=-1&site=530330030'
+
+# Get temporary CSV download URL
+csv_url <- read_html(url) %>% html_node("a") %>% html_attr("href")
+```
+
+## Get EPQ AQS Daily Data
+
+Now we can use that link to get the data.
+
+```{r}
+# Calculate start and end dates
+start <- Sys.Date() - 14
+end <- Sys.Date() - 1
+
+# Prepare data for plotting
+plot_df <- read.csv(csv_url) %>% 
+  select(date = "Date", pm25 = "Daily.Mean.PM2.5.Concentration") %>% 
+  mutate(date = as_date(as.character(date), format = "%m/%d/%Y")) %>% 
+  filter(date >= start, date <= end)
+```
+
+## Plot EPA AQS PM2.5 daily data for Seattle
+
+```{r epa_aqs_daily_plot}
+plot_title <- paste("Seattle (10th and Weller) PM2.5 from EPA AQS", 
+                    paste0('(', year(plot_df$date[1]), ')'))
+ggplot(plot_df, aes(date, pm25)) + geom_point() +  ggtitle(plot_title) + 
+  geom_smooth(formula = "y ~ x", method = "loess") + theme_classic()
+```
+
 ## Get WA Ecology data
 
-WA Ecology also has airquality data on their [web site](https://enviwa.ecology.wa.gov/home/map). Let's get PM2.5 data from the "Seattle-10th & Weller" sampling station. 
+WA Ecology also has airquality data on their [web site](https://enviwa.ecology.wa.gov/home/map). Let's get hourly PM2.5 data from the "Seattle-10th & Weller" sampling station. 
 
 ![](img/enviwa_map.png)
 
