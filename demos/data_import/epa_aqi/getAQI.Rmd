@@ -96,26 +96,29 @@ HTML element we want. Then we might extract the data using a package like `rvest
 
 ![](img/inspect_airnow_historical.png)
 
-It would be easier and more reliable to download a data file. But how?
-
-## Get the web address for JSON data
+## Getting structured data
 
 Instead of web-scraping the web page, we can download the data in JSON format, 
-which is better structured for data extraction and has the PM2.5 data we want.
+which is better structured for automated data extraction.
 
-We find the JSON web address (URL) using Chrome's built-in "Developer tools" 
-feature as we load the "Historical Air Quality" page for [Washington](https://www.airnow.gov/state/?name=washington).
-
-![](img/devtools_airnow_copy_link_address.png)
-
-## What does JSON look like?
-
-Here are the first 400 characters of the JSON returned when using this link.
+Here are the first 250 characters of the JSON data used by that web page.
 
 ```{r}
 url <- 'https://airnowgovapi.com/andata/States/Washington/2021/1/22.json'
-substr(prettify(fromJSON(url)), 1, 400)
+substr(prettify(fromJSON(url)), 1, 250)
 ```
+
+## Open "Developer tools"
+
+To find the web address, open the "DevTools" window in your web browser.
+
+![](img/developer_tools.png)
+
+## Get the web address for JSON data
+
+Use the Network tab of the DevTools feature after loading the "Historical Air Quality" page for [Washington](https://www.airnow.gov/state/?name=washington). Click XHR to filter results. Look for JSON files. 
+
+![](img/devtools_airnow_copy_link_address.png)
 
 ## Airnow data by date
 
@@ -178,50 +181,24 @@ ggplot(plot_df, aes(date, pm25)) + geom_point() +  ggtitle(plot_title) +
 
 ## Get WA Ecology data
 
-WA Ecology also has airquality data on their [web site](https://enviwa.ecology.wa.gov/).
+WA Ecology also has airquality data on their [web site](https://enviwa.ecology.wa.gov/home/map). Let's get PM2.5 data from the "Seattle-10th & Weller" sampling station. 
 
-To find data comparable to the previous example, we will get PM2.5 data for the 
-"Seattle-10th & Weller" sampling station.
-
-To do so, we need the "StationId" for "Seattle-10th & Weller" and 
-the "channel" for "BAM_PM25". We can get those from querying the web site.
-
-```{r}
-url <- 'https://enviwa.ecology.wa.gov/ajax/getAllStationsWithoutFiltering'
-enviwa_df <- fromJSON(url)
-sea_df <- enviwa_df %>% filter(name == "Seattle-10th & Weller")
-StationId <- sea_df %>% pull(serialCode)
-channel <- sea_df %>% select(monitors) %>% unnest(monitors) %>% 
-  filter(name == "BAM_PM25") %>% pull(channel)
-paste("StationId =", StationId, "; channel =", channel)
-```
-
-## Where do we get the URL?
-
-We navigate in the WA Ecology web site to Reports > Sites. This loads this page:
-
-- https://enviwa.ecology.wa.gov/report/SingleStationReport
-
-We find the URL using Chrome's built-in "Developer tools" feature. 
-
-![](img/devtools_enviwa_reports_sites.png)
-
-Right click the "Name" -> then "Copy" -> then "Copy link address".
+![](img/enviwa_map.png)
 
 ## Making the site report request
 
-After navigating to Reports > Sites, we fill out the request form like this:
+Launch WebTools and go to Reports > Sites in the [web site](https://enviwa.ecology.wa.gov/home/map). Fill out the form:
 
 ![](img/devtools_enviwa_site_report.png)
 
 ## Where do we get the request format?
 
-We find the request format using the "Copy as cURL (bash)" feature in Chrome's 
-built-in "Developer tools" feature.
+We want to duplicate this task in R. So, we need to find out how to send the 
+form data from R. We do this with "Copy as cURL (bash)" in DevTools.
 
 ![](img/devtools_enviwa_site_report_copy_as_curl.png)
 
-## What is Copy as cURL (bash)?
+## What is "Copy as cURL (bash)"?
 
 This is the cURL command you could paste into a Bash prompt to make the request.
 
@@ -265,6 +242,36 @@ style_text(deparse(fromJSON(json)))
 
 You will notice the dates are supplied in M/D/YYYY format. In R this is '%-m/%-d/%Y'.
 
+The StationId (163) and channel (32) could be modified for other sensor stations 
+or test parameters.
+
+## Getting a Station and parameter list
+
+To get a list of available sensors and test parameters, we can download another
+JSON file and search it. First we find the URL using the browser's DevTools feature. 
+
+![](img/devtools_enviwa_reports_sites.png)
+
+Right click the "Name" -> then "Copy" -> then "Copy link address".
+
+## Getting the StationId and channel
+
+With that link, we can download the station list and search for the StationId and channel we want.
+
+```{r}
+url <- 'https://enviwa.ecology.wa.gov/ajax/getAllStationsWithoutFiltering'
+enviwa_df <- fromJSON(url)
+sea_df <- enviwa_df %>% filter(name == "Seattle-10th & Weller")
+StationId <- sea_df %>% pull(serialCode)
+channel <- sea_df %>% select(monitors) %>% unnest(monitors) %>% 
+  filter(name == "BAM_PM25") %>% pull(channel)
+paste("StationId =", StationId, "; channel =", channel)
+```
+
+Although we already had these values for one station and parameter, now we have 
+a more efficient way to find other stations and parameters if we need to modify 
+our request.
+
 ## Format query dates
 
 We will request data for the past two weeks. We need to calculate the start and 
@@ -287,7 +294,7 @@ create a list to help accomplish that.
 
 ```{r}
 # Create a list of query parameters
-body_lst <- list(StationId = as.character(StationId),
+body_lst <- list(StationId = StationId,
                  MonitorsChannels = channel,
                  reportName = "station report",
                  startDateAbsolute = paste(start_date, "00:00"),
@@ -418,7 +425,7 @@ ts_key <- df$THINGSPEAK_PRIMARY_ID_READ_KEY
 
 ## Get JSON data from Thingspeak
 
-Now we can get the past two weeks of hourly data for the Montlake sensor.
+Now we can get the past two weeks of hourly data from the Montlake sensor.
 
 ```{r}
 # Calculate start and end dates
@@ -464,8 +471,8 @@ CSV download files when you follow a Purple Air "Download" link from the
 
 ### B. Get more parameters from multiple sensor locations
 
-1. Modify one of the examples provided here to get temperature, humidity, and 
-ozone (O<sub>3</sub>) as well as PM2.5, if they are available. 
+1. Modify WA Ecology example provided here to get temperature, humidity, and 
+ozone (O<sub>3</sub>) as well as PM2.5. 
 2. Then modify further to  collect from multiple sites using a loop, lapply, etc. 
 to avoid copying and pasting code. 
 3. Assemble the results into a single dataframe and 
