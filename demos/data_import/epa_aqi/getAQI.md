@@ -529,10 +529,9 @@ CSV download files when you follow a Purple Air "Download" link from the
 
 ### B. Get more parameters from multiple sensor locations
 
-1. Modify WA Ecology example provided here to get temperature, humidity, and 
-ozone (O<sub>3</sub>) as well as PM2.5. 
-2. Then modify further to  collect from multiple sites using a loop, lapply, etc. 
-to avoid copying and pasting code. 
-3. Assemble the results into a single dataframe and 
-save as a CSV file. Include the current date in the filename in ISO format 
-(YYYY-MM-DD). 
+1. Modify WA Ecology example provided here to get "Temp Amb 10m" and "BC_633" 
+as well as "BAM_PM25" from a single web request. 
+2. Then modify further to collect from multiple sites, one request per site, 
+using a loop, lapply, etc. to avoid copying and pasting code. 
+3. Assemble the results into a single dataframe and save as a CSV file. Include 
+the current date in the filename in ISO format (YYYY-MM-DD). 
