@@ -68,7 +68,7 @@ Load packages with `pacman` to auto-install any missing packages.
 if (! suppressPackageStartupMessages(require(pacman))) {
   install.packages('pacman', repos = 'http://cran.us.r-project.org')
 }
-pacman::p_load(dplyr, tidyr, ggplot2, lubridate, httr, jsonlite, styler)
+pacman::p_load(dplyr, tidyr, ggplot2, lubridate, httr, jsonlite, styler, maps)
 ```
 
 We are loading:
@@ -176,6 +176,80 @@ Seattle and view them as a scatter plot.
 plot_df <- df[grepl("Seattle", df$reportingArea), ]
 plot_title <- "Seattle PM2.5 from AirNow"
 ggplot(plot_df, aes(date, pm25)) + geom_point() +  ggtitle(plot_title) + 
+  geom_smooth(formula = "y ~ x", method = "loess") + theme_classic()
+```
+
+## Get EPA AQS Data
+
+The EPA offers data for [download](https://aqs.epa.gov/aqsweb/airdata/download_files.html) as annual 
+"zip" archives from previous years. You can download files for the year and 
+geographic area you want and then extract the data you want from those files.
+
+If you want to be more specific in what you download, you can use their 
+[API](https://aqs.epa.gov/aqsweb/documents/data_api.html) to 
+get data in JSON format for, e.g., a specific site and parameter. But you can't 
+get recent data from this source, unfortunately.
+
+We will get PM2.5 data for the "Seattle-10th & Weller" site for a two week 
+period from this time last year.
+
+```{r}
+# Calculate start and end dates
+start <- format.Date(Sys.Date() - 379, "%Y%m%d")
+end <- format.Date(Sys.Date() - 365, "%Y%m%d")
+```
+
+## Get EPA AQS Metadata
+
+To get our data, we will first need to download some metadata:
+
+- State FIPS code
+- County code
+- State code
+- Site number
+- Parameter code
+
+```{r}
+# Find FIPS code for Washington
+url <- "https://aqs.epa.gov/data/api/list/states?email=test@aqs.api&key=test"
+states <- fromJSON(url)[['Data']]
+fips_code <- states %>%  filter(value_represented == "Washington") %>% pull(code)
+
+# Get monitor info (site number and parameter code)
+url <- "https://aqs.epa.gov/data/api/monitors/byState"
+query_list <- list(email = "test@aqs.api", key = "test", 
+                   bdate = start, edate = end, state = fips_code)
+monitors <- fromJSON(content(GET(url, query = query_list), "text"))[['Data']]
+monitor <- monitors %>% filter(local_site_name == "Seattle-10th & Weller",
+         parameter_name == "PM2.5 - Local Conditions") 
+```
+
+## Get data with EPA AQS API
+
+Now we can get our hourly PM2.5 data from "Seattle-10th & Weller" from last year.
+
+```{r}
+# Get PM2.5 data
+url <- "https://aqs.epa.gov/data/api/sampleData/bySite"
+query_list <- list(email = "test@aqs.api", key = "test", 
+                   bdate = start, edate = end, state = fips_code,
+                   county = monitor$county_code, site = monitor$site_number, 
+                   param = monitor$parameter_code)
+df <- fromJSON(content(GET(url, query = query_list), "text"))[['Data']]
+
+# Prepare data for plotting
+plot_df <- df %>% 
+  mutate(datetime = 
+    as_datetime(paste(date_gmt, paste0(time_gmt, ':00')), tz = "UTC")) %>%
+  select(datetime, pm25 = "sample_measurement")
+```
+
+## Plot EPA AQS PM2.5 data for Seattle
+
+```{r epa_aqs_plot}
+plot_title <- paste("Seattle (10th and Weller) PM2.5 from EPA AQS", 
+                    paste0('(', year(plot_df$datetime[1]), ')'))
+ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) + 
   geom_smooth(formula = "y ~ x", method = "loess") + theme_classic()
 ```
 

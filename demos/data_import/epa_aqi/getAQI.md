@@ -1,7 +1,7 @@
 ---
 title: 'Air Quality Web Data'
 author: "Brian High"
-date: "24 January, 2021"
+date: "25 January, 2021"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -49,7 +49,7 @@ Load packages with `pacman` to auto-install any missing packages.
 if (! suppressPackageStartupMessages(require(pacman))) {
   install.packages('pacman', repos = 'http://cran.us.r-project.org')
 }
-pacman::p_load(dplyr, tidyr, ggplot2, lubridate, httr, jsonlite, styler)
+pacman::p_load(dplyr, tidyr, ggplot2, lubridate, httr, jsonlite, styler, maps)
 ```
 
 We are loading:
@@ -93,7 +93,7 @@ substr(prettify(fromJSON(url)), 1, 250)
 ```
 ## {
 ##     "state": "Washington",
-##     "fileWrittenDateTime": "20210124T160607Z",
+##     "fileWrittenDateTime": "20210125T160551Z",
 ##     "reportingAreas": [
 ##         {
 ##             "Ritzville": {
@@ -179,6 +179,86 @@ ggplot(plot_df, aes(date, pm25)) + geom_point() +  ggtitle(plot_title) +
 ```
 
 ![](getAQI_files/figure-html/airnow_plot-1.png)<!-- -->
+
+## Get EPA AQS Data
+
+The EPA offers data for [download](https://aqs.epa.gov/aqsweb/airdata/download_files.html) as annual 
+"zip" archives from previous years. You can download files for the year and 
+geographic area you want and then extract the data you want from those files.
+
+If you want to be more specific in what you download, you can use their 
+[API](https://aqs.epa.gov/aqsweb/documents/data_api.html) to 
+get data in JSON format for, e.g., a specific site and parameter. But you can't 
+get recent data from this source, unfortunately.
+
+We will get PM2.5 data for the "Seattle-10th & Weller" site for a two week 
+period from this time last year.
+
+
+```r
+# Calculate start and end dates
+start <- format.Date(Sys.Date() - 379, "%Y%m%d")
+end <- format.Date(Sys.Date() - 365, "%Y%m%d")
+```
+
+## Get EPA AQS Metadata
+
+To get our data, we will first need to download some metadata:
+
+- State FIPS code
+- County code
+- State code
+- Site number
+- Parameter code
+
+
+```r
+# Find FIPS code for Washington
+url <- "https://aqs.epa.gov/data/api/list/states?email=test@aqs.api&key=test"
+states <- fromJSON(url)[['Data']]
+fips_code <- states %>%  filter(value_represented == "Washington") %>% pull(code)
+
+# Get monitor info (site number and parameter code)
+url <- "https://aqs.epa.gov/data/api/monitors/byState"
+query_list <- list(email = "test@aqs.api", key = "test", 
+                   bdate = start, edate = end, state = fips_code)
+monitors <- fromJSON(content(GET(url, query = query_list), "text"))[['Data']]
+monitor <- monitors %>% filter(local_site_name == "Seattle-10th & Weller",
+         parameter_name == "PM2.5 - Local Conditions") 
+```
+
+## Get data with EPA AQS API
+
+Now we can get our hourly PM2.5 data from "Seattle-10th & Weller" from last year.
+
+
+```r
+# Get PM2.5 data
+url <- "https://aqs.epa.gov/data/api/sampleData/bySite"
+query_list <- list(email = "test@aqs.api", key = "test", 
+                   bdate = start, edate = end, state = fips_code,
+                   county = monitor$county_code, site = monitor$site_number, 
+                   param = monitor$parameter_code)
+df <- fromJSON(content(GET(url, query = query_list), "text"))[['Data']]
+
+# Prepare data for plotting
+plot_df <- df %>% 
+  mutate(datetime = 
+    as_datetime(paste(date_gmt, paste0(time_gmt, ':00')), tz = "UTC")) %>%
+  select(datetime, pm25 = "sample_measurement")
+```
+
+## Plot EPA AQS PM2.5 data for Seattle
+
+
+```r
+plot_title <- paste("Seattle (10th and Weller) PM2.5 from EPA AQS", 
+                    paste0('(', year(plot_df$datetime[1]), ')'))
+ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) + 
+  geom_smooth(formula = "y ~ x", method = "loess") + theme_classic()
+```
+
+![](getAQI_files/figure-html/epa_aqs_plot-1.png)<!-- -->
 
 ## Get WA Ecology data
 
@@ -304,7 +384,7 @@ start_date
 ```
 
 ```
-## [1] "1/10/2021"
+## [1] "1/11/2021"
 ```
 
 ```r
@@ -312,7 +392,7 @@ end_date
 ```
 
 ```
-## [1] "1/23/2021"
+## [1] "1/24/2021"
 ```
 
 ## Create list of request parameters
@@ -372,7 +452,7 @@ substr(prettify(json_txt), 1, 400)
 ##     "StationId": 163,
 ##     "data": [
 ##         {
-##             "datetime": "2021-01-10T00:00:00-08:00",
+##             "datetime": "2021-01-11T00:00:00-08:00",
 ##             "Originaldatetime": "/Date(-62135568000000)/",
 ##             "channels": [
 ##                 {
@@ -380,7 +460,7 @@ substr(prettify(json_txt), 1, 400)
 ##                     "id": 32,
 ##                     "name": "BAM_PM25",
 ##                     "alias": null,
-##                     "value": 12.0,
+##                     "value": 4.0,
 ## 
 ```
 
