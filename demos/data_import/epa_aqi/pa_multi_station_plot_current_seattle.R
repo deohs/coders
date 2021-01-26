@@ -69,9 +69,9 @@ gg <- gg + scale_fill_manual(values = aqi_colors, drop = FALSE)
 gg <- gg + scale_alpha(guide = FALSE)
 gg <- gg + labs(x = NULL, y = NULL, 
                 title = "Seattle Air Quality Index", 
-                subtitle = "US EPA PM2.5 AQI 30-min avg",
+                subtitle = "US EPA PM2.5 AQI 30-min. avg.",
                 caption = paste("Source: Purple Air", 
-                                format(timestamp, "%Y-%m-%d %H:%M %Z")))
+                                format(timestamp, "%Y-%m-%d %H:%M:%S %Z")))
 gg <- gg + theme_map(base_family = "Helvetica")
 gg <- gg + theme(plot.title = element_text(face = "bold"))
 gg <- gg + theme(legend.title = element_blank())
