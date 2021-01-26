@@ -67,8 +67,8 @@ gg <- gg+ geom_point(data = df, aes(x = Lon, y = Lat, fill = AQI),
 gg <- gg + scale_fill_manual(values = aqi_colors, drop = FALSE)
 gg <- gg + scale_alpha(guide = FALSE)
 gg <- gg + labs(x = NULL, y = NULL, fill = "PM2.5 AQI", 
-                title = "PM2.5 AQI in Seattle", 
-                subtitle = paste0("Source: Purple Air (", timestamp, ")"))
+                title = "Seattle Air Quality Index", 
+                subtitle = paste0("Purple Air (", timestamp, ")"))
 gg <- gg + theme_map(base_family = "Helvetica")
 gg <- gg + theme(plot.title = element_text(face = "bold"))
 gg <- gg + theme(legend.position = "right")
