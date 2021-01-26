@@ -62,14 +62,15 @@ basemap <- get_stamenmap(bbox, zoom = 10, maptype = "toner-lite")
 
 # Create the map
 gg <- ggmap(basemap)
-gg <- gg + geom_point(data = df, aes(x = Lon, y = Lat, color = AQI, alpha = 0.3))
-gg <- gg + scale_color_manual(values = aqi_colors, drop = FALSE)
+gg <- gg+ geom_point(data = df, aes(x = Lon, y = Lat, fill = AQI), 
+                     colour = "black", pch = 21, size = 2, alpha = 0.5)
+gg <- gg + scale_fill_manual(values = aqi_colors, drop = FALSE)
 gg <- gg + scale_alpha(guide = FALSE)
-gg <- gg + labs(x = NULL, y = NULL, color = "PM2.5 AQI", 
+gg <- gg + labs(x = NULL, y = NULL, fill = "PM2.5 AQI", 
                 title = "PM2.5 AQI in Seattle", 
                 subtitle = paste0("Source: Purple Air (", timestamp, ")"))
 gg <- gg + theme_map(base_family = "Helvetica")
-gg <- gg + theme(plot.title = element_text(face = "bold", hjust = 1))
+gg <- gg + theme(plot.title = element_text(face = "bold"))
 gg <- gg + theme(legend.position = "right")
 gg <- gg + theme(strip.background = element_rect(fill = "white", color = "white"))
 gg <- gg + theme(strip.text = element_text(face = "bold", hjust = 0))
@@ -80,3 +81,7 @@ img_dir <- "img"
 if (!dir.exists(img_dir)) dir.create(img_dir, showWarnings = FALSE)
 png_filename <- file.path(img_dir, gsub('\\.csv', '.png', basename(csv_filename)))
 ggsave(png_filename, width = 2.5, height = 3)
+
+# Resize this image using ImageMagick "covert" from Bash for use in presentation
+resize_png_filename <- gsub('\\.png', '_50pct_resize.png', png_filename)
+system2('convert', args = c('-resize "50%"', png_filename, resize_png_filename))
