@@ -17,15 +17,15 @@ csv_filename <- file.path(data_dir, paste0('pa_seattle_', today(), '.csv'))
 # Field "pm_5" is the 30-min average PM2.5 AQI
 base_url <- 'https://www.purpleair.com/data.json'
 query_list <- list(fetch = "true", 
-                   nwlat = "47.71803233",
-                   selat = "47.47633042",
-                   nwlng = "-122.49252319",
-                   selng = "-122.24670410",
+                   nwlat = 47.72,
+                   selat = 47.51,
+                   nwlng = -122.43,
+                   selng = -122.25,
                    fields = "pm_5")
 
 # Get station data
-timestamp <- now(tzone = Sys.timezone())
 json_txt <- content(GET(base_url, query = query_list), "text")
+timestamp <- now(tzone = Sys.timezone())
 pa_fields <- fromJSON(json_txt)[['fields']]
 pa_df <- data.frame(fromJSON(json_txt)[['data']])
 names(pa_df) <- pa_fields
@@ -50,16 +50,13 @@ df$AQI <- cut(df$PM2.5, ordered_result = TRUE, include.lowest = TRUE,
 aqi_colors <- c("green", "yellow", "orange", "red", "purple", "maroon")
 
 # Prepare a data frame to use for making the bounding box of the basemap.
-center_lat <- mean(range(df$Lat))
-center_lon <- mean(range(df$Lon))
-border <- 0.05
-bbox.df <- data.frame(
-  Lat = c(center_lat - border, center_lat, center_lat + border/1.5),
-  Lon = c(center_lon - border, center_lon, center_lon + border/2.5))
+bbox.df <- with(query_list, 
+                data.frame(Lat = c(selat, selat + (nwlat - selat)/2, nwlat),
+                           Lon = c(nwlng, nwlng + (selng - nwlng)/2, selng)))
 
 # Create the basemap.
-bbox <- make_bbox(Lon, Lat, bbox.df, f = 1)
-basemap <- get_stamenmap(bbox, zoom = 10, maptype = "toner-lite")
+bbox <- make_bbox(Lon, Lat, bbox.df, f = .05)
+basemap <- get_stamenmap(bbox, zoom = 11, maptype = "toner-lite")
 
 # Create the map
 gg <- ggmap(basemap)
