@@ -1,7 +1,7 @@
 ---
 title: 'Air Quality Web Data'
 author: "Brian High"
-date: "25 January, 2021"
+date: "26 January, 2021"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -449,7 +449,7 @@ start_date
 ```
 
 ```
-## [1] "1/11/2021"
+## [1] "1/12/2021"
 ```
 
 ```r
@@ -457,7 +457,7 @@ end_date
 ```
 
 ```
-## [1] "1/24/2021"
+## [1] "1/25/2021"
 ```
 
 ## Create list of request parameters
@@ -517,7 +517,7 @@ substr(prettify(json_txt), 1, 400)
 ##     "StationId": 163,
 ##     "data": [
 ##         {
-##             "datetime": "2021-01-11T00:00:00-08:00",
+##             "datetime": "2021-01-12T00:00:00-08:00",
 ##             "Originaldatetime": "/Date(-62135568000000)/",
 ##             "channels": [
 ##                 {
@@ -525,7 +525,7 @@ substr(prettify(json_txt), 1, 400)
 ##                     "id": 32,
 ##                     "name": "BAM_PM25",
 ##                     "alias": null,
-##                     "value": 4.0,
+##                     "value": 1.0,
 ## 
 ```
 
@@ -613,7 +613,7 @@ We can query the Montlake station with this information:
 ```r
 # Get dataframe of information we need to query Thingspeak's API
 url <- "https://www.purpleair.com/json?show=84023"
-df <- jsonlite::fromJSON("https://www.purpleair.com/json?show=84023")$results
+df <- jsonlite::fromJSON(url)$results
 df <- df[df$Label == "Montlake", 
   c('ID', 'Label', 'THINGSPEAK_PRIMARY_ID', 'THINGSPEAK_PRIMARY_ID_READ_KEY')]
 
@@ -638,7 +638,7 @@ query_list <- list(api_key = ts_key, start = start, end = end, timescale = "60")
 response <- GET(url, query = query_list)
 
 # Extract data from JSON into a dataframe
-json_txt <-content(response, "text")
+json_txt <- content(response, "text")
 df <- as_tibble(fromJSON(json_txt)[['feeds']])
 
 # Get names for "field1" through "field8" from metadata list
@@ -661,6 +661,14 @@ ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) +
 ```
 
 ![](getAQI_files/figure-html/purple_air_plot-1.png)<!-- -->
+
+## Plot a map of PM2.5 AQI for Seattle
+
+We can plot PM2.5 AQI for multiple sensor locations in Seattle using `ggmap()`. 
+The code for the plot below is rather long, so it is stored in 
+[a separate script file](pa_multi_station_plot_current_seattle.R).
+
+![](img/pa_seattle_2021-01-26_50pct_resize.png)
 
 ## Exercises 
 

@@ -543,7 +543,7 @@ We can query the Montlake station with this information:
 ```{r}
 # Get dataframe of information we need to query Thingspeak's API
 url <- "https://www.purpleair.com/json?show=84023"
-df <- jsonlite::fromJSON("https://www.purpleair.com/json?show=84023")$results
+df <- jsonlite::fromJSON(url)$results
 df <- df[df$Label == "Montlake", 
   c('ID', 'Label', 'THINGSPEAK_PRIMARY_ID', 'THINGSPEAK_PRIMARY_ID_READ_KEY')]
 
@@ -567,7 +567,7 @@ query_list <- list(api_key = ts_key, start = start, end = end, timescale = "60")
 response <- GET(url, query = query_list)
 
 # Extract data from JSON into a dataframe
-json_txt <-content(response, "text")
+json_txt <- content(response, "text")
 df <- as_tibble(fromJSON(json_txt)[['feeds']])
 
 # Get names for "field1" through "field8" from metadata list
@@ -587,6 +587,14 @@ plot_title <- "Seattle (Montlake) PM2.5 from Purple Air"
 ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) + 
   geom_smooth(formula = "y ~ x", method = "loess") + theme_classic()
 ```
+
+## Plot a map of PM2.5 AQI for Seattle
+
+We can plot PM2.5 AQI for multiple sensor locations in Seattle using `ggmap()`. 
+The code for the plot below is rather long, so it is stored in 
+[a separate script file](pa_multi_station_plot_current_seattle.R).
+
+![](img/pa_seattle_2021-01-26_50pct_resize.png)
 
 ## Exercises 
 
