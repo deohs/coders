@@ -79,9 +79,10 @@ gg <- gg + geom_point(data = df,
 gg <- gg + scale_shape_manual(values = shapes)
 gg <- gg + scale_fill_manual(values = aqi_colors, drop = FALSE)
 gg <- gg + scale_alpha(guide = FALSE)
-gg <- gg + guides(shape = guide_legend(keyheight = 0.8), 
+gg <- gg + guides(shape = guide_legend(keyheight = 0.8,
+  override.aes = list(size = 3)), 
                   fill = guide_legend(keyheight = 0.8,
-  override.aes = list(shape = 21, fill = aqi_colors)))
+  override.aes = list(shape = 21, fill = aqi_colors, size = 3)))
 gg <- gg + labs(x = NULL, y = NULL, fill = "PM2.5 AQI", 
                 shape = "Sensor Type",
                 title = "Seattle Air Quality Index", 
