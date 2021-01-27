@@ -592,7 +592,7 @@ ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) +
 
 We can plot PM2.5 AQI for multiple sensor locations in Seattle using `ggmap()`. 
 The code for the plot below is rather long, so it is stored in 
-[a separate script file](pa_multi_station_plot_current_seattle.R).
+[a separate script file](https://github.com/deohs/coders/blob/master/demos/data_import/epa_aqi/pa_multi_station_plot_current_seattle.R).
 
 ![](img/pa_seattle_2021-01-26_50pct_resize.png)
 

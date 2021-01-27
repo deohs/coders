@@ -83,7 +83,7 @@ if (!dir.exists(img_dir)) dir.create(img_dir, showWarnings = FALSE)
 png_filename <- file.path(img_dir, gsub('\\.csv', '.png', basename(csv_filename)))
 ggsave(png_filename, width = 2.5, height = 2.5)
 
-# Resize this image using ImageMagick "covert" from Bash for use in presentation
+# Resize this image for presentation using ImageMagick "convert" from Bash
 resize_png_filename <- gsub('\\.png', '_50pct_resize.png', png_filename)
 system2('convert', args = c('-resize "50%"', png_filename, resize_png_filename))
 
