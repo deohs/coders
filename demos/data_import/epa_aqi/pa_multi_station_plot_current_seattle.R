@@ -27,14 +27,22 @@ timestamp <- now(tzone = Sys.timezone())
 pa_fields <- fromJSON(json_txt)[['fields']]
 pa_df <- data.frame(fromJSON(json_txt)[['data']])
 names(pa_df) <- pa_fields
-df <- pa_df %>% rename(pa_id = ID) %>%
+pa_df <- pa_df %>% rename(pa_id = ID) %>%
   mutate(across(-Label, ~as.numeric(as.character(.)))) %>% as_tibble()
-write.csv(df, csv_filename, row.names = FALSE)
+pm_vars <- names(pa_df)[grepl('^pm_\\d$', names(pa_df))]
+new_pm_vars <- c('pm25_now', 'pm25_10m', 'pm25_30m', 'pm25_1h',
+                 'pm25_6h',  'pm25_1d',  'pm25_1w')
+names(pa_df)[names(pa_df) %in% pm_vars] <- new_pm_vars
+
+# Save data to CSV
+#write.csv(pa_df, csv_filename, row.names = FALSE)
+
+# Read data from CSV
+#pa_df <- read.csv(csv_filename, row.names = FALSE)
 
 # Prepare data for plotting
-# Field "pm_1" is the 10-min average PM2.5 AQI
-df <- df %>%
-  select(PM2.5 = "pm_1", conf, Lat, Lon, Flags) %>%
+df <- pa_df %>%
+  select(PM2.5 = "pm25_10m", conf, Lat, Lon, Flags) %>%
   mutate(across(everything(), ~ as.numeric(as.character(.)))) %>%
   filter(Flags == 0, PM2.5 < 1000, conf > 50) %>%
   select(-c(conf,-Flags)) %>%
