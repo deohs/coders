@@ -1,7 +1,7 @@
 ---
 title: 'Air Quality Web Data'
 author: "Brian High"
-date: "26 January, 2021"
+date: "27 January, 2021"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -449,7 +449,7 @@ start_date
 ```
 
 ```
-## [1] "1/12/2021"
+## [1] "1/13/2021"
 ```
 
 ```r
@@ -457,7 +457,7 @@ end_date
 ```
 
 ```
-## [1] "1/25/2021"
+## [1] "1/26/2021"
 ```
 
 ## Create list of request parameters
@@ -517,7 +517,7 @@ substr(prettify(json_txt), 1, 400)
 ##     "StationId": 163,
 ##     "data": [
 ##         {
-##             "datetime": "2021-01-12T00:00:00-08:00",
+##             "datetime": "2021-01-13T00:00:00-08:00",
 ##             "Originaldatetime": "/Date(-62135568000000)/",
 ##             "channels": [
 ##                 {
@@ -525,7 +525,7 @@ substr(prettify(json_txt), 1, 400)
 ##                     "id": 32,
 ##                     "name": "BAM_PM25",
 ##                     "alias": null,
-##                     "value": 1.0,
+##                     "value": 2.0,
 ## 
 ```
 
@@ -662,17 +662,18 @@ ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) +
 
 ![](getAQI_files/figure-html/purple_air_plot-1.png)<!-- -->
 
-## Plot a map of PM2.5 AQI for Seattle
+## Plot a map of PM2.5 AQI for Seattle {.columns-2}
 
 We can plot PM2.5 AQI for multiple sensor locations in Seattle using the 
-[ggmap](https://cran.r-project.org/web/packages/ggmap/index.html) package. The 
-[Air quality Index (AQI)](https://www.airnow.gov/aqi/aqi-basics/) is 
-calculated using the [con2aqi](https://cran.r-project.org/web/packages/con2aqi/index.html) package. 
+[ggmap](https://cran.r-project.org/web/packages/ggmap/index.html) package. 
 
-![](img/pa_seattle_2021-01-26_50pct_resize.png)
+The [Air quality Index (AQI)](https://www.airnow.gov/aqi/aqi-basics/) is calculated  
+using the [con2aqi](https://cran.r-project.org/web/packages/con2aqi/index.html) package. 
 
 The code for the plot is rather long, so it is stored in 
 [a separate script file](https://github.com/deohs/coders/blob/master/demos/data_import/epa_aqi/pa_multi_station_plot_current_seattle.R).
+
+![](img/pa_seattle_2021-01-27_50pct_resize.png)
 
 ## Exercises 
 

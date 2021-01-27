@@ -6,6 +6,8 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: 
     html_document:
         df_paged: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 # Setup
@@ -49,9 +51,10 @@ library(lubridate)
 #-----read data----
 
 # read data 
-  DEMS <- DEMSCombinedPersonal <- readRDS("~/Coders group/Prep/nancy_best_practice/data/DEMSCombinedPersonal.rds")
+  DEMS <- DEMSCombinedPersonal <- readRDS("data/DEMSCombinedPersonal.rds")
 
 # first, specify file name and path
+data_path <- "data"
 DEMS_file <- "DEMSCombinedPersonal.rds"
 DEMS_path <- file.path(data_path, DEMS_file)
 
@@ -159,13 +162,13 @@ xtabs( ~ facilityno, data = DEMS)
 
 ```{r table.with.baseR}
 # make dataframes for different facilities
-DEMSa <- filter(DEMS, facilityid == "A")
-DEMSb <- filter(DEMS, facilityid == "B")
-DEMSc <- filter(DEMS, facilityid == "C")
-DEMSd <- filter(DEMS, facilityid == "D")
-DEMSg <- filter(DEMS, facilityid == "D")
-DEMSh <- filter(DEMS, facilityid == "H")
-DEMSi <- filter(DEMS, facilityid == "I")
+DEMSa <- filter(DEMS, facilityno == "A")
+DEMSb <- filter(DEMS, facilityno == "B")
+DEMSc <- filter(DEMS, facilityno == "C")
+DEMSd <- filter(DEMS, facilityno == "D")
+DEMSg <- filter(DEMS, facilityno == "D")
+DEMSh <- filter(DEMS, facilityno == "H")
+DEMSi <- filter(DEMS, facilityno == "I")
 
 # calculate stats for facility A
 a_N <- dim(DEMSa)[1]
@@ -248,7 +251,12 @@ i_mod <- summary(lm(data = DEMSi, ecdata ~ no2data))$coefficients
 library(ggplot2)
 
 # histogram with density base plot
-p <- ggplot(data=DEMS, aes(ecdata, na.rm=TRUE)) + geom_histogram(aes(y=..density..), colour="black", fill="white", binwidth=20) + geom_density(alpha=.2, fill="red") + labs(x = "REC (ug/m3)") +         scale_y_continuous(expand = expand_scale(mult = c(0, .1))) + theme_classic()
+p <- ggplot(data = DEMS, aes(ecdata, na.rm = TRUE)) + geom_histogram(
+    aes(y = ..density..),
+    colour = "black",
+    fill = "white",
+    binwidth = 20
+  ) + geom_density(alpha = .2, fill = "red") + labs(x = "REC (ug/m3)") +         scale_y_continuous(expand = expand_scale(mult = c(0, .1))) + theme_classic()
 
 p
 
@@ -267,16 +275,16 @@ p
 # Note 2: with facets, you see facility D21 has no `nodata`
 ggplot(data = DEMS, aes(nodata, ecdata, color = u_s)) +
 geom_point() +
-facet_wrap(~ facilityno, nrow = 2, scales = "free") 
-+  geom_smooth(se = FALSE) +  labs(
-    title = "Scatterplot of the DEMS NO (ppm) vs. REC (ug/m3) data \n by facility, colored by measurement location",
-    x = "NO (ppm)",
-    y = "REC (ug/m3)",
-    color = "Measurement\nlocation"
-    ) + 
+  facet_wrap( ~ facilityno, nrow = 2, scales = "free") +  
+  geom_smooth(se = FALSE) +  labs(
+  title = "Scatterplot of the DEMS NO (ppm) vs. REC (ug/m3) data \n by facility, colored by measurement location",
+  x = "NO (ppm)",
+  y = "REC (ug/m3)",
+  color = "Measurement\nlocation"
+) +
   scale_color_brewer(palette = "Dark2") +
   theme_bw()
-    
+
 ### Some of the worst practices this chunk ### 
 # not following + at beginning of each attribute 
 # ignoring warnings 
