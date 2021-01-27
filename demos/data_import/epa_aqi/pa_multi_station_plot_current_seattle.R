@@ -55,7 +55,7 @@ bbox.df <- with(query_list,
                            Lon = c(nwlng, nwlng + (selng - nwlng)/2, selng)))
 
 # Create the basemap.
-bbox <- make_bbox(Lon, Lat, bbox.df, f = .05)
+bbox <- make_bbox(Lon, Lat, bbox.df)
 basemap <- get_stamenmap(bbox, zoom = 11, maptype = "toner-lite")
 
 # Create the map
