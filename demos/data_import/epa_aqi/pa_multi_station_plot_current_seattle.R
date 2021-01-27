@@ -91,6 +91,7 @@ gg <- gg + labs(x = NULL, y = NULL, fill = "PM2.5 AQI",
                                 format(timestamp, "%Y-%m-%d %H:%M:%S %Z")))
 gg <- gg + theme_map(base_family = "Helvetica")
 gg <- gg + theme(plot.title = element_text(face = "bold"),
+                 plot.caption = element_text(face = "italic"),
                  legend.title = element_text(size = 8))
 gg <- gg + theme(legend.position = "right", plot.caption.position = "plot")
 gg <- gg + theme(strip.background = element_rect(fill = "white", color = "white"))
