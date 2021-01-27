@@ -51,7 +51,7 @@ df <- pa_df %>%
   mutate(AQI = con2aqi("pm25", PM2.5))
 
 # Set shapes for plotting symbols by Type
-shapes <- ifelse(df$Type == "Outside", 22, 24)
+shapes <- ifelse(df$Type == "Outside", 21, 24)
 names(shapes) <- df$Type
 
 # Create a factor variable for AQI with levels used in the EPA color scale
