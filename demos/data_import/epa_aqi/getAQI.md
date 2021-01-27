@@ -64,7 +64,7 @@ We are loading:
 * `rvest` -- `read_html()`, `html_node()`, `html_attr()` -- for web-scraping
 * `styler` -- `style_text()` -- to format R code for better display
 
-## Airnow air quality data
+## Airnow Air Quality Index (AQI) data
 
 We will get historical air quality data from this page: 
 
@@ -167,7 +167,7 @@ df <- do.call("rbind", lapply(dates, function(my_date) {
 This is a base-R approach. We could do this with the `tidyverse` 
 function `map()` instead of `lapply()` and `bind_rows()` instead of `rbind()`.
 
-## Plot Airnow PM2.5 data for Seattle
+## Plot Airnow PM2.5 AQI data for Seattle
 
 We obtained data for several sites in Washington. We can subset the results for
 Seattle and view them as a scatter plot.
@@ -175,7 +175,7 @@ Seattle and view them as a scatter plot.
 
 ```r
 plot_df <- df[grepl("Seattle", df$reportingArea), ]
-plot_title <- "Seattle PM2.5 from AirNow"
+plot_title <- "Seattle PM2.5 AQI from AirNow"
 ggplot(plot_df, aes(date, pm25)) + geom_point() +  ggtitle(plot_title) + 
   geom_smooth(formula = "y ~ x", method = "loess") + theme_classic()
 ```
