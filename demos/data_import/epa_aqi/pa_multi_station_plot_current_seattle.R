@@ -50,16 +50,15 @@ df <- pa_df %>%
   mutate(Type = factor(Type, labels = c('Outside', 'Inside'))) %>%
   mutate(AQI = con2aqi("pm25", PM2.5))
 
-# Set shapes for plotting symbols by Type
-shapes <- ifelse(df$Type == "Outside", 21, 24)
-names(shapes) <- df$Type
-
 # Create a factor variable for AQI with levels used in the EPA color scale
 # See: https://www.airnow.gov/aqi/aqi-basics/
 df$AQI <- cut(df$AQI, ordered_result = TRUE, include.lowest = TRUE, 
               breaks = c(0, 50, 100, 150, 200, 300, Inf), 
               labels = c("0-50", "50-100", "100-150", 
                          "150-200", "200-300", "300+"))
+
+# Create vectors for shape and color of points
+aqi_shapes <- c(Outside = 21, Inside = 24)
 aqi_colors <- c("green", "yellow", "orange", "red", "purple", "maroon")
 
 # Prepare a data frame to use for making the bounding box of the basemap.
