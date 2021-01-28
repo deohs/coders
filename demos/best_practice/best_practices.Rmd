@@ -183,7 +183,7 @@ kable(facility_ec)
 no2_mods <- DEMS %>% 
   
   # group by facility
-  group_by(facilityid) %>%
+  group_by(facilityno) %>%
   
   # sum missing & filter out facilities with all missing data
   mutate(N = sum(!is.na(no2data))) %>% 

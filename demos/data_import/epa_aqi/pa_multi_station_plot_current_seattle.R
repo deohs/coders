@@ -75,7 +75,7 @@ gg <- ggmap(basemap)
 gg <- gg + geom_point(data = df, 
                      aes(x = Lon, y = Lat, fill = AQI, shape = Type), 
                      colour = "gray30", size = 1.5, alpha = 0.75)
-gg <- gg + scale_shape_manual(values = shapes)
+gg <- gg + scale_shape_manual(values = aqi_shapes)
 gg <- gg + scale_fill_manual(values = aqi_colors, drop = FALSE)
 gg <- gg + scale_alpha(guide = FALSE)
 gg <- gg + guides(shape = guide_legend(keyheight = 0.8,
