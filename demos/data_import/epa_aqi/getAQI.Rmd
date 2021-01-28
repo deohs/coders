@@ -599,7 +599,7 @@ using the [con2aqi](https://cran.r-project.org/web/packages/con2aqi/index.html) 
 The code for the plot is rather long, so it is stored in 
 [a separate script file](https://github.com/deohs/coders/blob/master/demos/data_import/epa_aqi/pa_multi_station_plot_current_seattle.R).
 
-![](img/pa_seattle_2021-01-27_50pct_resize.png)
+![](img/pa_seattle_2021-01-28_50pct_resize.png)
 
 ## Exercises 
 
