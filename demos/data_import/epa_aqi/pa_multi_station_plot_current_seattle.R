@@ -57,8 +57,9 @@ df$AQI <- cut(df$AQI, ordered_result = TRUE, include.lowest = TRUE,
               labels = c("0-50", "50-100", "100-150", 
                          "150-200", "200-300", "300+"))
 
-# Create vectors for shape and color of points
+# Create vectors for shape, size, and color of points
 aqi_shapes <- c(Outside = 21, Inside = 24)
+aqi_sizes <- seq(1, 3.5, 0.5)
 aqi_colors <- c("green", "yellow", "orange", "red", "purple", "maroon")
 
 # Prepare a data frame to use for making the bounding box of the basemap.
@@ -73,15 +74,16 @@ basemap <- get_stamenmap(bbox, zoom = 11, maptype = "toner-lite")
 # Create the map
 gg <- ggmap(basemap)
 gg <- gg + geom_point(data = df, 
-                     aes(x = Lon, y = Lat, fill = AQI, shape = Type), 
-                     colour = "gray30", size = 1.5, alpha = 0.75)
-gg <- gg + scale_shape_manual(values = aqi_shapes)
+                     aes(x = Lon, y = Lat, fill = AQI, size = AQI, shape = Type), 
+                     colour = "gray30")
 gg <- gg + scale_fill_manual(values = aqi_colors, drop = FALSE)
+gg <- gg + scale_shape_manual(values = aqi_shapes)
+gg <- gg + scale_size_manual(values = aqi_sizes, guide = FALSE)
 gg <- gg + scale_alpha(guide = FALSE)
-gg <- gg + guides(shape = guide_legend(keyheight = 0.8,
-  override.aes = list(size = 3)), 
-                  fill = guide_legend(keyheight = 0.8,
-  override.aes = list(shape = 21, fill = aqi_colors, size = 3)))
+gg <- gg + guides(shape = guide_legend(keyheight = 1,
+  override.aes = list(size = 2)), 
+                  fill = guide_legend(keyheight = 1,
+  override.aes = list(shape = 21, fill = aqi_colors, size = aqi_sizes)))
 gg <- gg + labs(x = NULL, y = NULL, fill = "PM2.5 AQI", 
                 shape = "Sensor Type",
                 title = "Seattle Air Quality Index", 
