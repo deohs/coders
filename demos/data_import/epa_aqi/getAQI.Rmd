@@ -590,14 +590,11 @@ ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) +
 
 ## Plot a map of PM2.5 AQI for Seattle {.columns-2}
 
-We can plot PM2.5 AQI for multiple sensor locations in Seattle using the 
-[ggmap](https://cran.r-project.org/web/packages/ggmap/index.html) package. 
+We can plot PM2.5 AQI for multiple sensor locations in Seattle using the [ggmap](https://cran.r-project.org/web/packages/ggmap/index.html) package. 
 
-The [Air quality Index (AQI)](https://www.airnow.gov/aqi/aqi-basics/) is calculated  
-using the [con2aqi](https://cran.r-project.org/web/packages/con2aqi/index.html) package. 
+The [Air quality Index (AQI)](https://www.airnow.gov/aqi/aqi-basics/) is calculated using the [con2aqi](https://cran.r-project.org/web/packages/con2aqi/index.html) package. 
 
-The code for the plot is rather long, so it is stored in 
-[a separate script file](https://github.com/deohs/coders/blob/master/demos/data_import/epa_aqi/pa_multi_station_plot_current_seattle.R).
+The code for the plot is rather long, so it is stored in [a separate script file](https://github.com/deohs/coders/blob/master/demos/data_import/epa_aqi/pa_multi_station_plot_current_seattle.R).
 
 ![](img/pa_seattle_2021-01-28_50pct_resize.png)
 
