@@ -44,7 +44,7 @@ names(pa_df)[names(pa_df) %in% pm_vars] <- new_pm_vars
 df <- pa_df %>%
   select(PM2.5 = "pm25_10m", conf, Lat, Lon, Flags, Type) %>%
   mutate(across(everything(), ~ as.numeric(as.character(.)))) %>%
-  filter(Flags == 0, PM2.5 < 1000, conf > 50) %>%
+  filter(Flags == 0, conf > 50) %>%
   select(-c(conf,-Flags)) %>%
   select(PM2.5, Lat, Lon, Type) %>% 
   mutate(Type = factor(Type, labels = c('Outside', 'Inside'))) %>%

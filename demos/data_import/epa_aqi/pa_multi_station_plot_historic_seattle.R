@@ -104,14 +104,10 @@ df <- inner_join(pa_df, ts_df, by = "pa_id")
 plot_date <- as.Date("2021-01-28")
 df <- df %>% filter(as.Date(created_at) == plot_date)
 
-# Select columns of interest for plotting
-df <- df %>% 
-  select(pa_id, conf, Type, Label, Lat, Lon, Flags, created_at, `PM2.5 (ATM)`)
-
 # Prepare data for plotting
 df <- df %>% select(PM2.5 = "PM2.5 (ATM)", conf, Lat, Lon, Flags, Type) %>%
   mutate(across(everything(), ~ as.numeric(as.character(.)))) %>%
-  filter(Flags == 0, PM2.5 < 1000, conf > 50) %>%
+  filter(Flags == 0, conf > 50) %>%
   select(-c(conf, -Flags)) %>%
   select(PM2.5, Lat, Lon, Type) %>%
   mutate(Type = factor(Type, labels = c('Outside', 'Inside'))) %>%
