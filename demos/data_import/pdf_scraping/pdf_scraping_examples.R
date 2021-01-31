@@ -229,3 +229,55 @@ ggplot(awards_paid_df, aes(x = fiscal_year, y = tot_outlays/1000000000)) +
   ggtitle(label = "US Vaccine Injury Awards Paid by Fiscal Year", 
           subtitle = "Source: National Vaccine Injury Compensation Program")
 ggsave(file.path(images_dir, "vaccine_awards.png"), height = 3, width = 6)
+
+
+# ----------
+# Example 6
+# ----------
+
+# Plot Snowfall per year at Snoqualmie pass using WSDOT data.
+
+# Load packages
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(data.table, tabulizer, ggplot2)
+
+# Prepare data folder
+data_dir <- "data"
+if (!dir.exists(data_dir)) {
+  dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+}
+
+# Prepare images folder
+images_dir <- "images"
+if (!dir.exists(images_dir)) {
+  dir.create(images_dir, showWarnings = FALSE, recursive = TRUE)
+}
+
+# Download file
+filename <- "snoqualmie-historical-snowfall-data.pdf"
+filepath <- file.path(data_dir, filename)
+if (!file.exists(filepath)) {
+  url <- paste0("https://www.wsdot.com/winter/files/", filename)
+  download.file(url, filepath)
+}
+
+# Extract data
+arg_list <- list(p1 = c(pages = 1, nrows = 43), 
+                 p2 = c(pages = 2, nrows = 28))
+sno <- rbindlist(lapply(arg_list, function(x) {
+  dat <- read_lines(extract_text(file = filepath, pages = x['pages']))
+  fread(text = dat, skip = "Season Snowfall", nrows = x['nrows'], fill = TRUE)
+}))
+
+# Clean up data
+sno[, Year := as.numeric(substr(Season, 1, 4))]
+sno[, Season := factor(Season, ordered = TRUE)]
+
+# Plot the results
+ggplot(sno[complete.cases(sno), ], aes(x = Year, y = Snowfall)) + 
+  geom_point() +  geom_smooth(formula = "y ~ x", method = "lm") + 
+  ggtitle(label = "Snowfall at Snoqualmie Pass by Year", 
+          subtitle = "Source: WSDOT South Central Region") + 
+  theme(axis.text.x = element_text(angle = 90)) + theme_classic() +
+  ylab("Snowfall (in)")
+ggsave(file.path(images_dir, "snoqualmie_snowfall.png"), height = 3, width = 6)
