@@ -278,6 +278,5 @@ ggplot(sno[complete.cases(sno), ], aes(x = Year, y = Snowfall)) +
   geom_point() +  geom_smooth(formula = "y ~ x", method = "lm") + 
   ggtitle(label = "Snowfall at Snoqualmie Pass by Year", 
           subtitle = "Source: WSDOT South Central Region") + 
-  theme(axis.text.x = element_text(angle = 90)) + theme_classic() +
-  ylab("Snowfall (in)")
+  theme_classic() + ylab("Snowfall (in)")
 ggsave(file.path(images_dir, "snoqualmie_snowfall.png"), height = 3, width = 6)
