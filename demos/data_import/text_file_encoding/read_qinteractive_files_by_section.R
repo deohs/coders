@@ -3,7 +3,7 @@
 # Read Q-Interactive files and combine results. Only read sections RAW SCORES, 
 # SCALED SCORES and SUBTEST COMPLETION TIMES. Get the first and last 
 # columns for each of these sections and combine into a single "wide" format 
-# dataframe. Include the filename as an additional column in order to track 
+# dataframe. Include the filename in an additional column in order to track 
 # which rows came from which files. The column names will be Subtest, Raw score, 
 # Scaled score, Completion Time (seconds) and filename.
 
@@ -15,24 +15,22 @@ pacman::p_load(tidyr, dplyr, stringr, purrr)
 # Define functions
 # -----------------
 
-# Store lines of a character vector into a list by section name
-create_section_list <- function(lines, 
-    pattern = '^[A-Z: -]*$|Additional Measures|Composite Score') {
-  section_row_num <- str_which(lines, pattern)
-  section_names <- lines[section_row_num]
-  section_num_rows <- diff(c(section_row_num, length(lines)+1))
-  map2(section_row_num, section_num_rows, ~lines[(.x + 1):(.x + .y - 1)]) %>%
-  set_names(section_names)
+# Split a file stored as a character string into a list by section
+create_section_list <- function(txt) {
+  pattern = '\n[A-Z: -]*\n|\nAdditional Measures [^\n]*\n|\nComposite Score\n'
+  section_names <- str_trim(unlist(str_extract_all(txt, pattern)))
+  strsplit(txt, pattern)[[1]][2:11] %>% set_names(section_names)
 }
 
-# Read a section of a file stored as a vector of character strings as a CSV
-read_section <- function(x) {
-  read.csv(text = x, na.strings = c("null", "-"), check.names = FALSE)
+# Read a section of a file stored as a character string as a CSV
+read_section <- function(txt) {
+  read.csv(text = txt, na.strings = c("null", "-"), check.names = FALSE)
 }
 
-# Read a Q-Interactive file into a vector of character strings
+# Read a Q-Interactive file into a vector of lines and combine into one string
 scan_file <- function(x) {
-  scan(x, what = "raw", fileEncoding = "UTF-16LE", sep = '\n', quiet = TRUE)
+  scan(x, what = "raw", fileEncoding = "UTF-16LE", sep = '\n', quiet = TRUE) %>%
+    paste(collapse = "\n")
 }
 
 # Read all sections of all CSV files into a nested list of dataframes
