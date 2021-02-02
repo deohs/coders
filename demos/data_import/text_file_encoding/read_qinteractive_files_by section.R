@@ -24,9 +24,9 @@ df <- list.files('data', pattern = "\\.csv$", recursive = T, full.names = T) %>%
                            section_row_num, section_num_rows)
     names(sections_lst) <- section_names
   
-    lapply(sections, function(x) {
-      read.csv(text = sections_lst[[x]], na.strings = c("null", "-"), 
-               check.names = F) %>% select(1, 3) %>% pivot_longer(-Subtest)
+    lapply(sections_lst[sections], function(x) {
+      read.csv(text = x, na.strings = c("null", "-"), check.names = F) %>% 
+        select(1, 3) %>% pivot_longer(-Subtest)
     }) %>% bind_rows() %>% pivot_wider() %>% mutate(filename = basename(fn)) 
   }) %>% bind_rows()
 
