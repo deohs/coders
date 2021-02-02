@@ -16,7 +16,7 @@ pacman::p_load(tidyr, dplyr, stringr, purrr)
 # -----------------
 
 # Split a file stored as a character string into a list by section
-create_section_list <- function(txt) {
+as_section_list <- function(txt) {
   patterns <- c('[A-Z: -]+', 'Additional Measures [^\n]*', 'Composite Score')
   pattern <- paste0('\n', patterns, collapse = '|', '\n')
   section_names <- unlist(str_trim(unlist(str_extract_all(txt, pattern))))
@@ -28,17 +28,15 @@ read_section <- function(txt) {
   read.csv(text = txt, na.strings = c("null", "-"), check.names = FALSE)
 }
 
-# Read a Q-Interactive file into a vector of lines and combine into one string
+# Read a Q-Interactive file and combine sections into a list of dataframes
 scan_file <- function(x) {
   scan(x, what = "raw", fileEncoding = "UTF-16LE", sep = '\n', quiet = TRUE) %>%
-    paste(collapse = "\n")
+    paste(collapse = "\n") %>% as_section_list() %>% map(read_section)
 }
 
 # Read all sections of all CSV files into a nested list of dataframes
 read_files <- function(files) {
-  sections_lst <- map(files, ~ {
-    scan_file(.x) %>% create_section_list() %>% map(read_section) }) %>%
-    set_names(basename(files))
+  sections_lst <- map(files, scan_file) %>% set_names(basename(files))
 }
 
 # From each dataframe in the nested list, select variables, reshape, & combine
