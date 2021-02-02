@@ -12,7 +12,7 @@ library(dplyr)
 library(stringr)
 
 # Function to store lines of a character vector into a list by section name
-create_section_list <- function(lines, sections) {
+create_section_list <- function(lines) {
   section_name_pattern <- '^[A-Z: -]*$|Additional Measures|Composite Score'
   section_row_num <- str_which(lines, section_name_pattern)
   section_names <- lines[section_row_num]
@@ -30,7 +30,7 @@ df <- list.files('data', pattern = "\\.csv$", recursive = T, full.names = T) %>%
   lapply(function (fn) {
     # Read the file into a character vector of lines the store in a named list
     lines <- scan(fn, "raw", fileEncoding = "UTF-16LE", sep = '\n', quiet = T)
-    sections_lst <- create_section_list(lines, sections)
+    sections_lst <- create_section_list(lines)
     
     # Read the lines as CSV from the sections of interest and reshape
     lapply(sections_lst[sections], function(x) {
