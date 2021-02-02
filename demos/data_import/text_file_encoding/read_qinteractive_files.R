@@ -13,8 +13,7 @@ df <- list.files('data', pattern = "\\.csv$", recursive = T, full.names = T) %>%
       row_nums <- sapply(col_names, function(x) str_which(lines, fixed(x))[1])
       lapply(row_nums, function(n) { 
         read.csv(text = lines[n:(n + 2)], na.strings = c("null", "-"), 
-                 check.names = F) %>% select(1, 3) %>% 
-          pivot_longer(-Subtest) %>% mutate(value = as.numeric(value))
+                 check.names = F) %>% select(1, 3) %>% pivot_longer(-Subtest)
       }) %>% bind_rows() %>% pivot_wider() %>% mutate(filename = basename(fn))
     }) %>% bind_rows()
 
