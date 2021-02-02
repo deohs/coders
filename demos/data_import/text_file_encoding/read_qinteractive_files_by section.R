@@ -20,6 +20,7 @@ create_section_list <- function(lines, sections) {
   sections_lst <- mapply(function(x, y) { lines[(x+1):(x+y-1)] }, 
                          section_row_num, section_num_rows)
   names(sections_lst) <- section_names
+  sections_lst
 }
 
 sections <- c('RAW SCORES', 'SCALED SCORES', 'SUBTEST COMPLETION TIMES')
@@ -29,7 +30,7 @@ df <- list.files('data', pattern = "\\.csv$", recursive = T, full.names = T) %>%
   lapply(function (fn) {
     # Read the file into a character vector of lines the store in a named list
     lines <- scan(fn, "raw", fileEncoding = "UTF-16LE", sep = '\n', quiet = T)
-    section_lst <- create_section_list(lines, sections)
+    sections_lst <- create_section_list(lines, sections)
     
     # Read the lines as CSV from the sections of interest and reshape
     lapply(sections_lst[sections], function(x) {
