@@ -17,9 +17,10 @@ pacman::p_load(tidyr, dplyr, stringr, purrr)
 
 # Split a file stored as a character string into a list by section
 create_section_list <- function(txt) {
-  pattern = '\n[A-Z: -]*\n|\nAdditional Measures [^\n]*\n|\nComposite Score\n'
-  section_names <- str_trim(unlist(str_extract_all(txt, pattern)))
-  strsplit(txt, pattern)[[1]][2:11] %>% set_names(section_names)
+  patterns <- c('[A-Z: -]+', 'Additional Measures [^\n]*', 'Composite Score')
+  pattern <- paste0('\n', patterns, collapse = '|', '\n')
+  section_names <- unlist(str_trim(unlist(str_extract_all(txt, pattern))))
+  strsplit(txt, pattern)[[1]][-1] %>% set_names(section_names)
 }
 
 # Read a section of a file stored as a character string as a CSV
@@ -36,7 +37,7 @@ scan_file <- function(x) {
 # Read all sections of all CSV files into a nested list of dataframes
 read_files <- function(files) {
   sections_lst <- map(files, ~ {
-    scan_file(.x) %>% create_section_list() %>% map(., read_section) }) %>%
+    scan_file(.x) %>% create_section_list() %>% map(read_section) }) %>%
     set_names(basename(files))
 }
 
