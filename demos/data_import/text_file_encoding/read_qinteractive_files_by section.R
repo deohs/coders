@@ -11,19 +11,27 @@ library(tidyr)
 library(dplyr)
 library(stringr)
 
+# Function to store lines of a character vector into a list by section name
+create_section_list <- function(lines, sections) {
+  section_name_pattern <- '^[A-Z: -]*$|Additional Measures|Composite Score'
+  section_row_num <- str_which(lines, section_name_pattern)
+  section_names <- lines[section_row_num]
+  section_num_rows <- diff(c(section_row_num, length(lines)+1))
+  sections_lst <- mapply(function(x, y) { lines[(x+1):(x+y-1)] }, 
+                         section_row_num, section_num_rows)
+  names(sections_lst) <- section_names
+}
+
 sections <- c('RAW SCORES', 'SCALED SCORES', 'SUBTEST COMPLETION TIMES')
 
+# Read in CSV files from the data folder, select variables and reshape
 df <- list.files('data', pattern = "\\.csv$", recursive = T, full.names = T) %>%
   lapply(function (fn) {
+    # Read the file into a character vector of lines the store in a named list
     lines <- scan(fn, "raw", fileEncoding = "UTF-16LE", sep = '\n', quiet = T)
-    section_name_pattern <- '^[A-Z: -]*$|Additional Measures|Composite Score'
-    section_row_num <- str_which(lines, section_name_pattern)
-    section_names <- lines[section_row_num]
-    section_num_rows <- diff(c(section_row_num, length(lines)+1))
-    sections_lst <- mapply(function(x, y) { lines[(x+1):(x+y-1)] }, 
-                           section_row_num, section_num_rows)
-    names(sections_lst) <- section_names
-  
+    section_lst <- create_section_list(lines, sections)
+    
+    # Read the lines as CSV from the sections of interest and reshape
     lapply(sections_lst[sections], function(x) {
       read.csv(text = x, na.strings = c("null", "-"), check.names = F) %>% 
         select(1, 3) %>% pivot_longer(-Subtest)
