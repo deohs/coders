@@ -34,11 +34,6 @@ scan_file <- function(x) {
     paste(collapse = "\n") %>% as_section_list() %>% map(read_section)
 }
 
-# Read all sections of all CSV files into a nested list of dataframes
-read_files <- function(files) {
-  sections_lst <- map(files, scan_file) %>% set_names(basename(files))
-}
-
 # From each dataframe in the nested list, select variables, reshape, & combine
 combine_dataframes <- function(df_lst, sections, col_nums = c(1, 3)) {
   df_lst %>% map_dfr(~ { map_dfr(.x[sections], ~ { .x[, col_nums] %>% 
@@ -51,7 +46,7 @@ combine_dataframes <- function(df_lst, sections, col_nums = c(1, 3)) {
 
 # Read in CSV files as a nested list of dataframes
 files <- list.files('data', pattern = "\\.csv$", full.names = TRUE)
-df_lst <- read_files(files)
+df_lst <- files %>% map(scan_file) %>% set_names(basename(files))
 
 # Combine results from desired sections
 sections <- c('RAW SCORES', 'SCALED SCORES', 'SUBTEST COMPLETION TIMES')
