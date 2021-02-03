@@ -18,7 +18,7 @@ pacman::p_load(tidyr, dplyr, stringr, purrr)
 # Split a file stored as a character string into a list by section
 as_section_list <- function(txt) {
   patterns <- c('[A-Z: -]+', 'Additional Measures [^\n]*', 'Composite Score')
-  pattern <- paste0('\n', patterns, collapse = '|', '\n')
+  pattern <- paste0('\n', patterns, '\n', collapse = '|')
   section_names <- unlist(str_trim(unlist(str_extract_all(txt, pattern))))
   strsplit(txt, pattern)[[1]][-1] %>% set_names(section_names)
 }
