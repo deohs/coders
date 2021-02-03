@@ -24,33 +24,33 @@ as_section_list <- function(txt) {
 }
 
 # Read a section of a file stored as a character string as a CSV
-read_section <- function(txt) {
-  read.csv(text = txt, na.strings = c("null", "-"), check.names = FALSE)
+read_section <- function(txt, col_nums = c(1, 3)) {
+  read.csv(text = txt, na.strings = c("null", "-"), check.names = FALSE) %>% 
+    select(col_nums) %>% pivot_longer(-1)
 }
 
 # Read a Q-Interactive file and combine sections into a list of dataframes
-scan_file <- function(x) {
+scan_file <- function(x, sections) {
   scan(x, what = "raw", fileEncoding = "UTF-16LE", sep = '\n', quiet = TRUE) %>%
-    paste(collapse = "\n") %>% as_section_list() %>% map(read_section)
-}
-
-# From each dataframe in the nested list, select variables, reshape, & combine
-combine_dataframes <- function(df_lst, sections, col_nums = c(1, 3)) {
-  df_lst %>% map_dfr(~ { map_dfr(.x[sections], ~ { .x[, col_nums] %>% 
-      pivot_longer(-1) }) %>% pivot_wider() }, .id = "Filename")
+    paste(collapse = "\n") %>% as_section_list() %>% 
+    .[sections] %>% as.list() %>% map(read_section)
 }
 
 # -------------
 # Main routine
 # -------------
 
-# Read in CSV files as a nested list of dataframes
-files <- list.files('data', pattern = "\\.csv$", full.names = TRUE)
-df_lst <- files %>% map(scan_file) %>% set_names(basename(files))
-
-# Combine results from desired sections
+# Define vector of section names to extract from files
 sections <- c('RAW SCORES', 'SCALED SCORES', 'SUBTEST COMPLETION TIMES')
-df <- combine_dataframes(df_lst, sections)
+
+# Get file list
+files <- list.files('data', pattern = "\\.csv$", full.names = TRUE)
+
+# Read in desired sections of files and combine into a single dataframe
+df <- tibble(Filename = files) %>% 
+  mutate(data = map(Filename, scan_file, sections)) %>% 
+  unnest(data) %>% unnest(data) %>% pivot_wider()
+
 
 # -------------
 # View results
