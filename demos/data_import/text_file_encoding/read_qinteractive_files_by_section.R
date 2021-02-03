@@ -41,9 +41,8 @@ read_files <- function(files) {
 
 # From each dataframe in the nested list, select variables, reshape, & combine
 combine_dataframes <- function(df_lst, sections, col_nums = c(1, 3)) {
-  map_dfr(df_lst, ~ { 
-    map_dfr(.x[sections], ~ {
-      .x[, col_nums] %>% pivot_longer(-1) }) %>% pivot_wider() }, .id = "File")
+  df_lst %>% map_dfr(~ { map_dfr(.x[sections], ~ { .x[, col_nums] %>% 
+      pivot_longer(-1) }) %>% pivot_wider() }, .id = "Filename")
 }
 
 # -------------
@@ -67,7 +66,7 @@ df
 # Expected Output
 #
 # A tibble: 4 x 5
-# File              Subtest          `Raw score` `Scaled score` `Completion Time (seconds)`
+# Filename          Subtest          `Raw score` `Scaled score` `Completion Time (seconds)`
 # <chr>             <fct>                  <dbl>          <dbl>                       <dbl>
 # 1 0001_scores.csv Matrix Reasoning          12              7                        243.
 # 2 0001_scores.csv Digit Span                18              8                         NA 
