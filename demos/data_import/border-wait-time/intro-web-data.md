@@ -1,7 +1,7 @@
 ---
 title: "Web Data"
 author: "Brian High and Tom Kiehne"
-date: "22 January, 2021"
+date: "05 February, 2021"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -43,57 +43,78 @@ From this website, we will extract data to satisfy this request:
 
 Sample code will be provided.
 
-## Web data sources
+## What is the Web?
 
-We commonly need to extract data from:
+Using the HyperText Transfer Protocol (http or https), we:
 
-- "Static" web pages where content is stored in HTML files
-- "Dynamic" pages that show data from databases on demand
-- Document files available for download from a web server
+- send commands via a client (browser, script, etc.)...
+- over a network (using TCP/IP) to a server...
+- and receive structured text in response...
+- that is processed by our client
 
-Ideally, we can download data as well-structured files.
+Some definitions:
 
-If not, we must extract it from web pages.
+- HTTP command = Uniform Resource Locator (URL)
+- Structured text = a stream of characters that contains markup or metadata that conforms to a convention
 
-## Web data extraction
+## Structured text & HTML
 
-Most web data extraction uses one of these methods:
+- Can be any of a littany of formats (e.g.: text, PDF, proprietary formats, video, sound, etc.)
+- Default for the Web is typically HyperText Markup Language (HTML)
+- What does it look like?
+  - Go to the [U.S. Customs and Border Protection Newsroom](https://www.cbp.gov/newsroom/media-releases/all)
+  - Right-click in window to "View Source" in your browser
+  - Explore the markup
+- HTML is good for visual display of information, not as good for data
 
-- Web-scraping: parsing web pages to extract content
-- RSS: pulling data from a "feed" using a specific URL
-- APIs: using a function library or crafting URLs to pull data
+## Structured text & XML
+
+- XML is a sibling of HTML meant for data exchange (e.g. [RSS](https://en.wikipedia.org/wiki/RSS))
+- XML formats are often explicit and rigid in their structure
+- Browsers can display, but the format is meant for non-visual use:
+  - Go to [CBP Border Wait Times](https://bwt.cbp.gov/)
+  - Find and click "XML" in the header
+  - Right-click in window to "View Source" in your browser
+  - Compare with the HTML we saw previously
+- Not as universal as CSV, but much better than HTML for data
+
+Note: [RSS](https://en.wikipedia.org/wiki/RSS) stands for "Really Simple Syndication".
+
+## "Dynamic" Web sites
+
+As Web technologies matured and computing power increased, the emphasis shifted to client-side scripting via Javascript
+
+- Go back to [CBP Border Wait Times](https://bwt.cbp.gov/)
+- Right-click and select "Inspect" (or press F12 key)
+- This is the "Inspector" which shows the page markup as rendered and manipulated in the client
+- Compare to "View Source"
+
+The content that is displayed is not what was originally returned in the server response!
+
+Click the "Network" tab in Inspector to see what happened...
+
+## Strutured text & JSON
+
+Filter the Network requests by clicking XHR (XML Http Request)...
+
+You can now see the structured data retreieved by the client-side application from an [API](https://en.wikipedia.org/wiki/API).
+
+This is a serialized representation of Javascript data structure called [JSON](https://www.json.org/). Compare with the XML data we saw earlier.
+
+Still not as universal as CSV, but about as good as XML for data
 
 Notes:
 
-- [RSS](https://en.wikipedia.org/wiki/RSS) stands for "Really Simple Syndication".
 - [API](https://en.wikipedia.org/wiki/API) stands for "application programming interface".
+- [JSON](https://www.json.org/) stands for "JavaScript Object Notation".
 
-## Web data formats
+## Which will I use?
 
-Web content is most commonly presented through text data formats: 
-
-- HTML: The "markup" language used for most web pages
-- XML: A general and flexible markup language
-- JSON: A simple format supporting hierarchical data
-
-Which will I use?
-
-- If you pull data with RSS, you will usually get XML.
-- If you pull data with APIs, you will usually get XML or JSON.
+- If the Web site publishes data files (CSV, etc.), use that
+- If the site has an API with XML or JSON data, use that
 - If you can't do any of the above, then you "web scrape" HTML.
 
-## Example: Inspect a web site
-
-Often we first need to examine a web site to see what it offers.
-
-Explore the [CBP Border Wait Times](https://bwt.cbp.gov/) web site. 
-
-Try to find border wait times for San Ysidro as presented in ...
-
-- HTML
-- XML
-- JSON
-- Document files or other useful formats
+Exercise: Explore the [CBP Border Wait Times](https://bwt.cbp.gov/) Web site to see what's available.
 
 ## R Tools for web data
 
@@ -109,7 +130,7 @@ Usually rvest, xml2, and jsonlite will be sufficient.
 
 ## Sample code
 
-We can extract data from the [CBP Border Wait Times](https://bwt.cbp.gov/) web site using:
+We can extract data from the [CBP Border Wait Times](https://bwt.cbp.gov/) Web site using:
 
 - xml2 to extract current data: [bwt.R](R/bwt.R)
 - jsonlite to extract current data: [bwt2.R](R/bwt2.R)
@@ -121,7 +142,7 @@ Since the BWT site does not offer a good web-scraping example, we use the CBP si
 
 ## Common challenges
 
-We often face the following challenges when web sites:
+We often face the following challenges when Web sites:
 
 - Are designed for viewing information with human eyes only
 - Require authentication, cookies, and Javascript to navigate
