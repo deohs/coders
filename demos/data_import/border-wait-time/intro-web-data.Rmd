@@ -98,9 +98,9 @@ Click the "Network" tab in Inspector to see what happened...
 
 ## Strutured text & JSON
 
-Filter the Network requests by clicking XHR (XML Http Request)...
+Filter the Network requests by clicking XHR (XML Http Request)
 
-You can now see the structured data retreieved by the client-side application from an [API](https://en.wikipedia.org/wiki/API).
+You can now see the structured data retrieved by the client-side application from an [API](https://en.wikipedia.org/wiki/API).
 
 This is a serialized representation of Javascript data structure called [JSON](https://www.json.org/). Compare with the XML data we saw earlier.
 
