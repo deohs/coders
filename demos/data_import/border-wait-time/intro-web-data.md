@@ -1,7 +1,7 @@
 ---
 title: "Web Data"
 author: "Brian High and Tom Kiehne"
-date: "05 February, 2021"
+date: "08 February, 2021"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -50,7 +50,7 @@ Using the HyperText Transfer Protocol (http or https), we:
 - send commands via a client (browser, script, etc.)...
 - over a network (using TCP/IP) to a server...
 - and receive structured text in response...
-- that is processed by our client
+- that is processed by the client
 
 Some definitions:
 
@@ -59,7 +59,7 @@ Some definitions:
 
 ## Structured text & HTML
 
-- Can be any of a littany of formats (e.g.: text, PDF, proprietary formats, video, sound, etc.)
+- Structured text can be any of a littany of formats (e.g.: text, PDF, proprietary formats, video, audio, etc.)
 - Default for the Web is typically HyperText Markup Language (HTML)
 - What does it look like?
   - Go to the [U.S. Customs and Border Protection Newsroom](https://www.cbp.gov/newsroom/media-releases/all)
@@ -71,7 +71,7 @@ Some definitions:
 
 - XML is a sibling of HTML meant for data exchange (e.g. [RSS](https://en.wikipedia.org/wiki/RSS))
 - XML formats are often explicit and rigid in their structure
-- Browsers can display, but the format is meant for non-visual use:
+- Browsers can display XML, but the format is meant for non-visual use:
   - Go to [CBP Border Wait Times](https://bwt.cbp.gov/)
   - Find and click "XML" in the header
   - Right-click in window to "View Source" in your browser
@@ -95,9 +95,9 @@ Click the "Network" tab in Inspector to see what happened...
 
 ## Strutured text & JSON
 
-Filter the Network requests by clicking XHR (XML Http Request)...
+Filter the Network requests by clicking XHR (XML Http Request)
 
-You can now see the structured data retreieved by the client-side application from an [API](https://en.wikipedia.org/wiki/API).
+You can now see the structured data retrieved by the client-side application from an [API](https://en.wikipedia.org/wiki/API).
 
 This is a serialized representation of Javascript data structure called [JSON](https://www.json.org/). Compare with the XML data we saw earlier.
 
