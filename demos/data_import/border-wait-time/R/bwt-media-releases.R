@@ -1,5 +1,7 @@
 # Get a list of all national media releases from the CPB site and save as CSV.
 # Get articles in the list and save each as a plain text file.
+#
+# Tested on Ubuntu 18.04.5 LTS and R version 3.6.3 (2021-02-08).
 
 # Load packages, installing as needed
 if (!require("pacman")) install.packages("pacman")

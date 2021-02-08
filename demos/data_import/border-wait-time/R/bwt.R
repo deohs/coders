@@ -1,6 +1,6 @@
 # bwt.R: Extract border wait time data from XML using R.
 #
-# Tested on Ubuntu 18.04.5 LTS and R version 3.6.3 (2020-02-29).
+# Tested on Ubuntu 18.04.5 LTS and R version 3.6.3 (2021-02-08).
 #
 # Schedule to run once an hour, at half past the hour, e.g.:
 #     $ echo '30 * * * * Rscript ~/bin/bwt.R' | crontab
