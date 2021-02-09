@@ -52,4 +52,4 @@ lane_data <- map2(.x = rep(ports_lst, length(lane_types)),
 port_data <- inner_join(ports, lane_data, by = "port_number")
 
 # Save results
-write_csv(port_data, csv)
+write_csv(port_data, csv, append = TRUE)

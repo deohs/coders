@@ -47,4 +47,4 @@ port_data <- inner_join(ports %>% filter(port_number %in% port_num),
                         by = "port_number")
 
 # Save results
-write_csv(port_data, csv)
+write_csv(port_data, csv, append = TRUE)
