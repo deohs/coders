@@ -129,6 +129,6 @@ png_filename <- file.path(img_dir,
 ggsave(filename = png_filename, plot = gg, width = 4, height = 4)
 
 # Resize this image for presentation using ImageMagick "convert" from Bash
-resize_png_filename <- gsub('\\.png', '_50pct_resize.png', png_filename)
-system2('convert', args = c('-resize "50%"', png_filename, resize_png_filename))
+resize_png_filename <- gsub('\\.png', '_30pct_resize.png', png_filename)
+system2('convert', args = c('-resize "30%"', png_filename, resize_png_filename))
 
