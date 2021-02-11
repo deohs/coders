@@ -598,6 +598,17 @@ The code for the plot is rather long, so it is stored in [a separate script file
 
 ![](img/pa_seattle_2021-01-28_50pct_resize.png)
 
+## Plot historical AQI for WA, OR, and CA {.columns-2}
+
+![](img/pa_wa_or_ca_daily_avg_facet_2020-09-08_30pct_resize.png)
+
+The [AirSensor](https://mazamascience.github.io/AirSensor/) package provides:
+
+- functions to facilitate use of the PurpleAir API
+- historical PurpleAir datasets
+
+The code for the plot is rather long, so it is stored in [a separate script file](https://github.com/deohs/coders/blob/master/demos/data_import/epa_aqi/pa_multi_station_plot_historic_facet_WA_OR_CA.R).
+
 ## Exercises 
 
 ### A. Get historical CSV data from Purple Air

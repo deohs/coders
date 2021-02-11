@@ -1,7 +1,7 @@
 ---
 title: 'Air Quality Web Data'
 author: "Brian High"
-date: "27 January, 2021"
+date: "10 February, 2021"
 output:
   ioslides_presentation:
     fig_caption: yes
@@ -260,6 +260,14 @@ ggplot(plot_df, aes(datetime, pm25)) + geom_point() +  ggtitle(plot_title) +
   geom_smooth(formula = "y ~ x", method = "loess") + theme_classic()
 ```
 
+```
+## Warning: Removed 2 rows containing non-finite values (stat_smooth).
+```
+
+```
+## Warning: Removed 2 rows containing missing values (geom_point).
+```
+
 ![](getAQI_files/figure-html/epa_aqs_plot-1.png)<!-- -->
 
 ## Current data from EPA AQS
@@ -449,7 +457,7 @@ start_date
 ```
 
 ```
-## [1] "1/13/2021"
+## [1] "1/27/2021"
 ```
 
 ```r
@@ -457,7 +465,7 @@ end_date
 ```
 
 ```
-## [1] "1/26/2021"
+## [1] "2/9/2021"
 ```
 
 ## Create list of request parameters
@@ -517,7 +525,7 @@ substr(prettify(json_txt), 1, 400)
 ##     "StationId": 163,
 ##     "data": [
 ##         {
-##             "datetime": "2021-01-13T00:00:00-08:00",
+##             "datetime": "2021-01-27T00:00:00-08:00",
 ##             "Originaldatetime": "/Date(-62135568000000)/",
 ##             "channels": [
 ##                 {
@@ -525,7 +533,7 @@ substr(prettify(json_txt), 1, 400)
 ##                     "id": 32,
 ##                     "name": "BAM_PM25",
 ##                     "alias": null,
-##                     "value": 2.0,
+##                     "value": 0.0,
 ## 
 ```
 
@@ -671,6 +679,17 @@ The [Air quality Index (AQI)](https://www.airnow.gov/aqi/aqi-basics/) is calcula
 The code for the plot is rather long, so it is stored in [a separate script file](https://github.com/deohs/coders/blob/master/demos/data_import/epa_aqi/pa_multi_station_plot_current_seattle.R).
 
 ![](img/pa_seattle_2021-01-28_50pct_resize.png)
+
+## Plot historical AQI for WA, OR, and CA {.columns-2}
+
+![](img/pa_wa_or_ca_daily_avg_facet_2020-09-08_30pct_resize.png)
+
+The [AirSensor](https://mazamascience.github.io/AirSensor/) package provides:
+
+- functions to facilitate use of the PurpleAir API
+- historical PurpleAir datasets
+
+The code for the plot is rather long, so it is stored in [a separate script file](https://github.com/deohs/coders/blob/master/demos/data_import/epa_aqi/pa_multi_station_plot_historic_facet_WA_OR_CA.R).
 
 ## Exercises 
 
