@@ -128,7 +128,7 @@ df <- cbind(meta_data, transpose(gen_site, make.names = 1))
 
 # Load packages
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(dplyr, tidyr, tabulizer, ggplot2, RColorBrewer)
+pacman::p_load(dplyr, tidyr, tabulizer, ggplot2, RColorBrewer, lubridate)
 
 # Prepare data folder
 data_dir <- "data"
