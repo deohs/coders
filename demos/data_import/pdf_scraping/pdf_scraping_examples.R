@@ -160,7 +160,7 @@ adjudications <- adjudications %>% filter(Fiscal.Year != "Total") %>%
 
 # Prepare for plotting: remove extra columns & rows; reshape to long format
 adjudications.long <- adjudications %>% select(-Total) %>% 
-  filter(Fiscal.Year != year(today())) %>%
+  filter(Fiscal.Year != year(Sys.Date())) %>%
   pivot_longer(cols = c(Compensable, Dismissed), 
                names_to = "Type", values_to = "Count")
 
