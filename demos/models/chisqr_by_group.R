@@ -13,6 +13,8 @@ titanic_train %>%
   group_by(Pclass) %>% nest() %>%
   mutate(M = map(data, ~ .x %>% 
       pivot_wider(names_from = Sex, values_from = freq) %>% 
-      .[, -1] %>% as.matrix())) %>% 
-  mutate(pvalue = map_dbl(M, ~chisq.test(.x)$p.value)) %>%
+      select(-Survived) %>% as.matrix())) %>% 
+  mutate(p.value = map_dbl(M, ~chisq.test(.x)$p.value)) %>%
   select(-data, -M)
+
+
