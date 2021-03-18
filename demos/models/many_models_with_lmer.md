@@ -1,7 +1,7 @@
 ---
 title: "Many Models with lme4::lmer() and broom.mixed::tidy()"
 author: "Brian High"
-date: "9/7/2020"
+date: "3/18/2021"
 output:
   html_document:
     df_print: paged
@@ -57,7 +57,7 @@ availableCores()
 
 ```
 ## system 
-##     16
+##     64
 ```
 
 ```r
@@ -147,7 +147,7 @@ toc()
 ```
 
 ```
-## 26.803 sec elapsed
+## 16.119 sec elapsed
 ```
 
 Display the results.
@@ -230,7 +230,7 @@ toc()
 ```
 
 ```
-## 21.379 sec elapsed
+## 14.911 sec elapsed
 ```
 
 Display the results.

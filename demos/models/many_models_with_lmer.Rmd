@@ -1,7 +1,7 @@
 ---
 title: "Many Models with lme4::lmer() and broom.mixed::tidy()"
 author: "Brian High"
-date: "9/7/2020"
+date: "3/18/2021"
 output:
   html_document:
     df_print: paged
@@ -15,6 +15,8 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+options(future.fork.enable = TRUE)
+options(future.supportsMulticore.unstable = "quiet")
 ```
 
 ## Objectives
