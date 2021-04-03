@@ -116,7 +116,7 @@ about as you approach EDA:
   * How much missingness is there?
 
 The goal of this script is to provide ideas, suggestions, and examples of EDA
-that may translate to other datasets.A great resource on EDA is 
+that may translate to other datasets. A great resource on EDA is 
 [R for Data Science](https://r4ds.had.co.nz/exploratory-data-analysis.html).
 
 ## About this data
@@ -137,8 +137,8 @@ Here we look at what the data type is, its dimensions, and other attributes.
 ```{r dim.var.class}
 #-----dimensions & variable classes-----
 
-# show dataframe
-moss
+# show top of dataframe
+head(moss)
 
 # show dimensions
 dim(moss)
@@ -172,8 +172,8 @@ concentrations in another.
 moss_long <- moss %>% 
   pivot_longer(cols = all_of(metals), names_to = "Metal", values_to = "Conc") 
 
-# show long dataframe
-moss_long
+# show top of long dataframe
+head(moss_long)
 
 ```
 
@@ -330,7 +330,10 @@ figs[["boxes"]] <- ggplot(data = moss_long,
        title = "Boxplots of Heavy Metal Concentrations in Moss") +
   
   # choose theme
-  theme_bw()
+  theme_bw() +
+  
+  # legend position
+  theme(legend.position = "bottom")
 
 # show plot  
 figs[["boxes"]]
@@ -373,7 +376,7 @@ figs[["ecdf"]]
 
 This dataset does not have a ton of varibales to investigate univariate
 correlation, but we can take a look and see if all the metals in the samples are
-correlated. We'll use the full dataset (`moss`) to do this. The easiest way
+correlated. We'll use the full dataset (`all_data`) to do this. The easiest way
 to visualize a correlation I have found is with the `corrplot` package. The
 [vingette page](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html)
 provides nice plot ideas and tricks. The drawback with `corrplot` is that the
