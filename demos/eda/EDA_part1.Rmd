@@ -5,7 +5,6 @@ author: "Chris Zuidema"
 date: "3/29/2021"
 output:
   html_document:
-    df_print: paged
     keep_md: true
 
 ---
@@ -42,7 +41,7 @@ work_dir <- getwd()
 
 # name and create output directory
 output_dir <- file.path(work_dir, "output")
-dir.create(output_dir, showWarnings = TRUE, recursive = TRUE)
+dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 # create "Datasets" directory if one does not already exist    
 dir.create(file.path(work_dir,"data"), showWarnings=FALSE, recursive = TRUE)
@@ -173,7 +172,7 @@ moss_long <- moss %>%
   pivot_longer(cols = all_of(metals), names_to = "Metal", values_to = "Conc") 
 
 # show top of long dataframe
-head(moss_long)
+head(moss_long) %>% knitr::kable()
 
 ```
 
@@ -201,7 +200,7 @@ tbls[["summary_tbl"]] <- moss_long %>%
   # round by mutating on a predicate function
   mutate_if(is.numeric, round, 3)
 
-tbls[["summary_tbl"]]
+tbls[["summary_tbl"]] %>% knitr::kable()
 
 ```
 
@@ -231,7 +230,11 @@ moss %>%
   summarise(across(where(is.double), 
                    summ_list, 
                    .names = "{.col}_{.fn}") ) %>% 
-  mutate_if(is.numeric, round, 3)
+  mutate_if(is.numeric, round, 3) %>%
+  pivot_longer(cols = everything(), names_to = "var", values_to = "val") %>%
+  separate(var, into = c('metal', 'stat'), sep = '_') %>% 
+  pivot_wider(id_cols = c(metal), names_from = stat, values_from = val) %>%
+  knitr::kable()
 
 
 ```

@@ -5,7 +5,6 @@ author: "Chris Zuidema"
 date: "3/29/2021"
 output:
   html_document:
-    df_print: paged
     keep_md: true
 
 ---
@@ -27,15 +26,8 @@ work_dir <- getwd()
 
 # name and create output directory
 output_dir <- file.path(work_dir, "output")
-dir.create(output_dir, showWarnings = TRUE, recursive = TRUE)
-```
+dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
-```
-## Warning in dir.create(output_dir, showWarnings = TRUE, recursive = TRUE): '/
-## home/NETID/high/git/coders/demos/eda/output' already exists
-```
-
-```r
 # create "Datasets" directory if one does not already exist    
 dir.create(file.path(work_dir,"data"), showWarnings=FALSE, recursive = TRUE)
 
@@ -147,11 +139,19 @@ Here we look at what the data type is, its dimensions, and other attributes.
 head(moss)
 ```
 
-<div data-pagedtable="false">
-  <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["LabNum"],"name":[1],"type":["chr"],"align":["left"]},{"label":["SampleName"],"name":[2],"type":["chr"],"align":["left"]},{"label":["GridCellNu"],"name":[3],"type":["int"],"align":["right"]},{"label":["Expert"],"name":[4],"type":["lgl"],"align":["right"]},{"label":["Replicate"],"name":[5],"type":["lgl"],"align":["right"]},{"label":["Collection_date"],"name":[6],"type":["date"],"align":["right"]},{"label":["Field_Lat"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["Field_Long"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["Ni"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["Cr"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["Co"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["Cd"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["Pb"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["As"],"name":[14],"type":["dbl"],"align":["right"]}],"data":[{"1":"19-SYC-030","2":"68","3":"68","4":"FALSE","5":"FALSE","6":"2019-05-28","7":"47.52925","8":"-122.3230","9":"3.430598","10":"6.932598","11":"0.5199853","12":"0.1681445","13":"NA","14":"0.5655733"},{"1":"19-SYC-011","2":"54","3":"54","4":"FALSE","5":"FALSE","6":"2019-05-28","7":"47.53177","8":"-122.3281","9":"NA","10":"33.396307","11":"3.8066893","12":"NA","13":"34.93102","14":"2.2548039"},{"1":"19-SYC-056","2":"55a","3":"55","4":"FALSE","5":"FALSE","6":"2019-05-28","7":"47.53210","8":"-122.3237","9":"7.161781","10":"12.748623","11":"1.2187047","12":"0.2167543","13":"16.22821","14":"0.6543646"},{"1":"19-SYC-022","2":"55b","3":"55","4":"FALSE","5":"FALSE","6":"2019-05-28","7":"47.53207","8":"-122.3237","9":"8.465356","10":"14.636759","11":"1.7634250","12":"0.8245584","13":"NA","14":"1.0291790"},{"1":"19-SYC-045","2":"56","3":"56","4":"FALSE","5":"FALSE","6":"2019-05-28","7":"47.53190","8":"-122.3206","9":"3.042101","10":"6.201848","11":"0.6458802","12":"0.7888315","13":"NA","14":"1.1456581"},{"1":"19-SYC-068","2":"61","3":"61","4":"FALSE","5":"FALSE","6":"2019-05-28","7":"47.52989","8":"-122.3232","9":"6.394777","10":"16.265369","11":"1.7164911","12":"0.5679473","13":"15.86344","14":"1.1198397"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+```
+## # A tibble: 6 x 14
+##   LabNum     SampleName GridCellNu Expert Replicate Collection_date Field_Lat
+##   <chr>      <chr>           <int> <lgl>  <lgl>     <date>              <dbl>
+## 1 19-SYC-030 68                 68 FALSE  FALSE     2019-05-28           47.5
+## 2 19-SYC-011 54                 54 FALSE  FALSE     2019-05-28           47.5
+## 3 19-SYC-056 55a                55 FALSE  FALSE     2019-05-28           47.5
+## 4 19-SYC-022 55b                55 FALSE  FALSE     2019-05-28           47.5
+## 5 19-SYC-045 56                 56 FALSE  FALSE     2019-05-28           47.5
+## 6 19-SYC-068 61                 61 FALSE  FALSE     2019-05-28           47.5
+## # … with 7 more variables: Field_Long <dbl>, Ni <dbl>, Cr <dbl>, Co <dbl>,
+## #   Cd <dbl>, Pb <dbl>, As <dbl>
+```
 
 ```r
 # show dimensions
@@ -167,22 +167,27 @@ dim(moss)
 lapply(moss, class) %>% bind_rows()
 ```
 
-<div data-pagedtable="false">
-  <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["LabNum"],"name":[1],"type":["chr"],"align":["left"]},{"label":["SampleName"],"name":[2],"type":["chr"],"align":["left"]},{"label":["GridCellNu"],"name":[3],"type":["chr"],"align":["left"]},{"label":["Expert"],"name":[4],"type":["chr"],"align":["left"]},{"label":["Replicate"],"name":[5],"type":["chr"],"align":["left"]},{"label":["Collection_date"],"name":[6],"type":["chr"],"align":["left"]},{"label":["Field_Lat"],"name":[7],"type":["chr"],"align":["left"]},{"label":["Field_Long"],"name":[8],"type":["chr"],"align":["left"]},{"label":["Ni"],"name":[9],"type":["chr"],"align":["left"]},{"label":["Cr"],"name":[10],"type":["chr"],"align":["left"]},{"label":["Co"],"name":[11],"type":["chr"],"align":["left"]},{"label":["Cd"],"name":[12],"type":["chr"],"align":["left"]},{"label":["Pb"],"name":[13],"type":["chr"],"align":["left"]},{"label":["As"],"name":[14],"type":["chr"],"align":["left"]}],"data":[{"1":"character","2":"character","3":"integer","4":"logical","5":"logical","6":"Date","7":"numeric","8":"numeric","9":"numeric","10":"numeric","11":"numeric","12":"numeric","13":"numeric","14":"numeric"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+```
+## # A tibble: 1 x 14
+##   LabNum    SampleName GridCellNu Expert  Replicate Collection_date Field_Lat
+##   <chr>     <chr>      <chr>      <chr>   <chr>     <chr>           <chr>    
+## 1 character character  integer    logical logical   Date            numeric  
+## # … with 7 more variables: Field_Long <chr>, Ni <chr>, Cr <chr>, Co <chr>,
+## #   Cd <chr>, Pb <chr>, As <chr>
+```
 
 ```r
 # count data by a variable
 count(moss, Expert)
 ```
 
-<div data-pagedtable="false">
-  <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["Expert"],"name":[1],"type":["lgl"],"align":["right"]},{"label":["n"],"name":[2],"type":["int"],"align":["right"]}],"data":[{"1":"FALSE","2":"79"},{"1":"TRUE","2":"20"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+```
+## # A tibble: 2 x 2
+##   Expert     n
+##   <lgl>  <int>
+## 1 FALSE     79
+## 2 TRUE      20
+```
 
 ```r
 # use `glimpse` to provide another view
@@ -228,14 +233,19 @@ moss_long <- moss %>%
   pivot_longer(cols = all_of(metals), names_to = "Metal", values_to = "Conc") 
 
 # show top of long dataframe
-head(moss_long)
+head(moss_long) %>% knitr::kable()
 ```
 
-<div data-pagedtable="false">
-  <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["LabNum"],"name":[1],"type":["chr"],"align":["left"]},{"label":["SampleName"],"name":[2],"type":["chr"],"align":["left"]},{"label":["GridCellNu"],"name":[3],"type":["int"],"align":["right"]},{"label":["Expert"],"name":[4],"type":["lgl"],"align":["right"]},{"label":["Replicate"],"name":[5],"type":["lgl"],"align":["right"]},{"label":["Collection_date"],"name":[6],"type":["date"],"align":["right"]},{"label":["Field_Lat"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["Field_Long"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["Metal"],"name":[9],"type":["chr"],"align":["left"]},{"label":["Conc"],"name":[10],"type":["dbl"],"align":["right"]}],"data":[{"1":"19-SYC-030","2":"68","3":"68","4":"FALSE","5":"FALSE","6":"2019-05-28","7":"47.52925","8":"-122.323","9":"As","10":"0.5655733"},{"1":"19-SYC-030","2":"68","3":"68","4":"FALSE","5":"FALSE","6":"2019-05-28","7":"47.52925","8":"-122.323","9":"Cd","10":"0.1681445"},{"1":"19-SYC-030","2":"68","3":"68","4":"FALSE","5":"FALSE","6":"2019-05-28","7":"47.52925","8":"-122.323","9":"Co","10":"0.5199853"},{"1":"19-SYC-030","2":"68","3":"68","4":"FALSE","5":"FALSE","6":"2019-05-28","7":"47.52925","8":"-122.323","9":"Cr","10":"6.9325977"},{"1":"19-SYC-030","2":"68","3":"68","4":"FALSE","5":"FALSE","6":"2019-05-28","7":"47.52925","8":"-122.323","9":"Ni","10":"3.4305980"},{"1":"19-SYC-030","2":"68","3":"68","4":"FALSE","5":"FALSE","6":"2019-05-28","7":"47.52925","8":"-122.323","9":"Pb","10":"NA"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+
+
+|LabNum     |SampleName | GridCellNu|Expert |Replicate |Collection_date | Field_Lat| Field_Long|Metal |      Conc|
+|:----------|:----------|----------:|:------|:---------|:---------------|---------:|----------:|:-----|---------:|
+|19-SYC-030 |68         |         68|FALSE  |FALSE     |2019-05-28      |  47.52925|   -122.323|As    | 0.5655733|
+|19-SYC-030 |68         |         68|FALSE  |FALSE     |2019-05-28      |  47.52925|   -122.323|Cd    | 0.1681445|
+|19-SYC-030 |68         |         68|FALSE  |FALSE     |2019-05-28      |  47.52925|   -122.323|Co    | 0.5199853|
+|19-SYC-030 |68         |         68|FALSE  |FALSE     |2019-05-28      |  47.52925|   -122.323|Cr    | 6.9325977|
+|19-SYC-030 |68         |         68|FALSE  |FALSE     |2019-05-28      |  47.52925|   -122.323|Ni    | 3.4305980|
+|19-SYC-030 |68         |         68|FALSE  |FALSE     |2019-05-28      |  47.52925|   -122.323|Pb    |        NA|
 
 
 # Descriptive statistics
@@ -262,14 +272,19 @@ tbls[["summary_tbl"]] <- moss_long %>%
   # round by mutating on a predicate function
   mutate_if(is.numeric, round, 3)
 
-tbls[["summary_tbl"]]
+tbls[["summary_tbl"]] %>% knitr::kable()
 ```
 
-<div data-pagedtable="false">
-  <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["Metal"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Min"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["Max"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Mean"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["Median"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["missing"],"name":[6],"type":["dbl"],"align":["right"]}],"data":[{"1":"As","2":"0.225","3":"2.634","4":"0.888","5":"0.766","6":"2"},{"1":"Cd","2":"0.098","3":"1.399","4":"0.446","5":"0.336","6":"6"},{"1":"Co","2":"0.300","3":"9.738","4":"1.301","5":"0.990","6":"7"},{"1":"Cr","2":"3.169","3":"47.433","4":"11.687","5":"8.964","6":"9"},{"1":"Ni","2":"1.351","3":"41.817","4":"5.619","5":"4.245","6":"2"},{"1":"Pb","2":"4.478","3":"102.188","4":"16.688","5":"12.200","6":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+
+
+|Metal |   Min|     Max|   Mean| Median| missing|
+|:-----|-----:|-------:|------:|------:|-------:|
+|As    | 0.225|   2.634|  0.888|  0.766|       2|
+|Cd    | 0.098|   1.399|  0.446|  0.336|       6|
+|Co    | 0.300|   9.738|  1.301|  0.990|       7|
+|Cr    | 3.169|  47.433| 11.687|  8.964|       9|
+|Ni    | 1.351|  41.817|  5.619|  4.245|       2|
+|Pb    | 4.478| 102.188| 16.688| 12.200|       6|
 
 
 Similar calculations can be performed on a "wide" dataset using `dplyr` functions
@@ -298,14 +313,23 @@ moss %>%
   summarise(across(where(is.double), 
                    summ_list, 
                    .names = "{.col}_{.fn}") ) %>% 
-  mutate_if(is.numeric, round, 3)
+  mutate_if(is.numeric, round, 3) %>%
+  pivot_longer(cols = everything(), names_to = "var", values_to = "val") %>%
+  separate(var, into = c('metal', 'stat'), sep = '_') %>% 
+  pivot_wider(id_cols = c(metal), names_from = stat, values_from = val) %>%
+  knitr::kable()
 ```
 
-<div data-pagedtable="false">
-  <script data-pagedtable-source type="application/json">
-{"columns":[{"label":["As_mean"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["As_sd"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["As_min"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["As_median"],"name":[4],"type":["dbl"],"align":["right"]},{"label":["As_max"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Cd_mean"],"name":[6],"type":["dbl"],"align":["right"]},{"label":["Cd_sd"],"name":[7],"type":["dbl"],"align":["right"]},{"label":["Cd_min"],"name":[8],"type":["dbl"],"align":["right"]},{"label":["Cd_median"],"name":[9],"type":["dbl"],"align":["right"]},{"label":["Cd_max"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["Co_mean"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["Co_sd"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["Co_min"],"name":[13],"type":["dbl"],"align":["right"]},{"label":["Co_median"],"name":[14],"type":["dbl"],"align":["right"]},{"label":["Co_max"],"name":[15],"type":["dbl"],"align":["right"]},{"label":["Cr_mean"],"name":[16],"type":["dbl"],"align":["right"]},{"label":["Cr_sd"],"name":[17],"type":["dbl"],"align":["right"]},{"label":["Cr_min"],"name":[18],"type":["dbl"],"align":["right"]},{"label":["Cr_median"],"name":[19],"type":["dbl"],"align":["right"]},{"label":["Cr_max"],"name":[20],"type":["dbl"],"align":["right"]},{"label":["Ni_mean"],"name":[21],"type":["dbl"],"align":["right"]},{"label":["Ni_sd"],"name":[22],"type":["dbl"],"align":["right"]},{"label":["Ni_min"],"name":[23],"type":["dbl"],"align":["right"]},{"label":["Ni_median"],"name":[24],"type":["dbl"],"align":["right"]},{"label":["Ni_max"],"name":[25],"type":["dbl"],"align":["right"]},{"label":["Pb_mean"],"name":[26],"type":["dbl"],"align":["right"]},{"label":["Pb_sd"],"name":[27],"type":["dbl"],"align":["right"]},{"label":["Pb_min"],"name":[28],"type":["dbl"],"align":["right"]},{"label":["Pb_median"],"name":[29],"type":["dbl"],"align":["right"]},{"label":["Pb_max"],"name":[30],"type":["dbl"],"align":["right"]}],"data":[{"1":"0.888","2":"0.488","3":"0.225","4":"0.766","5":"2.634","6":"0.446","7":"0.329","8":"0.098","9":"0.336","10":"1.399","11":"1.301","12":"1.275","13":"0.3","14":"0.99","15":"9.738","16":"11.687","17":"8.539","18":"3.169","19":"8.964","20":"47.433","21":"5.619","22":"5.016","23":"1.351","24":"4.245","25":"41.817","26":"16.688","27":"13.822","28":"4.478","29":"12.2","30":"102.188"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
-  </script>
-</div>
+
+
+|metal |   mean|     sd|   min| median|     max|
+|:-----|------:|------:|-----:|------:|-------:|
+|As    |  0.888|  0.488| 0.225|  0.766|   2.634|
+|Cd    |  0.446|  0.329| 0.098|  0.336|   1.399|
+|Co    |  1.301|  1.275| 0.300|  0.990|   9.738|
+|Cr    | 11.687|  8.539| 3.169|  8.964|  47.433|
+|Ni    |  5.619|  5.016| 1.351|  4.245|  41.817|
+|Pb    | 16.688| 13.822| 4.478| 12.200| 102.188|
 
 
 # Describe data distributions
@@ -682,13 +706,13 @@ sessionInfo()
 ## [22] RgoogleMaps_1.4.5.3 evaluate_0.14       labeling_0.4.2     
 ## [25] curl_4.3            fansi_0.4.2         highr_0.8          
 ## [28] Rcpp_1.0.6          scales_1.1.1        backports_1.2.1    
-## [31] jsonlite_1.7.2      farver_2.1.0        rjson_0.2.20       
-## [34] hms_1.0.0           png_0.1-7           digest_0.6.27      
-## [37] stringi_1.5.3       grid_3.6.3          cli_2.3.1          
-## [40] tools_3.6.3         bitops_1.0-6        tibble_3.1.0       
-## [43] crayon_1.4.1        pkgconfig_2.0.3     ellipsis_0.3.1     
-## [46] rstudioapi_0.13     assertthat_0.2.1    rmarkdown_2.7      
-## [49] httr_1.4.2          R6_2.5.0            compiler_3.6.3
+## [31] farver_2.1.0        rjson_0.2.20        hms_1.0.0          
+## [34] png_0.1-7           digest_0.6.27       stringi_1.5.3      
+## [37] grid_3.6.3          cli_2.3.1           tools_3.6.3        
+## [40] bitops_1.0-6        tibble_3.1.0        crayon_1.4.1       
+## [43] pkgconfig_2.0.3     ellipsis_0.3.1      assertthat_0.2.1   
+## [46] rmarkdown_2.7       httr_1.4.2          rstudioapi_0.13    
+## [49] R6_2.5.0            compiler_3.6.3
 ```
 
 ## Code in the R Markdown file
@@ -716,7 +740,7 @@ work_dir <- getwd()
 
 # name and create output directory
 output_dir <- file.path(work_dir, "output")
-dir.create(output_dir, showWarnings = TRUE, recursive = TRUE)
+dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 # create "Datasets" directory if one does not already exist    
 dir.create(file.path(work_dir,"data"), showWarnings=FALSE, recursive = TRUE)
@@ -783,7 +807,7 @@ moss_long <- moss %>%
   pivot_longer(cols = all_of(metals), names_to = "Metal", values_to = "Conc") 
 
 # show top of long dataframe
-head(moss_long)
+head(moss_long) %>% knitr::kable()
 
 #-----metal summary-----
 
@@ -801,7 +825,7 @@ tbls[["summary_tbl"]] <- moss_long %>%
   # round by mutating on a predicate function
   mutate_if(is.numeric, round, 3)
 
-tbls[["summary_tbl"]]
+tbls[["summary_tbl"]] %>% knitr::kable()
 
 #-----mutate across-----
 
@@ -824,7 +848,11 @@ moss %>%
   summarise(across(where(is.double), 
                    summ_list, 
                    .names = "{.col}_{.fn}") ) %>% 
-  mutate_if(is.numeric, round, 3)
+  mutate_if(is.numeric, round, 3) %>%
+  pivot_longer(cols = everything(), names_to = "var", values_to = "val") %>%
+  separate(var, into = c('metal', 'stat'), sep = '_') %>% 
+  pivot_wider(id_cols = c(metal), names_from = stat, values_from = val) %>%
+  knitr::kable()
 
 
 #-----histograms----
@@ -1089,7 +1117,7 @@ map(fn_names, get, .GlobalEnv) %>% set_names(fn_names)
 ##                  cl.lim = c(-0.5, 1)
 ##                  ) 
 ## }
-## <bytecode: 0x55a67cb254c8>
+## <bytecode: 0x55b7a617c600>
 ## 
 ## $map_fn
 ## function(metal){
@@ -1118,5 +1146,5 @@ map(fn_names, get, .GlobalEnv) %>% set_names(fn_names)
 ##           strip.text.x = element_text(margin = margin(2, 0, 2, 0)) 
 ##           )
 ##   }
-## <bytecode: 0x55a67bd57240>
+## <bytecode: 0x55b7a88aeb38>
 ```
