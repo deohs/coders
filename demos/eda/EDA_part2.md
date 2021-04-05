@@ -868,7 +868,7 @@ ts_new <- ts_data %>%
   summarise(across(where(is.numeric), mean, na.rm = TRUE ), .groups = "drop") %>% 
   
   # rename to get "datetime" variable name back
-  rename(datetime = datetime_new )
+  rename(date_time = datetime_new )
  
 # glimpse
 glimpse(ts_new)
@@ -877,7 +877,7 @@ glimpse(ts_new)
 ```
 ## Rows: 36
 ## Columns: 16
-## $ datetime        <dttm> 2021-03-29 15:00:00, 2021-03-29 20:00:00, 2021-03-30 …
+## $ date_time       <dttm> 2021-03-29 15:00:00, 2021-03-29 20:00:00, 2021-03-30 …
 ## $ latitude        <dbl> 30.40496, 35.28075, 39.76300, 37.69754, 31.92985, 33.3…
 ## $ longitude       <dbl> -35.81452, -129.14505, -125.29828, -117.83017, -128.59…
 ## $ depth           <dbl> 9.361667, 17.644726, 12.439390, 9.854851, 9.701349, 6.…
@@ -900,7 +900,7 @@ We can look at new timeseries plots with the new aggregated time scale. First, l
 ```r
 ts_new %>% 
 # pipe into ggplot
-ggplot(aes(x = hr, y = mag)) + 
+ggplot(aes(x = date_time, y = mag)) + 
   
   # specify type of plot
   geom_point() +
@@ -1282,14 +1282,14 @@ ts_new <- ts_data %>%
   summarise(across(where(is.numeric), mean, na.rm = TRUE ), .groups = "drop") %>% 
   
   # rename to get "datetime" variable name back
-  rename(datetime = datetime_new )
+  rename(date_time = datetime_new )
  
 # glimpse
 glimpse(ts_new)
 
 ts_new %>% 
 # pipe into ggplot
-ggplot(aes(x = hr, y = mag)) + 
+ggplot(aes(x = date_time, y = mag)) + 
   
   # specify type of plot
   geom_point() +

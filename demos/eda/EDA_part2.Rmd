@@ -463,7 +463,7 @@ ts_new <- ts_data %>%
   summarise(across(where(is.numeric), mean, na.rm = TRUE ), .groups = "drop") %>% 
   
   # rename to get "datetime" variable name back
-  rename(datetime = datetime_new )
+  rename(date_time = datetime_new )
  
 # glimpse
 glimpse(ts_new)
@@ -474,7 +474,7 @@ We can look at new timeseries plots with the new aggregated time scale. First, l
 ```{r data.time}
 ts_new %>% 
 # pipe into ggplot
-ggplot(aes(x = hr, y = mag)) + 
+ggplot(aes(x = date_time, y = mag)) + 
   
   # specify type of plot
   geom_point() +
