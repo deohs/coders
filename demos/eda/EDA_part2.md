@@ -951,7 +951,7 @@ bbox <- c(-123,
 
 # make a map of the base layer of stamen tiles 
 
-map <- suppressMessages(get_stamenmap(bbox, maptype = "terrain"))
+map <- suppressMessages(get_stamenmap(bbox, maptype = "terrain", zoom = 8))
 
 # make the map image from the tiles
 basemap <- ggmap(map, darken = c(0.5, "white")) + theme_void()
@@ -1314,7 +1314,7 @@ bbox <- c(-123,
 
 # make a map of the base layer of stamen tiles 
 
-map <- suppressMessages(get_stamenmap(bbox, maptype = "terrain"))
+map <- suppressMessages(get_stamenmap(bbox, maptype = "terrain", zoom = 8))
 
 # make the map image from the tiles
 basemap <- ggmap(map, darken = c(0.5, "white")) + theme_void()
