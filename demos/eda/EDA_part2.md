@@ -417,7 +417,7 @@ sapply(all_data, class)
 cols.num <- c("magType", "net", "type", "status", "locationSource", "magSource")
 
 # Apply as.factor to all variables in the vector 
-all_data[cols.num] <- sapply(all_data[cols.num], as.factor)
+all_data <- all_data %>% mutate(across(.cols = cols.num, .fns = as.factor))
 
 # Check columns classes
 sapply(all_data, class)
@@ -440,7 +440,7 @@ sapply(all_data, class)
 ## [1] "numeric"
 ## 
 ## $magType
-## [1] "character"
+## [1] "factor"
 ## 
 ## $nst
 ## [1] "numeric"
@@ -455,7 +455,7 @@ sapply(all_data, class)
 ## [1] "numeric"
 ## 
 ## $net
-## [1] "character"
+## [1] "factor"
 ## 
 ## $id
 ## [1] "character"
@@ -467,7 +467,7 @@ sapply(all_data, class)
 ## [1] "character"
 ## 
 ## $type
-## [1] "character"
+## [1] "factor"
 ## 
 ## $horizontalError
 ## [1] "numeric"
@@ -482,13 +482,13 @@ sapply(all_data, class)
 ## [1] "numeric"
 ## 
 ## $status
-## [1] "character"
+## [1] "factor"
 ## 
 ## $locationSource
-## [1] "character"
+## [1] "factor"
 ## 
 ## $magSource
-## [1] "character"
+## [1] "factor"
 ## 
 ## $date_time
 ## [1] "POSIXct" "POSIXt" 
@@ -524,22 +524,22 @@ summary(all_data)
 ##  3rd Qu.:2021-04-03 10:27:42   3rd Qu.: 38.84   3rd Qu.:-116.5  
 ##  Max.   :2021-04-05 19:02:40   Max.   : 72.30   Max.   : 179.7  
 ##                                                                 
-##      depth              mag           magType               nst       
-##  Min.   : -3.360   Min.   :-1.350   Length:2102        Min.   :  3.0  
-##  1st Qu.:  3.900   1st Qu.: 0.900   Class :character   1st Qu.: 11.0  
-##  Median :  7.145   Median : 1.400   Mode  :character   Median : 16.0  
-##  Mean   : 17.014   Mean   : 1.564                      Mean   : 21.2  
-##  3rd Qu.: 14.273   3rd Qu.: 1.910                      3rd Qu.: 27.0  
-##  Max.   :630.930   Max.   : 6.600                      Max.   :188.0  
-##                    NA's   :1                           NA's   :358    
-##       gap             dmin              rms            net           
-##  Min.   : 16.0   Min.   : 0.0000   Min.   :0.000   Length:2102       
-##  1st Qu.: 73.0   1st Qu.: 0.0317   1st Qu.:0.110   Class :character  
-##  Median :105.0   Median : 0.0642   Median :0.150   Mode  :character  
-##  Mean   :114.6   Mean   : 0.3594   Mean   :0.243                     
-##  3rd Qu.:140.2   3rd Qu.: 0.1227   3rd Qu.:0.260                     
-##  Max.   :334.0   Max.   :21.3540   Max.   :2.100                     
-##  NA's   :234     NA's   :634                                         
+##      depth              mag            magType          nst       
+##  Min.   : -3.360   Min.   :-1.350   ml     :1336   Min.   :  3.0  
+##  1st Qu.:  3.900   1st Qu.: 0.900   md     : 650   1st Qu.: 11.0  
+##  Median :  7.145   Median : 1.400   mb     :  89   Median : 16.0  
+##  Mean   : 17.014   Mean   : 1.564   mww    :  16   Mean   : 21.2  
+##  3rd Qu.: 14.273   3rd Qu.: 1.910   mw     :   4   3rd Qu.: 27.0  
+##  Max.   :630.930   Max.   : 6.600   (Other):   6   Max.   :188.0  
+##                    NA's   :1        NA's   :   1   NA's   :358    
+##       gap             dmin              rms             net     
+##  Min.   : 16.0   Min.   : 0.0000   Min.   :0.000   ci     :468  
+##  1st Qu.: 73.0   1st Qu.: 0.0317   1st Qu.:0.110   hv     :353  
+##  Median :105.0   Median : 0.0642   Median :0.150   nn     :245  
+##  Mean   :114.6   Mean   : 0.3594   Mean   :0.243   ak     :234  
+##  3rd Qu.:140.2   3rd Qu.: 0.1227   3rd Qu.:0.260   nc     :233  
+##  Max.   :334.0   Max.   :21.3540   Max.   :2.100   us     :124  
+##  NA's   :234     NA's   :634                       (Other):445  
 ##       id               updated                       place          
 ##  Length:2102        Min.   :2021-03-29 19:31:41   Length:2102       
 ##  Class :character   1st Qu.:2021-03-31 12:52:40   Class :character  
@@ -548,22 +548,22 @@ summary(all_data)
 ##                     3rd Qu.:2021-04-03 22:11:26                     
 ##                     Max.   :2021-04-05 19:05:47                     
 ##                                                                     
-##      type           horizontalError    depthError         magError     
-##  Length:2102        Min.   : 0.080   Min.   :  0.000   Min.   :0.0000  
-##  Class :character   1st Qu.: 0.310   1st Qu.:  0.570   1st Qu.:0.1000  
-##  Mode  :character   Median : 0.460   Median :  0.830   Median :0.1560  
-##                     Mean   : 1.173   Mean   :  2.505   Mean   :0.2859  
-##                     3rd Qu.: 0.770   3rd Qu.:  1.460   3rd Qu.:0.2240  
-##                     Max.   :17.840   Max.   :202.100   Max.   :5.9300  
-##                     NA's   :547                        NA's   :426     
-##      magNst          status          locationSource      magSource        
-##  Min.   :  0.00   Length:2102        Length:2102        Length:2102       
-##  1st Qu.:  6.00   Class :character   Class :character   Class :character  
-##  Median : 10.00   Mode  :character   Mode  :character   Mode  :character  
-##  Mean   : 15.42                                                           
-##  3rd Qu.: 18.00                                                           
-##  Max.   :630.00                                                           
-##  NA's   :392                                                              
+##            type      horizontalError    depthError         magError     
+##  earthquake  :2068   Min.   : 0.080   Min.   :  0.000   Min.   :0.0000  
+##  explosion   :  10   1st Qu.: 0.310   1st Qu.:  0.570   1st Qu.:0.1000  
+##  ice quake   :   1   Median : 0.460   Median :  0.830   Median :0.1560  
+##  quarry blast:  23   Mean   : 1.173   Mean   :  2.505   Mean   :0.2859  
+##                      3rd Qu.: 0.770   3rd Qu.:  1.460   3rd Qu.:0.2240  
+##                      Max.   :17.840   Max.   :202.100   Max.   :5.9300  
+##                      NA's   :547                        NA's   :426     
+##      magNst             status     locationSource   magSource  
+##  Min.   :  0.00   automatic: 741   ci     :468    ci     :468  
+##  1st Qu.:  6.00   reviewed :1361   hv     :353    hv     :353  
+##  Median : 10.00                    nn     :245    nn     :245  
+##  Mean   : 15.42                    ak     :234    ak     :234  
+##  3rd Qu.: 18.00                    nc     :233    nc     :233  
+##  Max.   :630.00                    us     :124    us     :123  
+##  NA's   :392                       (Other):445    (Other):446  
 ##    date_time                        date                  hr       
 ##  Min.   :2021-03-29 19:06:38   Min.   :2021-03-29   Min.   : 0.00  
 ##  1st Qu.:2021-03-31 01:19:42   1st Qu.:2021-03-31   1st Qu.: 6.00  
@@ -816,7 +816,7 @@ duplicates(all_data, index = date_time)
 ```
 ## # A tibble: 12 x 27
 ##    time                latitude longitude depth   mag magType   nst   gap
-##    <dttm>                 <dbl>     <dbl> <dbl> <dbl> <chr>   <dbl> <dbl>
+##    <dttm>                 <dbl>     <dbl> <dbl> <dbl> <fct>   <dbl> <dbl>
 ##  1 2021-03-30 19:01:33     60.6     -153.  9.55 0.02  ml          6  282 
 ##  2 2021-03-30 19:01:33     60.6     -153.  9.8  0.02  ml          6  282 
 ##  3 2021-03-30 01:38:18     36.7     -116.  6.4  0.8   ml         26  110.
@@ -829,10 +829,10 @@ duplicates(all_data, index = date_time)
 ## 10 2021-04-01 07:20:41     34.0     -117. 14.3  1.05  ml         62   46 
 ## 11 2021-04-04 04:56:46     34.3     -117.  7.68 1.07  ml         33   78 
 ## 12 2021-04-04 04:56:46     35.9     -118.  6.24 0.93  ml         14   92 
-## # … with 19 more variables: dmin <dbl>, rms <dbl>, net <chr>, id <chr>,
-## #   updated <dttm>, place <chr>, type <chr>, horizontalError <dbl>,
-## #   depthError <dbl>, magError <dbl>, magNst <dbl>, status <chr>,
-## #   locationSource <chr>, magSource <chr>, date_time <dttm>, date <date>,
+## # … with 19 more variables: dmin <dbl>, rms <dbl>, net <fct>, id <chr>,
+## #   updated <dttm>, place <chr>, type <fct>, horizontalError <dbl>,
+## #   depthError <dbl>, magError <dbl>, magNst <dbl>, status <fct>,
+## #   locationSource <fct>, magSource <fct>, date_time <dttm>, date <date>,
 ## #   hr <int>, mins <int>, secs <dbl>
 ```
 
@@ -1184,7 +1184,7 @@ sapply(all_data, class)
 cols.num <- c("magType", "net", "type", "status", "locationSource", "magSource")
 
 # Apply as.factor to all variables in the vector 
-all_data[cols.num] <- sapply(all_data[cols.num], as.factor)
+all_data <- all_data %>% mutate(across(.cols = cols.num, .fns = as.factor))
 
 # Check columns classes
 sapply(all_data, class)

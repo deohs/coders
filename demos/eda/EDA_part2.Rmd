@@ -226,7 +226,7 @@ sapply(all_data, class)
 cols.num <- c("magType", "net", "type", "status", "locationSource", "magSource")
 
 # Apply as.factor to all variables in the vector 
-all_data[cols.num] <- sapply(all_data[cols.num], as.factor)
+all_data <- all_data %>% mutate(across(.cols = cols.num, .fns = as.factor))
 
 # Check columns classes
 sapply(all_data, class)
