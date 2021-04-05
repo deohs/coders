@@ -944,13 +944,9 @@ We can create use the `ggmap` package to create simple maps. Mapping the entire 
 ## Note: This area is too large to render in the stamen map below 
 
 # we define the bounding box as the greater Puget Sound region 
-bbox <- c(-123,
-          47.1,-122,
-          48.1)
-
+bbox <- c(-123, 47.1,-122, 48.1)
 
 # make a map of the base layer of stamen tiles 
-
 map <- suppressMessages(get_stamenmap(bbox, maptype = "terrain", zoom = 8))
 
 # make the map image from the tiles
@@ -1307,13 +1303,9 @@ ggplot(aes(x = hr, y = mag)) +
 ## Note: This area is too large to render in the stamen map below 
 
 # we define the bounding box as the greater Puget Sound region 
-bbox <- c(-123,
-          47.1,-122,
-          48.1)
-
+bbox <- c(-123, 47.1,-122, 48.1)
 
 # make a map of the base layer of stamen tiles 
-
 map <- suppressMessages(get_stamenmap(bbox, maptype = "terrain", zoom = 8))
 
 # make the map image from the tiles
