@@ -139,11 +139,14 @@ _Sampling maps_
 Material adapted from: 
 
 "Exploratory analysis of spatial and temporal data : a systematic approach" by  Natalia Andrienko and Gennady Andrienko
-Springer e-book available for free on UW Library
-https://link.springer.com/book/10.1007/3-540-31190-4 
+
+- [book listing at Springer website](https://link.springer.com/book/10.1007/3-540-31190-4)
+
+- [e-book available for free from UW Library](https://alliance-primo.hosted.exlibrisgroup.com/permalink/f/kjtuig/CP7198100710001451)
 
 "R for Data Science" written by Hadley Wickham and Garrett Grolemund.
-https://r4ds.had.co.nz/exploratory-data-analysis.html 
+
+- [EDA chapter in online ebook](https://r4ds.had.co.nz/exploratory-data-analysis.html)
 
 "Week 9 Lab:  Time Series Data and Analysis Strategies" by Chris Zuidema and Elena Austin 
 ENVH 556 (Dr. Sheppard's course)
