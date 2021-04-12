@@ -30,7 +30,7 @@ knitr::opts_chunk$set(
 rm(list = ls(all = TRUE))
 
 if (!is.null(sessionInfo()$otherPkgs)) {
-  res <- suppressWarnings(lapply(
+  res <- suppressWarnings(map(
     paste('package:', names(sessionInfo()$otherPkgs), sep = ""),
     detach,
     character.only = TRUE,
@@ -217,7 +217,7 @@ Next, let's specify the formulas, run the regressions and organize the output
 with `broom` functions programmatically. Once the parameters of interest are in
 a dataframe, they can be manipulated easily with familiar `dplyr` functions.
 
-We use `lapply()` from `base` to apply `glance()` and `tidy()` to many models. 
+We use `map()` from `purrr` to apply `glance()` and `tidy()` to many models. 
 
 ```{r programmatically.simple.example}
 
@@ -229,11 +229,11 @@ lm_formulas <- formulas(~Survived,
                         mod4 = ~ Age + Sex + Fare)
 
 # fit models
-mdls <- lapply(lm_formulas, lm, data = titanic)
+mdls <- map(lm_formulas, lm, data = titanic)
 
 # extract overall model parameters and coefficient summaries into lists
-coeff_summ <- lapply(mdls, tidy, conf.int = TRUE)
-model_summ <- lapply(mdls, glance)
+coeff_summ <- map(mdls, tidy, conf.int = TRUE)
+model_summ <- map(mdls, glance)
 
 # create overall model summary table
 model_summ_tbl <- model_summ %>% 
@@ -252,9 +252,9 @@ model_summ_tbl
 Often we are faced with a dataset we'd like to run stratified models on. The
 nesting workflow makes that pretty easy.
 
-We need to use `lapply()` with `map()` because we are using many models and
-`fit_with()` created `list` output like `lapply()` would have. We use `lapply()`
-to get "inside" of the `list` output of `fit_with()`.
+Using `fit_with()` with `map()` creates a double-nested list structure for the 
+model fit objects, so we use `map()` nested with `map()` to apply `glance()` and 
+`tidy()` to them.
 
 ```{r programatically.nested.more.complicated.example}
 
@@ -280,14 +280,14 @@ df_nested <- titanic %>%
   mutate(
     
     # using `map` fit the linear models
-    # `map` is from the purr package
+    # `map` is from the purrr package
     model = map(.x = data, .f = ~fit_with(lm, lm_formulas, data = .x)),
     
     # extract model summaries with `glance()`
-    model_summ = map(model, ~lapply(.x, glance)),
+    model_summ = map(model, ~map(.x, glance)),
     
     # extract model coefficient estimates with `tidy()`
-    coeff_summ = map(model, ~lapply(.x, tidy))
+    coeff_summ = map(model, ~map(.x, tidy))
     ) 
 
 # at this point we still have a nested dataframe, let's take a look
@@ -295,7 +295,8 @@ df_nested
 
 ```
 
-From here we have to `unnest()` the nested columns.
+From here we have to `unnest()` the nested columns. Since the results were 
+double-nested, we use `unnest()` twice to flatten the data structure.
 
 ```{r extract.nested}
 
