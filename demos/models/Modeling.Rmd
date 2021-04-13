@@ -284,10 +284,10 @@ df_nested <- titanic %>%
     model = map(.x = data, .f = ~fit_with(lm, lm_formulas, data = .x)),
     
     # extract model summaries with `glance()`
-    model_summ = map(model, ~map(.x, glance)),
+    model_summ = map(model, map, glance),
     
     # extract model coefficient estimates with `tidy()`
-    coeff_summ = map(model, ~map(.x, tidy))
+    coeff_summ = map(model, map, tidy)
     ) 
 
 # at this point we still have a nested dataframe, let's take a look

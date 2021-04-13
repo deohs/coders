@@ -365,10 +365,10 @@ df_nested <- titanic %>%
     model = map(.x = data, .f = ~fit_with(lm, lm_formulas, data = .x)),
     
     # extract model summaries with `glance()`
-    model_summ = map(model, ~map(.x, glance)),
+    model_summ = map(model, map, glance),
     
     # extract model coefficient estimates with `tidy()`
-    coeff_summ = map(model, ~map(.x, tidy))
+    coeff_summ = map(model, map, tidy)
     ) 
 
 # at this point we still have a nested dataframe, let's take a look
@@ -731,10 +731,10 @@ df_nested <- titanic %>%
     model = map(.x = data, .f = ~fit_with(lm, lm_formulas, data = .x)),
     
     # extract model summaries with `glance()`
-    model_summ = map(model, ~map(.x, glance)),
+    model_summ = map(model, map, glance),
     
     # extract model coefficient estimates with `tidy()`
-    coeff_summ = map(model, ~map(.x, tidy))
+    coeff_summ = map(model, map, tidy)
     ) 
 
 # at this point we still have a nested dataframe, let's take a look
@@ -867,5 +867,5 @@ lsf.str() %>% set_names() %>% map(get, .GlobalEnv)
 ##     mutate_if(is.double, round, 3)
 ##   
 ## }
-## <bytecode: 0x5582180fb9b8>
+## <bytecode: 0x56216ceeab18>
 ```
