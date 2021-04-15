@@ -11,9 +11,25 @@
 # vector or list? What if those nested objects are of unequal length? How can 
 # we "flatten" the dataset?
 #
-# Scenario: Each participant (id) has one or more pets, of various species.
-#           Pet species are grouped into types. Count the number of pets per
-#           type owned by each participant.
+# Scenario: Each participant (id) has one or more pets, of various types.
+#           Pet types are grouped into classes. Count the number of 
+#           pets per class owned by each participant.
+
+# ---- Setup ----
+
+# Clear workspace of all objects.
+rm(list = ls(all = TRUE))
+
+# Unload all extra (non-base) packages.
+if (!is.null(sessionInfo()$otherPkgs)) {
+  res <- suppressWarnings(map(
+    paste('package:', names(sessionInfo()$otherPkgs), sep = ""),
+    detach,
+    character.only = TRUE,
+    unload = TRUE,
+    force = TRUE
+  ))
+}
 
 # Load pacman, installing if needed.
 if (!require("pacman")) {install.packages("pacman")}
@@ -30,18 +46,18 @@ get_pets <- function(min_n, max_n, pet_lst) {
     paste(collapse = ", ")
 }
 
-# Find the pet type given a pet species.
-get_type <- function(pet, pet_lst) names(list.search(pet_lst, any(. == pet)))
+# Find the pet class given a pet type.
+get_class <- function(pet, pet_lst) names(list.search(pet_lst, any(. == pet)))
 
-# --------------------------
 
+# ---- Prepare dataset ----
 
 # Define variables.
 n_ids <- 20
 min_pets <- 2
 max_pets <- 5
 
-# Create list of pet species.
+# Create list of pet types, grouped by class.
 pets <- list(amphibian = c('frog', 'salamander'),
              mammal = c('cat', 'dog', 'hamster'),
              reptile = c('lizard', 'snake', 'turtle'))
@@ -54,24 +70,26 @@ df <- tibble(id = 1:n_ids, pet = pets_multivalued)
 # View dataset
 df
 
+
 # ---- Method #1: Split and Unnest ----
 
 # Use str_split() and unnest() to split multi-value data into single-value 
-# data, then plot the types of pet per id as a bar plot (histogram).
+# data, then plot the classes of pet per id as a bar plot (histogram).
 
 # Split multi-valued strings into rows (one row per value).
 df_long <- df %>% mutate(pet = str_split(pet, pattern = ", ")) %>% unnest(pet)
 
 df_long
 
-# For each pet, find pet type using get_type(), defined in Functions section.
-df_long <- df_long %>% mutate(type = map_chr(pet, get_type, pet_lst = pets))
+# For each pet, find pet class using get_class(), defined in Functions section.
+df_long <- df_long %>% mutate(`class` = map_chr(pet, get_class, pet_lst = pets))
 
 df_long
 
-# Let ggplot() count the number of types per id using stat = "count".
+# Let ggplot() count the number of classes per id using stat = "count".
 ggplot(df_long, aes(x = `id`)) + geom_bar(stat = "count") + 
-  facet_wrap(~ `type`, nrow = 3)
+  facet_wrap(~ `class`, nrow = 3)
+
 
 # ---- Method #2: Count Pattern Matches ----
 
@@ -79,15 +97,15 @@ ggplot(df_long, aes(x = `id`)) + geom_bar(stat = "count") +
 # actually need to "flatten" the dataset, just search the multi-value variable 
 # for pattern matches and count them.
 
-# Count the number of pet types per id by counting pattern matches.
+# Count the number of pet classes per id by counting pattern matches.
 df_count <- pets %>% 
   map(paste0, collapse = '|') %>% 
   map(~str_count(df$pet, .x)) %>% 
   bind_cols(df) %>% select(-pet) %>%
   pivot_longer(cols = any_of(names(pets)), 
-               names_to = "type", values_to = "count")
+               names_to = "class", values_to = "count")
 
-# Since we have already counted the number per type, use stat = "identity".
+# Since we have already counted the number per class, use stat = "identity".
 ggplot(df_count, aes(x = `id`, y = `count`)) + geom_bar(stat = "identity") + 
-  facet_wrap(~ `type`, nrow = 3)
+  facet_wrap(~ `class`, nrow = 3)
 
