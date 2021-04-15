@@ -27,7 +27,7 @@ pacman::p_load(dplyr, tidyr, stringr, purrr, ggplot2, rlist)
 
 # Create a list of pets for a participant as a comma-space separated string.
 get_pets <- function(min_n, max_n, pet_lst) {
-  sample(unlist(pet_lst), sample(min_n:max_n, 1), replace = FALSE) %>% 
+  sample(unlist(pet_lst), sample(min_n:max_n, 1), replace = TRUE) %>% 
     paste(collapse = ", ")
 }
 
