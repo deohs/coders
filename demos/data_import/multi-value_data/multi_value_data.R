@@ -12,9 +12,8 @@
 # we "flatten" the dataset?
 #
 # Scenario: Each participant (id) has one or more pets, of various species.
-#           For simplicity, only one pet per species is allowed per pet owner.
 #           Pet species are grouped into types. Count the number of pets per
-#           type owned by each test participant.
+#           type owned by each participant.
 
 # Load pacman, installing if needed.
 if (!require("pacman")) {install.packages("pacman")}
