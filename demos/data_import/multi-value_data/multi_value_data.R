@@ -32,7 +32,7 @@ if (!is.null(sessionInfo()$otherPkgs)) {
 }
 
 # Load pacman, installing if needed.
-if (!require("pacman")) {install.packages("pacman")}
+if (!require("pacman")) install.packages("pacman")
 
 # Load other packages, installing as needed.
 pacman::p_load(dplyr, tidyr, stringr, purrr, ggplot2)
