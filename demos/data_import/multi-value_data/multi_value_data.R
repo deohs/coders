@@ -16,12 +16,12 @@
 #           Pet species are grouped into types. Count the number of pets per
 #           type owned by each test participant.
 
-library(dplyr)
-library(tidyr)
-library(stringr)
-library(purrr)
-library(ggplot2)
-library(rlist)
+# Load pacman, installing if needed.
+if (!require("pacman")) {install.packages("pacman")}
+
+# Load other packages, installing as needed.
+pacman::p_load(dplyr, tidyr, stringr, purrr, ggplot2, rlist)
+
 
 # ---- Define functions ----
 
