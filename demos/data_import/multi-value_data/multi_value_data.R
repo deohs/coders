@@ -35,7 +35,7 @@ if (!is.null(sessionInfo()$otherPkgs)) {
 if (!require("pacman")) {install.packages("pacman")}
 
 # Load other packages, installing as needed.
-pacman::p_load(dplyr, tidyr, stringr, purrr, ggplot2, rlist)
+pacman::p_load(dplyr, tidyr, stringr, purrr, ggplot2)
 
 
 # ---- Define functions ----
@@ -47,7 +47,7 @@ get_pets <- function(min_n, max_n, pet_lst) {
 }
 
 # Find the pet class given a pet type.
-get_class <- function(pet, pet_lst) names(list.search(pet_lst, any(. == pet)))
+get_class <- function(x, lst) names(lst)[map_lgl(lst, ~ x %in% .x)]
 
 
 # ---- Prepare dataset ----
@@ -82,7 +82,7 @@ df_long <- df %>% mutate(pet = str_split(pet, pattern = ", ")) %>% unnest(pet)
 df_long
 
 # For each pet, find pet class using get_class(), defined in Functions section.
-df_long <- df_long %>% mutate(`class` = map_chr(pet, get_class, pet_lst = pets))
+df_long <- df_long %>% mutate(`class` = map_chr(pet, get_class, lst = pets))
 
 df_long
 
