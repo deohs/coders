@@ -41,13 +41,13 @@ pacman::p_load(dplyr, tidyr, stringr, purrr, ggplot2)
 # ---- Define functions ----
 
 # Create a list of pets for a participant as a comma-space separated string.
-get_pets <- function(min_n, max_n, pet_lst) {
-  sample(unlist(pet_lst), sample(min_n:max_n, 1), replace = TRUE) %>% 
+get_pets <- function(lst, min_n, max_n) {
+  sample(unlist(lst), sample(min_n:max_n, 1), replace = TRUE) %>% 
     paste(collapse = ", ")
 }
 
 # Find the pet class given a pet type.
-get_class <- function(x, lst) names(lst)[map_lgl(lst, ~ x %in% .x)]
+get_class <- function(lst, pet) names(lst)[map_lgl(lst, ~ pet %in% .x)]
 
 
 # ---- Prepare dataset ----
@@ -64,7 +64,7 @@ pets <- list(amphibian = c('frog', 'salamander'),
 
 # Create dataset.
 set.seed(1)
-pets_multivalued <- map_chr(1:n_ids, ~(get_pets(min_pets, max_pets, pets)))
+pets_multivalued <- map_chr(1:n_ids, ~(get_pets(pets, min_pets, max_pets)))
 df <- tibble(id = 1:n_ids, pet = pets_multivalued)
 
 # View dataset
@@ -82,7 +82,7 @@ df_long <- df %>% mutate(pet = str_split(pet, pattern = ", ")) %>% unnest(pet)
 df_long
 
 # For each pet, find pet class using get_class(), defined in Functions section.
-df_long <- df_long %>% mutate(`class` = map_chr(pet, get_class, lst = pets))
+df_long <- df_long %>% mutate(`class` = map_chr(pet, ~get_class(pets, .x)))
 
 df_long
 
