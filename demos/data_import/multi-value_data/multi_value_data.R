@@ -64,7 +64,7 @@ pets <- list(amphibian = c('frog', 'salamander'),
 
 # Create dataset.
 set.seed(1)
-pets_multivalued <- map_chr(1:n_ids, ~(get_pets(pets, min_pets, max_pets)))
+pets_multivalued <- map_chr(1:n_ids, ~get_pets(pets, min_pets, max_pets))
 df <- tibble(id = 1:n_ids, pet = pets_multivalued)
 
 # View dataset
