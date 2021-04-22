@@ -28,14 +28,11 @@ if (!file.exists(filepath)) {
 }
 
 # Extract data
-df_list <- extract_tables(file = filepath, pages = 4:5, output = "data.frame")
+df <- extract_tables(file = filepath, output = "data.frame")[[1]][c(1, 4:15),]
 
 # Cleanup data
-df_list <- list(df_list[[1]][, c(1:2, 4)], 
-                df_list[[2]][4:nrow(df_list[[2]]), 1:3])
-names(df_list[[2]]) <- names(df_list[[1]])
-df_list <- map(df_list, ~mutate(.x, across(2:3, ~as.numeric(gsub(',', '', .)))))
-df <- bind_rows(df_list)
+names(df) <- c('county', 'deaths', 'cases')
+df <- df[-1, ] %>% mutate(across(2:3, ~as.numeric(gsub(',', '', .))))
 
 # ----------
 # Example 2
