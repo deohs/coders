@@ -14,7 +14,7 @@ Load packages and setup a data folder in OneDrive, assuming you have already con
 ```{r}
 # Load packages
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(readr, dplyr, tidyr, purrr, tabulizer, ggplot2, RColorBrewer)
+pacman::p_load(readr, dplyr, tabulizer)
 
 # Prepare data folder
 data_dir <- file.path(Sys.getenv("HOME"), "..", "OneDrive", "coders", "data")

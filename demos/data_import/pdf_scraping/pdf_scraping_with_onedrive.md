@@ -3,6 +3,8 @@ title: "PDF Scraping WA Covid Data using OneDrive"
 output: 
   html_document:
     keep_md: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 # Setup
@@ -20,7 +22,7 @@ if (!require(pacman)) install.packages("pacman")
 ```
 
 ```r
-pacman::p_load(readr, dplyr, tidyr, purrr, tabulizer, ggplot2, RColorBrewer)
+pacman::p_load(readr, dplyr, tabulizer)
 
 # Prepare data folder
 data_dir <- file.path(Sys.getenv("HOME"), "..", "OneDrive", "coders", "data")
