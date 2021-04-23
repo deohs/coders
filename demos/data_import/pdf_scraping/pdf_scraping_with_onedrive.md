@@ -47,6 +47,9 @@ filepath <- file.path(data_dir, filename)
 if (!file.exists(filepath)) {
   url <- paste0('https://www.doh.wa.gov/Portals/1/Documents/1600/coronavirus/',
                 'data-tables/', filename)
+  
+  # Download with httr::GET() and save with httr::write_disk().
+  # Base-R alternative would be: download.file(url, filepath, method = "curl")
   response_msg <- GET(url, write_disk(filepath, overwrite = TRUE))
 }
 ```
