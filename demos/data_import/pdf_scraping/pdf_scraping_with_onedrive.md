@@ -35,7 +35,7 @@ if (!dir.exists(data_dir)) {
 }
 ```
 
-# Get PDf File
+# Get PDF File
 
 See: https://www.doh.wa.gov/Emergencies/COVID19/DataDashboard#downloads
 
@@ -51,7 +51,7 @@ if (!file.exists(filepath)) {
 }
 ```
 
-# Extract Data from PDf File
+# Extract Data from PDF File
 
 
 ```r
