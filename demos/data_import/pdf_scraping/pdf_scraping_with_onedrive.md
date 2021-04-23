@@ -22,7 +22,7 @@ if (!require(pacman)) install.packages("pacman")
 ```
 
 ```r
-pacman::p_load(readr, dplyr, tabulizer)
+pacman::p_load(readr, dplyr, httr, tabulizer)
 
 # Construct data folder path
 onedrive_path <- ifelse(Sys.getenv('OneDrive') != "", Sys.getenv('OneDrive'), 
@@ -47,7 +47,7 @@ filepath <- file.path(data_dir, filename)
 if (!file.exists(filepath)) {
   url <- paste0('https://www.doh.wa.gov/Portals/1/Documents/1600/coronavirus/',
                 'data-tables/', filename)
-  download.file(url, filepath)
+  response_msg <- GET(url, write_disk(filepath, overwrite = TRUE))
 }
 ```
 
