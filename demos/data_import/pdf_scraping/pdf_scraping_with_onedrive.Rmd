@@ -16,12 +16,10 @@ Load packages and setup a data folder in OneDrive, assuming you have already con
 if (!require(pacman)) install.packages("pacman")
 pacman::p_load(readr, dplyr, tabulizer)
 
-# Construct data folder path using a heuristic
+# Construct data folder path
 onedrive_path <- Sys.getenv('OneDrive')
-alt_onedrive_path <- file.path(Sys.getenv('HOME'), 
-                               ifelse(.Platform$OS.type == "windows", '..', ''), 
-                               'OneDrive')
-onedrive_path <- ifelse(onedrive_path != "", onedrive_path, alt_onedrive_path)
+onedrive_path <- ifelse(onedrive_path != "", onedrive_path, 
+  file.path(gsub('[\\/]*Documents', '', Sys.getenv('HOME')), 'OneDrive'))
 data_dir <- file.path(onedrive_path, 'coders', 'data')
 
 # Create data folder if it does not already exist
