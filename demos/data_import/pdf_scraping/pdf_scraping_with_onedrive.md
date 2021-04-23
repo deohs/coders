@@ -56,7 +56,9 @@ if (!file.exists(filepath)) {
 
 ```r
 txt <- extract_text(file = filepath)
-lines <- c('county;deaths;cases', read_lines(txt) %>% .[c(71:94, 100:111)])
+lines <- read_lines(txt)
+lines <- c('county;deaths;cases', 
+           grep('^[A-Z].*[0-9,]+\\s+[0-9,]+\\s*$', lines, lines, value = TRUE))
 lines <- gsub('\\s+(\\d)', ';\\1', lines) %>% gsub(',', '', .)
 df <- read_delim(lines, delim = ';', trim_ws = TRUE)
 ```
