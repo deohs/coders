@@ -24,7 +24,8 @@ if (!require(pacman)) install.packages("pacman")
 ```r
 pacman::p_load(readr, dplyr, httr, tabulizer)
 
-# Construct data folder path
+# Construct data folder path. Use the environment variable "OneDrive" if 
+# available, otherwise guess the location using the "HOME" variable.
 onedrive_path <- ifelse(Sys.getenv('OneDrive') != "", Sys.getenv('OneDrive'), 
   file.path(gsub('[\\/]+Documents', '', Sys.getenv('HOME')), 'OneDrive'))
 data_dir <- file.path(onedrive_path, 'coders', 'data')
