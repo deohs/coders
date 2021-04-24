@@ -41,7 +41,7 @@ if (!file.exists(filepath)) {
                 'data-tables/', filename)
   
   # Download with httr::GET() and save with httr::write_disk().
-  # Base-R alternative would be: download.file(url, filepath, method = "curl")
+  # Or in Base-R: download.file(url, filepath, method = "curl", quiet = TRUE)
   response_msg <- GET(url, write_disk(filepath, overwrite = TRUE))
 }
 ```
