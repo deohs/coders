@@ -25,13 +25,23 @@ system.time(brfss <- readRDS(file.path("data", "brfss_data.rds")))
 ##   user  system elapsed 
 ## 51.987  14.104  66.076 
 
+# Create the SQLite database
 con <- dbConnect(RSQLite::SQLite(), "brfss_data.sqlite")
 dbWriteTable(con, "brfss", brfss)
+
+# We don't have to read the whole database to use it, but let's time it anyway.
 system.time(brfss_data <- dbReadTable(con, "brfss"))
 
 ##    user  system elapsed 
 ## 644.020  58.490 702.359 
 
+# Remove the object to free the memory
+rm("brfss_data")
+
+# List tables in the database
+dbListTables(con)
+
+# Create a test query
 query <- '
 SELECT IYEAR AS Year, COUNT(*) AS Respondents
 FROM brfss
@@ -43,33 +53,42 @@ ORDER BY IYEAR;
 system.time(res <- dbGetQuery(con, query))
 
 ##  user  system elapsed 
-## 2.829   4.985   7.812 
+## 2.719   5.393   8.109 
 
-# Running a second time will be faster because of the new index (and caching).
+# Running a second time will likely be faster due to the index (and caching).
 system.time(res <- dbGetQuery(con, query))
 
 ##  user  system elapsed 
-## 2.608   2.553   5.159
+## 2.403   2.636   5.035
 
 dbDisconnect(con)
 
+# Create the DuckDB database
 con_duck <- dbConnect(duckdb::duckdb(), 'brfss_data.duckdb')
 dbWriteTable(con_duck, "brfss", brfss)
+
+# List tables in the database
+dbListTables(con_duck)
+
+# We don't have to read the whole database to use it, but let's time it anyway.
 system.time(brfss_data <- dbReadTable(con_duck, "brfss"))
 
 ##    user  system elapsed 
 ##  63.605 304.157 367.658 
 
+# Remove the object to free the memory
+rm("brfss_data")
+
 # This runs fast the first time because it's already indexed.
 system.time(res <- dbGetQuery(con_duck, query))
 
 ##  user  system elapsed 
-## 0.168   0.000   0.168 
+## 0.161   0.188   0.349 
 
-# Running a second time may (or may not) run faster because of caching.
+# Running a second time may run faster due to caching.
 system.time(res <- dbGetQuery(con_duck, query))
 
 ##  user  system elapsed 
-## 0.152   0.000   0.152
+## 0.140   0.000   0.141
 
 dbDisconnect(con_duck)
