@@ -66,6 +66,18 @@ res2 <- brfss_data %>% group_by(IYEAR) %>%
   summarise(Respondents = n(), .groups = "drop") %>% 
   select(Year = "IYEAR", Respondents) %>% 
   arrange(Year, Respondents) 
+
+# View the query
+res2 %>% show_query()
+
+## <SQL>
+## SELECT `IYEAR` AS `Year`, `Respondents`
+## FROM (SELECT `IYEAR`, COUNT(*) AS `Respondents`
+## FROM `brfss`
+## GROUP BY `IYEAR`)
+## ORDER BY `Year`, `Respondents`
+
+# Execute the query
 system.time(res3 <- res2 %>% collect())
 
 ##  user  system elapsed 
@@ -119,6 +131,18 @@ res2 <- brfss_data %>% group_by(IYEAR) %>%
   summarise(Respondents = n(), .groups = "drop") %>% 
   select(Year = "IYEAR", Respondents) %>% 
   arrange(Year, Respondents) 
+
+# View the query
+res2 %>% show_query()
+
+## <SQL>
+## SELECT `IYEAR` AS `Year`, `Respondents`
+## FROM (SELECT `IYEAR`, COUNT(*) AS `Respondents`
+## FROM `brfss`
+## GROUP BY `IYEAR`)
+## ORDER BY `Year`, `Respondents`
+
+# Execute the query
 system.time(res3 <- res2 %>% collect())
 
 ##  user  system elapsed 
