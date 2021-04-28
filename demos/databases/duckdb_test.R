@@ -10,15 +10,15 @@
 #
 # Summary of results:
 #
-# - readRDS is much faster than Sqlite but not much faster than DuckDB.
+# - readRDS is much faster than SQLite but not much faster than DuckDB.
 # - DuckDB is much faster than SQlite when reading entire tables.
 # - DuckDB is much faster than SQlite when running queries.
 
 # Load packages
 if (!require(pacman)) install.packages("pacman")
-pacman::p_load(data.table, DBI, RSQLite, duckdb)
+pacman::p_load(data.table, DBI, RSQLite, duckdb, dplyr)
 
-# Read "rds" file
+# Read "rds" file. (Unlike a database file, you have to load the entire file.)
 system.time(brfss <- readRDS(file.path("data", "brfss_data.rds")))
 
 ##   user  system elapsed 
@@ -60,6 +60,28 @@ system.time(res <- dbGetQuery(con, query))
 ##  user  system elapsed 
 ## 2.478   2.615   5.092
 
+# Try the query again using a dplyr pipeline.
+brfss_data <- tbl(con, "brfss")
+res2 <- brfss_data %>% group_by(IYEAR) %>%
+  summarise(Respondents = n(), .groups = "drop") %>% 
+  select(Year = "IYEAR", Respondents) %>% 
+  arrange(Year, Respondents) 
+system.time(res3 <- res2 %>% collect())
+
+##  user  system elapsed 
+## 2.611   3.537   6.145 
+
+# And repeat collect()
+system.time(res3 <- res2 %>% collect())
+
+##  user  system elapsed 
+## 2.551   2.855   5.404
+
+# Compare results with SQL alternative
+all_equal(res, res3, convert = TRUE)
+
+## [1] TRUE
+
 # Close the connection
 dbDisconnect(con)
 
@@ -90,6 +112,28 @@ system.time(res <- dbGetQuery(con_duck, query))
 
 ##  user  system elapsed 
 ## 0.148   0.000   0.147
+
+# Try the query again using a dplyr pipeline.
+brfss_data <- tbl(con_duck, "brfss")
+res2 <- brfss_data %>% group_by(IYEAR) %>%
+  summarise(Respondents = n(), .groups = "drop") %>% 
+  select(Year = "IYEAR", Respondents) %>% 
+  arrange(Year, Respondents) 
+system.time(res3 <- res2 %>% collect())
+
+##  user  system elapsed 
+## 0.193   0.067   0.260
+
+# And repeat collect()
+system.time(res3 <- res2 %>% collect())
+
+##  user  system elapsed 
+## 0.163   0.000   0.163
+
+# Compare results with SQL alternative
+all_equal(res, res3, convert = TRUE)
+
+## [1] TRUE
 
 # Close the connection
 dbDisconnect(con_duck, shutdown=TRUE)
