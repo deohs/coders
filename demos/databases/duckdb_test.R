@@ -42,7 +42,7 @@ dbListTables(con)
 
 # Create a test query
 query <- '
-SELECT IYEAR AS Year, COUNT(*) AS Respondents
+SELECT IYEAR AS year, COUNT(*) AS respondents
 FROM brfss
 GROUP BY IYEAR
 ORDER BY IYEAR;
@@ -63,19 +63,19 @@ system.time(res <- dbGetQuery(con, query))
 # Try the query again using a dplyr pipeline.
 brfss_data <- tbl(con, "brfss")
 res2 <- brfss_data %>% group_by(IYEAR) %>%
-  summarise(Respondents = n(), .groups = "drop") %>% 
-  select(Year = "IYEAR", Respondents) %>% 
-  arrange(Year, Respondents) 
+  summarise(respondents = n(), .groups = "drop") %>% 
+  select(year = "IYEAR", respondents) %>% 
+  arrange(year, respondents) 
 
 # View the query
 res2 %>% show_query()
 
 ## <SQL>
-## SELECT `IYEAR` AS `Year`, `Respondents`
+## SELECT `IYEAR` AS `year`, `respondents`
 ## FROM (SELECT `IYEAR`, COUNT(*) AS `Respondents`
 ## FROM `brfss`
 ## GROUP BY `IYEAR`)
-## ORDER BY `Year`, `Respondents`
+## ORDER BY `year`, `respondents`
 
 # Execute the query
 system.time(res3 <- res2 %>% collect())
@@ -128,19 +128,19 @@ system.time(res <- dbGetQuery(con_duck, query))
 # Try the query again using a dplyr pipeline.
 brfss_data <- tbl(con_duck, "brfss")
 res2 <- brfss_data %>% group_by(IYEAR) %>%
-  summarise(Respondents = n(), .groups = "drop") %>% 
-  select(Year = "IYEAR", Respondents) %>% 
-  arrange(Year, Respondents) 
+  summarise(respondents = n(), .groups = "drop") %>% 
+  select(year = "IYEAR", respondents) %>% 
+  arrange(year, respondents) 
 
 # View the query
 res2 %>% show_query()
 
 ## <SQL>
-## SELECT `IYEAR` AS `Year`, `Respondents`
-## FROM (SELECT `IYEAR`, COUNT(*) AS `Respondents`
-## FROM `brfss`
-## GROUP BY `IYEAR`)
-## ORDER BY `Year`, `Respondents`
+## SELECT "IYEAR" AS "year", "respondents"
+## FROM (SELECT "IYEAR", COUNT(*) AS "respondents"
+## FROM "brfss"
+## GROUP BY "IYEAR") "q01"
+## ORDER BY "year", "respondents"
 
 # Execute the query
 system.time(res3 <- res2 %>% collect())
@@ -161,3 +161,4 @@ all_equal(res, res3, convert = TRUE)
 
 # Close the connection
 dbDisconnect(con_duck, shutdown=TRUE)
+
