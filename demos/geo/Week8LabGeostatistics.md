@@ -1059,9 +1059,9 @@ Table: Summary of kriging cross-validation results for log(zinc).
 
 |Description                 |   RMSE| MSE_based_R2|
 |:---------------------------|------:|------------:|
-|OK: 5-fold CV               | 0.4026|       0.6869|
+|OK: 5-fold CV               | 0.4102|       0.6751|
 |OK: LOO CV                  | 0.3869|       0.7109|
-|UK on sqrt(dist): 5-fold CV | 0.3917|       0.7036|
+|UK on sqrt(dist): 5-fold CV | 0.4020|       0.6878|
 |UK on sqrt(dist): LOO CV    | 0.3829|       0.7169|
 
 
@@ -1255,20 +1255,25 @@ la_grid
 # we do not want to predict there.
 
 # specify url for a zip file for access to a shapefile
-#url <- "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/physical/ne_10m_land.zip"
-# The above URL is not working in R due to a redirect and a check for "referer".
-# bash$ curl --referer 'https://www.naturalearthdata.com' --verbose -LO $URL
-# So the URL below is the redirected URL.
-url <- 'https://naciscdn.org/naturalearth/10m/physical/ne_10m_land.zip'
+url <- "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/physical/ne_10m_land.zip"
 
 # download zip file
-# note: if on Windows, the argument `mode = "wb"` (Windows binary) must be added
-# to the `download.file()` function.
 if (!file.exists(file.path('Datasets','ne_10m_land.zip'))){
-  download.file(url = url, 
-                destfile = file.path('Datasets','ne_10m_land.zip'))
+  GET(url, add_headers(referer = "https://www.naturalearthdata.com"), 
+      write_disk(file.path('Datasets','ne_10m_land.zip'), overwrite = TRUE))
 }
+```
 
+```
+## Response [https://naciscdn.org/naturalearth/10m/physical/ne_10m_land.zip]
+##   Date: 2021-05-03 20:18
+##   Status: 200
+##   Content-Type: application/zip
+##   Size: 3.02 MB
+## <ON DISK>  Datasets/ne_10m_land.zip
+```
+
+```r
 # unzip file
 if (!file.exists(file.path('Datasets','ne_10m_land','ne_10m_land.shp'))){
   unzip(file.path('Datasets','ne_10m_land.zip'), 
@@ -1908,9 +1913,9 @@ sessionInfo()
 ##  [5] scales_1.1.1      funModeling_1.9.4 Hmisc_4.5-0       Formula_1.2-4    
 ##  [9] survival_3.1-8    lattice_0.20-40   gstat_2.0-7       stars_0.5-2      
 ## [13] sf_0.9-8          abind_1.4-5       ggmap_3.0.0       maps_3.3.0       
-## [17] knitr_1.31        forcats_0.5.1     stringr_1.4.0     dplyr_1.0.5      
-## [21] purrr_0.3.4       readr_1.4.0       tidyr_1.1.3       tibble_3.1.0     
-## [25] ggplot2_3.3.3     tidyverse_1.3.0   pacman_0.5.1     
+## [17] httr_1.4.2        knitr_1.31        forcats_0.5.1     stringr_1.4.0    
+## [21] dplyr_1.0.5       purrr_0.3.4       readr_1.4.0       tidyr_1.1.3      
+## [25] tibble_3.1.0      ggplot2_3.3.3     tidyverse_1.3.0   pacman_0.5.1     
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] colorspace_2.0-0    rjson_0.2.20        ellipsis_0.3.1     
@@ -1920,31 +1925,30 @@ sessionInfo()
 ## [13] xml2_1.3.2          splines_3.6.3       jsonlite_1.7.2     
 ## [16] entropy_1.2.1       broom_0.7.5         cluster_2.1.0      
 ## [19] dbplyr_2.1.0        png_0.1-7           compiler_3.6.3     
-## [22] httr_1.4.2          backports_1.2.1     assertthat_0.2.1   
-## [25] Matrix_1.2-18       lazyeval_0.2.2      cli_2.3.1          
-## [28] htmltools_0.5.1.1   tools_3.6.3         gtable_0.3.0       
-## [31] glue_1.4.2          reshape2_1.4.4      Rcpp_1.0.6         
-## [34] cellranger_1.1.0    vctrs_0.3.7         nlme_3.1-144       
-## [37] lwgeom_0.2-5        xfun_0.22           rvest_1.0.0        
-## [40] lifecycle_1.0.0     zoo_1.8-9           hms_1.0.0          
-## [43] parallel_3.6.3      RColorBrewer_1.1-2  curl_4.3           
-## [46] yaml_2.2.1          gridExtra_2.3       pander_0.6.3       
-## [49] rpart_4.1-15        latticeExtra_0.6-29 stringi_1.5.3      
-## [52] highr_0.8           e1071_1.7-6         checkmate_2.0.0    
-## [55] intervals_0.15.2    RgoogleMaps_1.4.5.3 rlang_0.4.10       
-## [58] pkgconfig_2.0.3     moments_0.14        bitops_1.0-6       
-## [61] evaluate_0.14       ROCR_1.0-11         labeling_0.4.2     
-## [64] htmlwidgets_1.5.3   tidyselect_1.1.0    plyr_1.8.6         
-## [67] magrittr_2.0.1      R6_2.5.0            generics_0.1.0     
-## [70] DBI_1.1.1           mgcv_1.8-31         pillar_1.5.1       
-## [73] haven_2.3.1         foreign_0.8-75      withr_2.4.1        
-## [76] units_0.7-1         xts_0.12.1          nnet_7.3-13        
-## [79] spacetime_1.2-4     modelr_0.1.8        crayon_1.4.1       
-## [82] KernSmooth_2.23-16  utf8_1.2.1          rmarkdown_2.7      
-## [85] jpeg_0.1-8.1        isoband_0.2.4       grid_3.6.3         
-## [88] readxl_1.3.1        data.table_1.14.0   FNN_1.1.3          
-## [91] reprex_1.0.0        digest_0.6.27       classInt_0.4-3     
-## [94] munsell_0.5.0
+## [22] backports_1.2.1     assertthat_0.2.1    Matrix_1.2-18      
+## [25] lazyeval_0.2.2      cli_2.3.1           htmltools_0.5.1.1  
+## [28] tools_3.6.3         gtable_0.3.0        glue_1.4.2         
+## [31] reshape2_1.4.4      Rcpp_1.0.6          cellranger_1.1.0   
+## [34] vctrs_0.3.7         nlme_3.1-144        lwgeom_0.2-5       
+## [37] xfun_0.22           rvest_1.0.0         lifecycle_1.0.0    
+## [40] zoo_1.8-9           hms_1.0.0           parallel_3.6.3     
+## [43] RColorBrewer_1.1-2  curl_4.3            yaml_2.2.1         
+## [46] gridExtra_2.3       pander_0.6.3        rpart_4.1-15       
+## [49] latticeExtra_0.6-29 stringi_1.5.3       highr_0.8          
+## [52] e1071_1.7-6         checkmate_2.0.0     intervals_0.15.2   
+## [55] RgoogleMaps_1.4.5.3 rlang_0.4.10        pkgconfig_2.0.3    
+## [58] moments_0.14        bitops_1.0-6        evaluate_0.14      
+## [61] ROCR_1.0-11         labeling_0.4.2      htmlwidgets_1.5.3  
+## [64] tidyselect_1.1.0    plyr_1.8.6          magrittr_2.0.1     
+## [67] R6_2.5.0            generics_0.1.0      DBI_1.1.1          
+## [70] mgcv_1.8-31         pillar_1.5.1        haven_2.3.1        
+## [73] foreign_0.8-75      withr_2.4.1         units_0.7-1        
+## [76] xts_0.12.1          nnet_7.3-13         spacetime_1.2-4    
+## [79] modelr_0.1.8        crayon_1.4.1        KernSmooth_2.23-16 
+## [82] utf8_1.2.1          rmarkdown_2.7       jpeg_0.1-8.1       
+## [85] isoband_0.2.4       grid_3.6.3          readxl_1.3.1       
+## [88] data.table_1.14.0   FNN_1.1.3           reprex_1.0.0       
+## [91] digest_0.6.27       classInt_0.4-3      munsell_0.5.0
 ```
 
 ## Embedded code
@@ -1983,6 +1987,7 @@ if (!require("pacman")) {install.packages("pacman", repos = my_repo)}
   # ggplot2: part of tidyverse
   # readr: file reading
   # dplyr: data wrangling
+  # httr: downloading files from the web
   # Hmisc:  describe
   # gstat:  for kriging
   # maps: for maps
@@ -1998,7 +2003,7 @@ if (!require("pacman")) {install.packages("pacman", repos = my_repo)}
   # sp: spatial data methods -- will eventually be superseded by `sf`
   # rgdal:  projections, coordinate systems
   # downloader: download files over HTTP and HTTPS
-pacman::p_load(tidyverse, knitr, dplyr, purrr, maps, ggmap, stars, gstat,
+pacman::p_load(tidyverse, knitr, dplyr, httr, purrr, maps, ggmap, stars, gstat,
                funModeling, Hmisc, scales, akima, sp, rgdal, downloader, sf)
 
 # Note: this lab will only knit if the latest version of ggmap is installed.  
@@ -2412,18 +2417,12 @@ la_grid
 # we do not want to predict there.
 
 # specify url for a zip file for access to a shapefile
-#url <- "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/physical/ne_10m_land.zip"
-# The above URL is not working in R due to a redirect and a check for "referer".
-# bash$ curl --referer 'https://www.naturalearthdata.com' --verbose -LO $URL
-# So the URL below is the redirected URL.
-url <- 'https://naciscdn.org/naturalearth/10m/physical/ne_10m_land.zip'
+url <- "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/physical/ne_10m_land.zip"
 
 # download zip file
-# note: if on Windows, the argument `mode = "wb"` (Windows binary) must be added
-# to the `download.file()` function.
 if (!file.exists(file.path('Datasets','ne_10m_land.zip'))){
-  download.file(url = url, 
-                destfile = file.path('Datasets','ne_10m_land.zip'))
+  GET(url, add_headers(referer = "https://www.naturalearthdata.com"), 
+      write_disk(file.path('Datasets','ne_10m_land.zip'), overwrite = TRUE))
 }
 
 # unzip file
@@ -2749,7 +2748,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##   ggtitle(plot_title) +
 ##   theme_bw()
 ## }
-## <bytecode: 0x560aedf94f80>
+## <bytecode: 0x55ad659fac88>
 ## 
 ## [[2]]
 ## A single object matching 'krige.cv.stats' was found
@@ -2774,7 +2773,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##          RMSE = round(sqrt(MSE_pred), 4), 
 ##          MSE_based_R2 = round(max(1 - MSE_pred/MSE_obs, 0), 4) )
 ## }
-## <bytecode: 0x560af0739e70>
+## <bytecode: 0x55ad690ae8d0>
 ## 
 ## [[3]]
 ## A single object matching 'krige.cv2' was found
@@ -2793,7 +2792,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##   if (is.na(st_crs(krige.cv1))) {st_crs(krige.cv1) <- st_crs(locations)}
 ##   return(krige.cv1)
 ## }
-## <bytecode: 0x560af4eb0f58>
+## <bytecode: 0x55ad6c8698f0>
 ```
 
 
