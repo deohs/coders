@@ -887,7 +887,10 @@ la_grid
 
 # specify url for a zip file for access to a shapefile
 #url <- "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/physical/ne_10m_land.zip"
-url <- 'https://www.qgistutorials.com/downloads/ne_10m_land.zip'
+# The above URL is not working in R due to a redirect and a check for "referer".
+# bash$ curl --referer 'https://www.naturalearthdata.com' --verbose -LO $URL
+# So the URL below is the redirected URL.
+url <- 'https://naciscdn.org/naturalearth/10m/physical/ne_10m_land.zip'
 
 # download zip file
 # note: if on Windows, the argument `mode = "wb"` (Windows binary) must be added

@@ -1059,9 +1059,9 @@ Table: Summary of kriging cross-validation results for log(zinc).
 
 |Description                 |   RMSE| MSE_based_R2|
 |:---------------------------|------:|------------:|
-|OK: 5-fold CV               | 0.4034|       0.6858|
+|OK: 5-fold CV               | 0.4026|       0.6869|
 |OK: LOO CV                  | 0.3869|       0.7109|
-|UK on sqrt(dist): 5-fold CV | 0.3887|       0.7083|
+|UK on sqrt(dist): 5-fold CV | 0.3917|       0.7036|
 |UK on sqrt(dist): LOO CV    | 0.3829|       0.7169|
 
 
@@ -1256,7 +1256,10 @@ la_grid
 
 # specify url for a zip file for access to a shapefile
 #url <- "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/physical/ne_10m_land.zip"
-url <- 'https://www.qgistutorials.com/downloads/ne_10m_land.zip'
+# The above URL is not working in R due to a redirect and a check for "referer".
+# bash$ curl --referer 'https://www.naturalearthdata.com' --verbose -LO $URL
+# So the URL below is the redirected URL.
+url <- 'https://naciscdn.org/naturalearth/10m/physical/ne_10m_land.zip'
 
 # download zip file
 # note: if on Windows, the argument `mode = "wb"` (Windows binary) must be added
@@ -2410,7 +2413,10 @@ la_grid
 
 # specify url for a zip file for access to a shapefile
 #url <- "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/physical/ne_10m_land.zip"
-url <- 'https://www.qgistutorials.com/downloads/ne_10m_land.zip'
+# The above URL is not working in R due to a redirect and a check for "referer".
+# bash$ curl --referer 'https://www.naturalearthdata.com' --verbose -LO $URL
+# So the URL below is the redirected URL.
+url <- 'https://naciscdn.org/naturalearth/10m/physical/ne_10m_land.zip'
 
 # download zip file
 # note: if on Windows, the argument `mode = "wb"` (Windows binary) must be added
@@ -2743,7 +2749,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##   ggtitle(plot_title) +
 ##   theme_bw()
 ## }
-## <bytecode: 0x5599ee4fc058>
+## <bytecode: 0x560aedf94f80>
 ## 
 ## [[2]]
 ## A single object matching 'krige.cv.stats' was found
@@ -2768,7 +2774,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##          RMSE = round(sqrt(MSE_pred), 4), 
 ##          MSE_based_R2 = round(max(1 - MSE_pred/MSE_obs, 0), 4) )
 ## }
-## <bytecode: 0x5599f0cab1b0>
+## <bytecode: 0x560af0739e70>
 ## 
 ## [[3]]
 ## A single object matching 'krige.cv2' was found
@@ -2787,7 +2793,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##   if (is.na(st_crs(krige.cv1))) {st_crs(krige.cv1) <- st_crs(locations)}
 ##   return(krige.cv1)
 ## }
-## <bytecode: 0x5599f5455d98>
+## <bytecode: 0x560af4eb0f58>
 ```
 
 
