@@ -887,14 +887,13 @@ la_grid
 # Remove the water points from la_grid:  We don't have data from the water, so
 # we do not want to predict there.
 
-# get url for a zip file for access to a shapefile
-download_page <- 
-  'https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/'
-url <- GET(download_page) %>% read_html() %>% html_node("a.download-link") %>% 
-  html_attr("href")
-
 # download zip file
 if (!file.exists(file.path('Datasets','ne_10m_land.zip'))){
+  # get url for a zip file for access to a shapefile
+  download_page <- 
+    'https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/'
+  url <- GET(download_page) %>% read_html() %>% 
+    html_node("a.download-link") %>% html_attr("href")
   GET(url, add_headers(referer = "https://www.naturalearthdata.com"), 
       write_disk(file.path('Datasets','ne_10m_land.zip'), overwrite = TRUE))
 }

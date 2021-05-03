@@ -1059,9 +1059,9 @@ Table: Summary of kriging cross-validation results for log(zinc).
 
 |Description                 |   RMSE| MSE_based_R2|
 |:---------------------------|------:|------------:|
-|OK: 5-fold CV               | 0.4143|       0.6685|
+|OK: 5-fold CV               | 0.4069|       0.6802|
 |OK: LOO CV                  | 0.3869|       0.7109|
-|UK on sqrt(dist): 5-fold CV | 0.3839|       0.7153|
+|UK on sqrt(dist): 5-fold CV | 0.3923|       0.7028|
 |UK on sqrt(dist): LOO CV    | 0.3829|       0.7169|
 
 
@@ -1254,14 +1254,13 @@ la_grid
 # Remove the water points from la_grid:  We don't have data from the water, so
 # we do not want to predict there.
 
-# get url for a zip file for access to a shapefile
-download_page <- 
-  'https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/'
-url <- GET(download_page) %>% read_html() %>% html_node("a.download-link") %>% 
-  html_attr("href")
-
 # download zip file
 if (!file.exists(file.path('Datasets','ne_10m_land.zip'))){
+  # get url for a zip file for access to a shapefile
+  download_page <- 
+    'https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/'
+  url <- GET(download_page) %>% read_html() %>% 
+    html_node("a.download-link") %>% html_attr("href")
   GET(url, add_headers(referer = "https://www.naturalearthdata.com"), 
       write_disk(file.path('Datasets','ne_10m_land.zip'), overwrite = TRUE))
 }
@@ -1269,7 +1268,7 @@ if (!file.exists(file.path('Datasets','ne_10m_land.zip'))){
 
 ```
 ## Response [https://naciscdn.org/naturalearth/10m/physical/ne_10m_land.zip]
-##   Date: 2021-05-03 20:46
+##   Date: 2021-05-03 20:52
 ##   Status: 200
 ##   Content-Type: application/zip
 ##   Size: 3.02 MB
@@ -2420,14 +2419,13 @@ la_grid
 # Remove the water points from la_grid:  We don't have data from the water, so
 # we do not want to predict there.
 
-# get url for a zip file for access to a shapefile
-download_page <- 
-  'https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/'
-url <- GET(download_page) %>% read_html() %>% html_node("a.download-link") %>% 
-  html_attr("href")
-
 # download zip file
 if (!file.exists(file.path('Datasets','ne_10m_land.zip'))){
+  # get url for a zip file for access to a shapefile
+  download_page <- 
+    'https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/'
+  url <- GET(download_page) %>% read_html() %>% 
+    html_node("a.download-link") %>% html_attr("href")
   GET(url, add_headers(referer = "https://www.naturalearthdata.com"), 
       write_disk(file.path('Datasets','ne_10m_land.zip'), overwrite = TRUE))
 }
@@ -2755,7 +2753,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##   ggtitle(plot_title) +
 ##   theme_bw()
 ## }
-## <bytecode: 0x5590d652f7e8>
+## <bytecode: 0x557a077f47f0>
 ## 
 ## [[2]]
 ## A single object matching 'krige.cv.stats' was found
@@ -2780,7 +2778,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##          RMSE = round(sqrt(MSE_pred), 4), 
 ##          MSE_based_R2 = round(max(1 - MSE_pred/MSE_obs, 0), 4) )
 ## }
-## <bytecode: 0x5590d8b01728>
+## <bytecode: 0x557a03ace4a8>
 ## 
 ## [[3]]
 ## A single object matching 'krige.cv2' was found
@@ -2799,7 +2797,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##   if (is.na(st_crs(krige.cv1))) {st_crs(krige.cv1) <- st_crs(locations)}
 ##   return(krige.cv1)
 ## }
-## <bytecode: 0x5590dd2f2f70>
+## <bytecode: 0x557a07f367c0>
 ```
 
 
