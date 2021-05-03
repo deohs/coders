@@ -1059,9 +1059,9 @@ Table: Summary of kriging cross-validation results for log(zinc).
 
 |Description                 |   RMSE| MSE_based_R2|
 |:---------------------------|------:|------------:|
-|OK: 5-fold CV               | 0.4102|       0.6751|
+|OK: 5-fold CV               | 0.4143|       0.6685|
 |OK: LOO CV                  | 0.3869|       0.7109|
-|UK on sqrt(dist): 5-fold CV | 0.4020|       0.6878|
+|UK on sqrt(dist): 5-fold CV | 0.3839|       0.7153|
 |UK on sqrt(dist): LOO CV    | 0.3829|       0.7169|
 
 
@@ -1254,8 +1254,11 @@ la_grid
 # Remove the water points from la_grid:  We don't have data from the water, so
 # we do not want to predict there.
 
-# specify url for a zip file for access to a shapefile
-url <- "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/physical/ne_10m_land.zip"
+# get url for a zip file for access to a shapefile
+download_page <- 
+  'https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/'
+url <- GET(download_page) %>% read_html() %>% html_node("a.download-link") %>% 
+  html_attr("href")
 
 # download zip file
 if (!file.exists(file.path('Datasets','ne_10m_land.zip'))){
@@ -1266,7 +1269,7 @@ if (!file.exists(file.path('Datasets','ne_10m_land.zip'))){
 
 ```
 ## Response [https://naciscdn.org/naturalearth/10m/physical/ne_10m_land.zip]
-##   Date: 2021-05-03 20:18
+##   Date: 2021-05-03 20:46
 ##   Status: 200
 ##   Content-Type: application/zip
 ##   Size: 3.02 MB
@@ -1909,28 +1912,28 @@ sessionInfo()
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-##  [1] downloader_0.4    rgdal_1.5-23      sp_1.4-5          akima_0.6-2.1    
-##  [5] scales_1.1.1      funModeling_1.9.4 Hmisc_4.5-0       Formula_1.2-4    
-##  [9] survival_3.1-8    lattice_0.20-40   gstat_2.0-7       stars_0.5-2      
-## [13] sf_0.9-8          abind_1.4-5       ggmap_3.0.0       maps_3.3.0       
+##  [1] rgdal_1.5-23      sp_1.4-5          akima_0.6-2.1     scales_1.1.1     
+##  [5] funModeling_1.9.4 Hmisc_4.5-0       Formula_1.2-4     survival_3.1-8   
+##  [9] lattice_0.20-40   gstat_2.0-7       stars_0.5-2       sf_0.9-8         
+## [13] abind_1.4-5       ggmap_3.0.0       maps_3.3.0        rvest_1.0.0      
 ## [17] httr_1.4.2        knitr_1.31        forcats_0.5.1     stringr_1.4.0    
 ## [21] dplyr_1.0.5       purrr_0.3.4       readr_1.4.0       tidyr_1.1.3      
 ## [25] tibble_3.1.0      ggplot2_3.3.3     tidyverse_1.3.0   pacman_0.5.1     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] colorspace_2.0-0    rjson_0.2.20        ellipsis_0.3.1     
-##  [4] class_7.3-15        htmlTable_2.1.0     base64enc_0.1-3    
-##  [7] fs_1.5.0            rstudioapi_0.13     proxy_0.4-25       
-## [10] farver_2.1.0        fansi_0.4.2         lubridate_1.7.10   
-## [13] xml2_1.3.2          splines_3.6.3       jsonlite_1.7.2     
-## [16] entropy_1.2.1       broom_0.7.5         cluster_2.1.0      
-## [19] dbplyr_2.1.0        png_0.1-7           compiler_3.6.3     
-## [22] backports_1.2.1     assertthat_0.2.1    Matrix_1.2-18      
-## [25] lazyeval_0.2.2      cli_2.3.1           htmltools_0.5.1.1  
-## [28] tools_3.6.3         gtable_0.3.0        glue_1.4.2         
-## [31] reshape2_1.4.4      Rcpp_1.0.6          cellranger_1.1.0   
-## [34] vctrs_0.3.7         nlme_3.1-144        lwgeom_0.2-5       
-## [37] xfun_0.22           rvest_1.0.0         lifecycle_1.0.0    
+##  [1] colorspace_2.0-0    selectr_0.4-2       rjson_0.2.20       
+##  [4] ellipsis_0.3.1      class_7.3-15        htmlTable_2.1.0    
+##  [7] base64enc_0.1-3     fs_1.5.0            rstudioapi_0.13    
+## [10] proxy_0.4-25        farver_2.1.0        fansi_0.4.2        
+## [13] lubridate_1.7.10    xml2_1.3.2          splines_3.6.3      
+## [16] jsonlite_1.7.2      entropy_1.2.1       broom_0.7.5        
+## [19] cluster_2.1.0       dbplyr_2.1.0        png_0.1-7          
+## [22] compiler_3.6.3      backports_1.2.1     assertthat_0.2.1   
+## [25] Matrix_1.2-18       lazyeval_0.2.2      cli_2.3.1          
+## [28] htmltools_0.5.1.1   tools_3.6.3         gtable_0.3.0       
+## [31] glue_1.4.2          reshape2_1.4.4      Rcpp_1.0.6         
+## [34] cellranger_1.1.0    vctrs_0.3.7         nlme_3.1-144       
+## [37] lwgeom_0.2-5        xfun_0.22           lifecycle_1.0.0    
 ## [40] zoo_1.8-9           hms_1.0.0           parallel_3.6.3     
 ## [43] RColorBrewer_1.1-2  curl_4.3            yaml_2.2.1         
 ## [46] gridExtra_2.3       pander_0.6.3        rpart_4.1-15       
@@ -1988,6 +1991,7 @@ if (!require("pacman")) {install.packages("pacman", repos = my_repo)}
   # readr: file reading
   # dplyr: data wrangling
   # httr: downloading files from the web
+  # rvest: parsing html in web pages
   # Hmisc:  describe
   # gstat:  for kriging
   # maps: for maps
@@ -2003,8 +2007,8 @@ if (!require("pacman")) {install.packages("pacman", repos = my_repo)}
   # sp: spatial data methods -- will eventually be superseded by `sf`
   # rgdal:  projections, coordinate systems
   # downloader: download files over HTTP and HTTPS
-pacman::p_load(tidyverse, knitr, dplyr, httr, purrr, maps, ggmap, stars, gstat,
-               funModeling, Hmisc, scales, akima, sp, rgdal, downloader, sf)
+pacman::p_load(tidyverse, knitr, dplyr, httr, rvest, purrr, maps, ggmap, stars, 
+               gstat, funModeling, Hmisc, scales, akima, sp, rgdal, sf)
 
 # Note: this lab will only knit if the latest version of ggmap is installed.  
   # The following line does this, but needs to be run at the console before
@@ -2416,8 +2420,11 @@ la_grid
 # Remove the water points from la_grid:  We don't have data from the water, so
 # we do not want to predict there.
 
-# specify url for a zip file for access to a shapefile
-url <- "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/physical/ne_10m_land.zip"
+# get url for a zip file for access to a shapefile
+download_page <- 
+  'https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/'
+url <- GET(download_page) %>% read_html() %>% html_node("a.download-link") %>% 
+  html_attr("href")
 
 # download zip file
 if (!file.exists(file.path('Datasets','ne_10m_land.zip'))){
@@ -2748,7 +2755,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##   ggtitle(plot_title) +
 ##   theme_bw()
 ## }
-## <bytecode: 0x55ad659fac88>
+## <bytecode: 0x5590d652f7e8>
 ## 
 ## [[2]]
 ## A single object matching 'krige.cv.stats' was found
@@ -2773,7 +2780,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##          RMSE = round(sqrt(MSE_pred), 4), 
 ##          MSE_based_R2 = round(max(1 - MSE_pred/MSE_obs, 0), 4) )
 ## }
-## <bytecode: 0x55ad690ae8d0>
+## <bytecode: 0x5590d8b01728>
 ## 
 ## [[3]]
 ## A single object matching 'krige.cv2' was found
@@ -2792,7 +2799,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##   if (is.na(st_crs(krige.cv1))) {st_crs(krige.cv1) <- st_crs(locations)}
 ##   return(krige.cv1)
 ## }
-## <bytecode: 0x55ad6c8698f0>
+## <bytecode: 0x5590dd2f2f70>
 ```
 
 
