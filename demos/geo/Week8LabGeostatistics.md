@@ -1059,9 +1059,9 @@ Table: Summary of kriging cross-validation results for log(zinc).
 
 |Description                 |   RMSE| MSE_based_R2|
 |:---------------------------|------:|------------:|
-|OK: 5-fold CV               | 0.4069|       0.6802|
+|OK: 5-fold CV               | 0.4292|       0.6443|
 |OK: LOO CV                  | 0.3869|       0.7109|
-|UK on sqrt(dist): 5-fold CV | 0.3923|       0.7028|
+|UK on sqrt(dist): 5-fold CV | 0.3937|       0.7006|
 |UK on sqrt(dist): LOO CV    | 0.3829|       0.7169|
 
 
@@ -1255,47 +1255,25 @@ la_grid
 # we do not want to predict there.
 
 # download zip file
-if (!file.exists(file.path('Datasets','ne_10m_land.zip'))){
+zip_file_path <- file.path('Datasets','ne_10m_land.zip')
+if (!file.exists(zip_file_path)){
   # get url for a zip file for access to a shapefile
   download_page <- 
     'https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/'
   url <- GET(download_page) %>% read_html() %>% 
     html_node("a.download-link") %>% html_attr("href")
-  GET(url, add_headers(referer = "https://www.naturalearthdata.com"), 
-      write_disk(file.path('Datasets','ne_10m_land.zip'), overwrite = TRUE))
+  GET(url, add_headers(referer = download_page), write_disk(zip_file_path))
 }
-```
 
-```
-## Response [https://naciscdn.org/naturalearth/10m/physical/ne_10m_land.zip]
-##   Date: 2021-05-03 20:52
-##   Status: 200
-##   Content-Type: application/zip
-##   Size: 3.02 MB
-## <ON DISK>  Datasets/ne_10m_land.zip
-```
-
-```r
 # unzip file
-if (!file.exists(file.path('Datasets','ne_10m_land','ne_10m_land.shp'))){
-  unzip(file.path('Datasets','ne_10m_land.zip'), 
-        exdir = file.path('Datasets','ne_10m_land'))
+shp_file_path <- file.path('Datasets','ne_10m_land','ne_10m_land.shp')
+if (!file.exists(shp_file_path)) { 
+  unzip(zip_file_path, exdir = dirname(shp_file_path))
 }
 
 # read shapefile as sf multipolygon
-land <- st_read(file.path('Datasets','ne_10m_land','ne_10m_land.shp'))
-```
+land <- st_read(shp_file_path, quiet = TRUE)
 
-```
-## Reading layer `ne_10m_land' from data source `/home/NETID/high/git/coders/demos/geo/Datasets/ne_10m_land/ne_10m_land.shp' using driver `ESRI Shapefile'
-## Simple feature collection with 10 features and 3 fields
-## Geometry type: MULTIPOLYGON
-## Dimension:     XY
-## Bounding box:  xmin: -180 ymin: -90 xmax: 180 ymax: 83.6341
-## Geodetic CRS:  WGS 84
-```
-
-```r
 # crop world land multipolygon to that which overlaps la_grid
 # to save time in next step
 land <- suppressWarnings(st_crop(land,st_bbox(la_grid)))
@@ -1920,37 +1898,37 @@ sessionInfo()
 ## [25] tibble_3.1.0      ggplot2_3.3.3     tidyverse_1.3.0   pacman_0.5.1     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] colorspace_2.0-0    selectr_0.4-2       rjson_0.2.20       
-##  [4] ellipsis_0.3.1      class_7.3-15        htmlTable_2.1.0    
-##  [7] base64enc_0.1-3     fs_1.5.0            rstudioapi_0.13    
-## [10] proxy_0.4-25        farver_2.1.0        fansi_0.4.2        
-## [13] lubridate_1.7.10    xml2_1.3.2          splines_3.6.3      
-## [16] jsonlite_1.7.2      entropy_1.2.1       broom_0.7.5        
-## [19] cluster_2.1.0       dbplyr_2.1.0        png_0.1-7          
-## [22] compiler_3.6.3      backports_1.2.1     assertthat_0.2.1   
-## [25] Matrix_1.2-18       lazyeval_0.2.2      cli_2.3.1          
-## [28] htmltools_0.5.1.1   tools_3.6.3         gtable_0.3.0       
-## [31] glue_1.4.2          reshape2_1.4.4      Rcpp_1.0.6         
-## [34] cellranger_1.1.0    vctrs_0.3.7         nlme_3.1-144       
-## [37] lwgeom_0.2-5        xfun_0.22           lifecycle_1.0.0    
-## [40] zoo_1.8-9           hms_1.0.0           parallel_3.6.3     
-## [43] RColorBrewer_1.1-2  curl_4.3            yaml_2.2.1         
-## [46] gridExtra_2.3       pander_0.6.3        rpart_4.1-15       
-## [49] latticeExtra_0.6-29 stringi_1.5.3       highr_0.8          
-## [52] e1071_1.7-6         checkmate_2.0.0     intervals_0.15.2   
-## [55] RgoogleMaps_1.4.5.3 rlang_0.4.10        pkgconfig_2.0.3    
-## [58] moments_0.14        bitops_1.0-6        evaluate_0.14      
-## [61] ROCR_1.0-11         labeling_0.4.2      htmlwidgets_1.5.3  
-## [64] tidyselect_1.1.0    plyr_1.8.6          magrittr_2.0.1     
-## [67] R6_2.5.0            generics_0.1.0      DBI_1.1.1          
-## [70] mgcv_1.8-31         pillar_1.5.1        haven_2.3.1        
-## [73] foreign_0.8-75      withr_2.4.1         units_0.7-1        
-## [76] xts_0.12.1          nnet_7.3-13         spacetime_1.2-4    
-## [79] modelr_0.1.8        crayon_1.4.1        KernSmooth_2.23-16 
-## [82] utf8_1.2.1          rmarkdown_2.7       jpeg_0.1-8.1       
-## [85] isoband_0.2.4       grid_3.6.3          readxl_1.3.1       
-## [88] data.table_1.14.0   FNN_1.1.3           reprex_1.0.0       
-## [91] digest_0.6.27       classInt_0.4-3      munsell_0.5.0
+##  [1] colorspace_2.0-0    rjson_0.2.20        ellipsis_0.3.1     
+##  [4] class_7.3-15        htmlTable_2.1.0     base64enc_0.1-3    
+##  [7] fs_1.5.0            rstudioapi_0.13     proxy_0.4-25       
+## [10] farver_2.1.0        fansi_0.4.2         lubridate_1.7.10   
+## [13] xml2_1.3.2          splines_3.6.3       jsonlite_1.7.2     
+## [16] entropy_1.2.1       broom_0.7.5         cluster_2.1.0      
+## [19] dbplyr_2.1.0        png_0.1-7           compiler_3.6.3     
+## [22] backports_1.2.1     assertthat_0.2.1    Matrix_1.2-18      
+## [25] lazyeval_0.2.2      cli_2.3.1           htmltools_0.5.1.1  
+## [28] tools_3.6.3         gtable_0.3.0        glue_1.4.2         
+## [31] reshape2_1.4.4      Rcpp_1.0.6          cellranger_1.1.0   
+## [34] vctrs_0.3.7         nlme_3.1-144        lwgeom_0.2-5       
+## [37] xfun_0.22           lifecycle_1.0.0     zoo_1.8-9          
+## [40] hms_1.0.0           parallel_3.6.3      RColorBrewer_1.1-2 
+## [43] curl_4.3            yaml_2.2.1          gridExtra_2.3      
+## [46] pander_0.6.3        rpart_4.1-15        latticeExtra_0.6-29
+## [49] stringi_1.5.3       highr_0.8           e1071_1.7-6        
+## [52] checkmate_2.0.0     intervals_0.15.2    RgoogleMaps_1.4.5.3
+## [55] rlang_0.4.10        pkgconfig_2.0.3     moments_0.14       
+## [58] bitops_1.0-6        evaluate_0.14       ROCR_1.0-11        
+## [61] labeling_0.4.2      htmlwidgets_1.5.3   tidyselect_1.1.0   
+## [64] plyr_1.8.6          magrittr_2.0.1      R6_2.5.0           
+## [67] generics_0.1.0      DBI_1.1.1           mgcv_1.8-31        
+## [70] pillar_1.5.1        haven_2.3.1         foreign_0.8-75     
+## [73] withr_2.4.1         units_0.7-1         xts_0.12.1         
+## [76] nnet_7.3-13         spacetime_1.2-4     modelr_0.1.8       
+## [79] crayon_1.4.1        KernSmooth_2.23-16  utf8_1.2.1         
+## [82] rmarkdown_2.7       jpeg_0.1-8.1        isoband_0.2.4      
+## [85] grid_3.6.3          readxl_1.3.1        data.table_1.14.0  
+## [88] FNN_1.1.3           reprex_1.0.0        digest_0.6.27      
+## [91] classInt_0.4-3      munsell_0.5.0
 ```
 
 ## Embedded code
@@ -2420,24 +2398,24 @@ la_grid
 # we do not want to predict there.
 
 # download zip file
-if (!file.exists(file.path('Datasets','ne_10m_land.zip'))){
+zip_file_path <- file.path('Datasets','ne_10m_land.zip')
+if (!file.exists(zip_file_path)){
   # get url for a zip file for access to a shapefile
   download_page <- 
     'https://www.naturalearthdata.com/downloads/10m-physical-vectors/10m-land/'
   url <- GET(download_page) %>% read_html() %>% 
     html_node("a.download-link") %>% html_attr("href")
-  GET(url, add_headers(referer = "https://www.naturalearthdata.com"), 
-      write_disk(file.path('Datasets','ne_10m_land.zip'), overwrite = TRUE))
+  GET(url, add_headers(referer = download_page), write_disk(zip_file_path))
 }
 
 # unzip file
-if (!file.exists(file.path('Datasets','ne_10m_land','ne_10m_land.shp'))){
-  unzip(file.path('Datasets','ne_10m_land.zip'), 
-        exdir = file.path('Datasets','ne_10m_land'))
+shp_file_path <- file.path('Datasets','ne_10m_land','ne_10m_land.shp')
+if (!file.exists(shp_file_path)) { 
+  unzip(zip_file_path, exdir = dirname(shp_file_path))
 }
 
 # read shapefile as sf multipolygon
-land <- st_read(file.path('Datasets','ne_10m_land','ne_10m_land.shp'))
+land <- st_read(shp_file_path, quiet = TRUE)
 
 # crop world land multipolygon to that which overlaps la_grid
 # to save time in next step
@@ -2753,7 +2731,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##   ggtitle(plot_title) +
 ##   theme_bw()
 ## }
-## <bytecode: 0x557a077f47f0>
+## <bytecode: 0x556e398628e0>
 ## 
 ## [[2]]
 ## A single object matching 'krige.cv.stats' was found
@@ -2778,7 +2756,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##          RMSE = round(sqrt(MSE_pred), 4), 
 ##          MSE_based_R2 = round(max(1 - MSE_pred/MSE_obs, 0), 4) )
 ## }
-## <bytecode: 0x557a03ace4a8>
+## <bytecode: 0x556e2f57cf90>
 ## 
 ## [[3]]
 ## A single object matching 'krige.cv2' was found
@@ -2797,7 +2775,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##   if (is.na(st_crs(krige.cv1))) {st_crs(krige.cv1) <- st_crs(locations)}
 ##   return(krige.cv1)
 ## }
-## <bytecode: 0x557a07f367c0>
+## <bytecode: 0x556e3481f538>
 ```
 
 
