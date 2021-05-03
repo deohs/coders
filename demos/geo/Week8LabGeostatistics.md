@@ -622,7 +622,7 @@ meuse.riv <- st_as_sf(data.frame(meuse.riv), coords=1:2, crs=st_crs(meuse)) %>%
 ggplot(data=meuse) + geom_sf() + geom_sf(data=meuse.riv)
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse plots-1.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse plots-1.png)
 
 ```r
 # The river is too long compared to the study area
@@ -637,7 +637,7 @@ meuse.riv <- st_crop(meuse.riv, st_bbox(st_buffer(meuse, 500)))
 ggplot(data=meuse) + geom_sf() + geom_sf(data=meuse.riv)
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse plots-2.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse plots-2.png)
 
 ```r
 # Color the zinc data based on the native scale
@@ -652,7 +652,7 @@ ggplot(data=meuse) +
   theme_bw()
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse plots-3.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse plots-3.png)
 
 ```r
 # Color the zinc data based on the log scale
@@ -665,7 +665,7 @@ ggplot(data=meuse) +
   theme_bw()
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse plots-4.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse plots-4.png)
 
 ```r
 # Make a bubble plot
@@ -678,7 +678,7 @@ ggplot(data=meuse) +
   theme_bw()
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse plots-5.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse plots-5.png)
 
 ```r
 # Put these ideas together:  Size and color based on native scale
@@ -690,7 +690,7 @@ ggplot(data=meuse) +
   theme_bw()
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse plots-6.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse plots-6.png)
 
 ### Estimating variograms
 
@@ -733,21 +733,21 @@ also uploaded to the course Canvas site.
 plot(variogram(log(zinc)~1, meuse, cloud=TRUE))
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse empirical variogram-1.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse empirical variogram-1.png)
 
 ```r
 # plot binned variogram (the default)
 plot(variogram(log(zinc)~1, meuse))
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse empirical variogram-2.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse empirical variogram-2.png)
 
 ```r
 # you can also show the number of points in each bin
 plot(variogram(log(zinc)~1, meuse), pl=TRUE)
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse empirical variogram-3.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse empirical variogram-3.png)
 
 ```r
 # save the variogram cloud 
@@ -769,7 +769,7 @@ ggplot(data=vgm.meuse, aes(x = dist, y = gamma)) +
 ## `geom_smooth()` using method = 'gam' and formula 'y ~ s(x, bs = "cs")'
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse empirical variogram-4.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse empirical variogram-4.png)
 
 
 #### Modeled variogram
@@ -811,7 +811,7 @@ v.fit
 plot(v, v.fit)
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse modeled variogram-1.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse modeled variogram-1.png)
 
 ### Kriging
 
@@ -851,7 +851,7 @@ lzn.kr <- krige(log(zinc)~1, meuse, newdata = meuse.grid, model = v.fit)
 pl1 <- plot(lzn.kr["var1.pred"], main = "OK prediction of log(zinc)")
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse ordinary kriging-1.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse ordinary kriging-1.png)
 
 ```r
 # calculate then plot kriging standard errors
@@ -859,7 +859,7 @@ lzn.kr$se = sqrt(lzn.kr$var1.var)
 pl2 <- plot(lzn.kr["se"], main = "OK prediction error")
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse ordinary kriging-2.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse ordinary kriging-2.png)
 
 #### Universal kriging (UK)
 
@@ -895,7 +895,7 @@ m.uk
 plot(v.uk, model = m.uk)
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse universal kriging-1.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse universal kriging-1.png)
 
 ```r
 # fit the universal kriging model, predicting on the meuse.grid
@@ -914,13 +914,13 @@ lzn.kr$se = sqrt(lzn.kr$var1.var)
 pl3 <- plot(lzn.kr["var1.pred"], main = "UK prediction of log-zinc")
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse universal kriging-2.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse universal kriging-2.png)
 
 ```r
 pl4 <- plot(lzn.kr["se"], main = "UK prediction error")
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse universal kriging-3.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse universal kriging-3.png)
 
 ### Cross-validating the kriging model using the built-in CV function `krige.cv`
 
@@ -1003,7 +1003,7 @@ meuse.CV5 <- krige.cv2(log(zinc)~1, meuse, model = v.fit, nmax = 40, nfold=5)
 krige.cv.bubble(meuse.CV5,"log(zinc) OK results: 5-fold CV residuals")
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse cross-validation-1.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse cross-validation-1.png)
 
 ```r
 # ordinary kriging, LOOCV
@@ -1013,7 +1013,7 @@ meuse.CVLOO <- krige.cv2(log(zinc)~1, meuse, model = v.fit, nmax = 40)
 krige.cv.bubble(meuse.CVLOO, "log(zinc) OK results: LOO CV residuals")
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse cross-validation-2.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse cross-validation-2.png)
 
 ```r
 # universal kriging, 5-fold cross-validation 
@@ -1025,7 +1025,7 @@ meuse.CV5uk <-
 krige.cv.bubble(meuse.CV5uk,"log(zinc) UK on sqrt(dist): 5-fold CV residuals")
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse cross-validation-3.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse cross-validation-3.png)
 
 ```r
 # universal kriging, LOOCV
@@ -1036,7 +1036,7 @@ meuse.CVLOOuk <- krige.cv2(log(zinc)~sqrt(dist), meuse,
 krige.cv.bubble(meuse.CVLOOuk,"log(zinc) UK on sqrt(dist): LOO CV residuals")
 ```
 
-![](Week8LabGeostatistics_files/figure-html/meuse cross-validation-4.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/meuse cross-validation-4.png)
 
 ```r
 # calculate and compare performance statistics across CVs
@@ -1059,9 +1059,9 @@ Table: Summary of kriging cross-validation results for log(zinc).
 
 |Description                 |   RMSE| MSE_based_R2|
 |:---------------------------|------:|------------:|
-|OK: 5-fold CV               | 0.4268|       0.6482|
+|OK: 5-fold CV               | 0.3952|       0.6984|
 |OK: LOO CV                  | 0.3869|       0.7109|
-|UK on sqrt(dist): 5-fold CV | 0.3814|       0.7190|
+|UK on sqrt(dist): 5-fold CV | 0.3679|       0.7386|
 |UK on sqrt(dist): LOO CV    | 0.3829|       0.7169|
 
 
@@ -1300,7 +1300,7 @@ land <- suppressWarnings(st_crop(land,st_bbox(la_grid)))
 ggplot(land) + geom_sf(aes(fill=featurecla))
 ```
 
-![](Week8LabGeostatistics_files/figure-html/convert LA grid to sf-1.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/convert LA grid to sf-1.png)
 
 ```r
 # Remove water points from la_grid
@@ -1329,7 +1329,7 @@ ggplot(data=fall) +
   theme_bw()
 ```
 
-![](Week8LabGeostatistics_files/figure-html/plot fall snapshot-1.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/plot fall snapshot-1.png)
 
 ```r
 # we show a similar color and size varying bubble plot of the data
@@ -1340,7 +1340,7 @@ ggplot(data=fall) +
   theme_bw()
 ```
 
-![](Week8LabGeostatistics_files/figure-html/plot fall snapshot-2.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/plot fall snapshot-2.png)
 
 ### Mapping the data
 
@@ -1390,7 +1390,7 @@ g <- ggmap(map, darken = c(0.5, "white")) + theme_void()
 g + ggtitle("Sample Map of Los Angeles for \n the area covered by the snapshot data")
 ```
 
-![](Week8LabGeostatistics_files/figure-html/LA Stamen map-1.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/LA Stamen map-1.png)
 
 ```r
 # Add snapshot locations to the map with colors for values
@@ -1407,7 +1407,7 @@ g + geom_point(data=fall,
     ggtitle("Map of Los Angeles \n with the fall snapshot data")
 ```
 
-![](Week8LabGeostatistics_files/figure-html/LA Stamen map-2.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/LA Stamen map-2.png)
 
 ```r
 # NOx on log scale
@@ -1420,7 +1420,7 @@ g + geom_point(data=fall,
   theme_bw()
 ```
 
-![](Week8LabGeostatistics_files/figure-html/LA Stamen map-3.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/LA Stamen map-3.png)
 
 Note, in comparing the above map to the one displayed in Figure 2b of Mercer, a
 few observations are in order:
@@ -1447,7 +1447,7 @@ g + geom_point(data=la_grid,aes(x = st_coordinates(la_grid)[,'X'],
   theme_bw()
 ```
 
-![](Week8LabGeostatistics_files/figure-html/plot the grid on the map-1.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/plot the grid on the map-1.png)
 
 
 ### Estimation using the snapshot data: Kriging using the common model
@@ -1494,7 +1494,7 @@ vf.fit
 plot(vf, vf.fit)
 ```
 
-![](Week8LabGeostatistics_files/figure-html/fall estimate variogram-1.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/fall estimate variogram-1.png)
 
 ```r
 # now repeat for the UK model
@@ -1525,7 +1525,7 @@ vfc.fit
 plot(vfc, vfc.fit)
 ```
 
-![](Week8LabGeostatistics_files/figure-html/fall estimate variogram-2.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/fall estimate variogram-2.png)
 
 ```r
 # Mercer used an exponential variogram, so refit the variogram using that:
@@ -1548,7 +1548,7 @@ vfc.fit
 plot(vfc, vfc.fit)
 ```
 
-![](Week8LabGeostatistics_files/figure-html/fall estimate variogram-3.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/fall estimate variogram-3.png)
 
 Observe the exponential and spherical fits are almost indistinguishable
 visually.  They are also different from the Mercer paper.  This may be due to
@@ -1586,14 +1586,14 @@ fall.CVcluster.uk <- krige.cv2(ln_nox ~ D2A1 + A1_50 + A23_400 + Pop_5000 + D2C 
 krige.cv.bubble(st_transform(fall.CVcluster.ok,latlong_proj),'ln(NOx) OK: clusterwise CV residuals')
 ```
 
-![](Week8LabGeostatistics_files/figure-html/krige.cv in LA-1.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/krige.cv in LA-1.png)
 
 ```r
 # bubble plot of UK residuals
 krige.cv.bubble(st_transform(fall.CVcluster.uk,latlong_proj),'ln(NOx) UK: clusterwise CV residuals')
 ```
 
-![](Week8LabGeostatistics_files/figure-html/krige.cv in LA-2.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/krige.cv in LA-2.png)
 
 ```r
 # calculate and compile CV stats
@@ -1784,7 +1784,7 @@ g + geom_point(data=new_grid,aes(x = st_coordinates(new_grid)[,'X'],
     ggtitle("Map of Los Angeles \n with fall UK predictions overlaid as points")
 ```
 
-![](Week8LabGeostatistics_files/figure-html/plot the grid predictions on the map-1.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/plot the grid predictions on the map-1.png)
 
 
 Now we show an example plotting smooth gridded predictions on the map with polygons.  The smoothing smudges the data back over the water.
@@ -1812,7 +1812,7 @@ g + stat_contour(aes(x = x, y = y, z = z, fill = ..level..), alpha = 0.07,
     ggtitle("Map of Los Angeles \n with fall UK predictions overlaid, \n smoothed predictions with interpolation")
 ```
 
-![](Week8LabGeostatistics_files/figure-html/plot smooth grid predictions on the map with polygons-1.png)<!-- -->
+![](Week8LabGeostatistics_files/figure-html/plot smooth grid predictions on the map with polygons-1.png)
 
 
 #### Ordinary kriging using the residuals from a LUR
@@ -2743,7 +2743,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##   ggtitle(plot_title) +
 ##   theme_bw()
 ## }
-## <bytecode: 0x5608250f4638>
+## <bytecode: 0x556ca5cb5a58>
 ## 
 ## [[2]]
 ## A single object matching 'krige.cv.stats' was found
@@ -2768,7 +2768,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##          RMSE = round(sqrt(MSE_pred), 4), 
 ##          MSE_based_R2 = round(max(1 - MSE_pred/MSE_obs, 0), 4) )
 ## }
-## <bytecode: 0x5608219545f8>
+## <bytecode: 0x556ca933b890>
 ## 
 ## [[3]]
 ## A single object matching 'krige.cv2' was found
@@ -2787,7 +2787,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##   if (is.na(st_crs(krige.cv1))) {st_crs(krige.cv1) <- st_crs(locations)}
 ##   return(krige.cv1)
 ## }
-## <bytecode: 0x560825427598>
+## <bytecode: 0x556cacc04a08>
 ```
 
 
