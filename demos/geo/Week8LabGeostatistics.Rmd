@@ -886,7 +886,7 @@ la_grid
 # we do not want to predict there.
 
 # specify url for a zip file for access to a shapefile
-#url <- "https://www.naturalearthdata.com/download/10m/physical/ne_10m_land.zip"
+#url <- "https://www.naturalearthdata.com/http//www.naturalearthdata.com/download/10m/physical/ne_10m_land.zip"
 url <- 'https://www.qgistutorials.com/downloads/ne_10m_land.zip'
 
 # download zip file
