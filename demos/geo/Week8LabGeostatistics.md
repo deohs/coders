@@ -1,7 +1,7 @@
 ---
 title: "Week 8 Lab:  Geostatistics"
 author: "Lianne Sheppard for ENVH 556"
-date: "Winter 2021; Updated 03 May, 2021"
+date: "Winter 2021; Updated 04 May, 2021"
 output: 
     html_document:
         fig_caption: yes
@@ -1059,9 +1059,9 @@ Table: Summary of kriging cross-validation results for log(zinc).
 
 |Description                 |   RMSE| MSE_based_R2|
 |:---------------------------|------:|------------:|
-|OK: 5-fold CV               | 0.4292|       0.6443|
+|OK: 5-fold CV               | 0.3899|       0.7064|
 |OK: LOO CV                  | 0.3869|       0.7109|
-|UK on sqrt(dist): 5-fold CV | 0.3937|       0.7006|
+|UK on sqrt(dist): 5-fold CV | 0.3938|       0.7004|
 |UK on sqrt(dist): LOO CV    | 0.3829|       0.7169|
 
 
@@ -1254,7 +1254,7 @@ la_grid
 # Remove the water points from la_grid:  We don't have data from the water, so
 # we do not want to predict there.
 
-# download zip file
+# download zip file ... requires specifying a referer and following a redirect
 zip_file_path <- file.path('Datasets','ne_10m_land.zip')
 if (!file.exists(zip_file_path)){
   # get url for a zip file for access to a shapefile
@@ -1263,6 +1263,14 @@ if (!file.exists(zip_file_path)){
   url <- GET(download_page) %>% read_html() %>% 
     html_node("a.download-link") %>% html_attr("href")
   GET(url, add_headers(referer = download_page), write_disk(zip_file_path))
+  
+  # Similarly, RCurl could be used for this download...
+  #RCurl::getBinaryURL(
+  #  paste0("https://www.naturalearthdata.com/http//www.naturalearthdata.com/",
+  #         "download/10m/physical/ne_10m_land.zip"), 
+  #  .opts = list(followlocation = TRUE, 
+  #               referer = "https://www.naturalearthdata.com")) %>%
+  #  writeBin(file.path('Datasets','ne_10m_land.zip'))
 }
 
 # unzip file
@@ -2397,7 +2405,7 @@ la_grid
 # Remove the water points from la_grid:  We don't have data from the water, so
 # we do not want to predict there.
 
-# download zip file
+# download zip file ... requires specifying a referer and following a redirect
 zip_file_path <- file.path('Datasets','ne_10m_land.zip')
 if (!file.exists(zip_file_path)){
   # get url for a zip file for access to a shapefile
@@ -2406,6 +2414,14 @@ if (!file.exists(zip_file_path)){
   url <- GET(download_page) %>% read_html() %>% 
     html_node("a.download-link") %>% html_attr("href")
   GET(url, add_headers(referer = download_page), write_disk(zip_file_path))
+  
+  # Similarly, RCurl could be used for this download...
+  #RCurl::getBinaryURL(
+  #  paste0("https://www.naturalearthdata.com/http//www.naturalearthdata.com/",
+  #         "download/10m/physical/ne_10m_land.zip"), 
+  #  .opts = list(followlocation = TRUE, 
+  #               referer = "https://www.naturalearthdata.com")) %>%
+  #  writeBin(file.path('Datasets','ne_10m_land.zip'))
 }
 
 # unzip file
@@ -2731,7 +2747,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##   ggtitle(plot_title) +
 ##   theme_bw()
 ## }
-## <bytecode: 0x556e398628e0>
+## <bytecode: 0x55f5c9010410>
 ## 
 ## [[2]]
 ## A single object matching 'krige.cv.stats' was found
@@ -2756,7 +2772,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##          RMSE = round(sqrt(MSE_pred), 4), 
 ##          MSE_based_R2 = round(max(1 - MSE_pred/MSE_obs, 0), 4) )
 ## }
-## <bytecode: 0x556e2f57cf90>
+## <bytecode: 0x55f5cc4a24c8>
 ## 
 ## [[3]]
 ## A single object matching 'krige.cv2' was found
@@ -2775,7 +2791,7 @@ lapply(c(lsf.str()), getAnywhere)
 ##   if (is.na(st_crs(krige.cv1))) {st_crs(krige.cv1) <- st_crs(locations)}
 ##   return(krige.cv1)
 ## }
-## <bytecode: 0x556e3481f538>
+## <bytecode: 0x55f5cfd8d6f8>
 ```
 
 
