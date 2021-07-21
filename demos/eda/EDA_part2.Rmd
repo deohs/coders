@@ -1,0 +1,601 @@
+---
+title: "Exploratory Data Analysis - Part 2"
+subtitle: "DEOHS Coders Group"
+author: "Nancy Carmona"
+date: "4/5/2021"
+output:
+  html_document:
+    keep_md: true
+
+---
+
+# Setup
+
+Rmarkdown setup and directory organization, and data download.
+
+```{r setup, include=FALSE}
+#-----setup options-----
+
+# Set knitr options
+knitr::opts_chunk$set(
+  echo = TRUE,
+  cache = FALSE,
+  cache.comments = FALSE,
+  message = FALSE,
+  warning = FALSE
+)
+
+# Clear workspace of all objects and unload all extra (non-base) packages
+rm(list = ls(all = TRUE))
+
+if (!is.null(sessionInfo()$otherPkgs)) {
+  res <- suppressWarnings(lapply(
+    paste('package:', names(sessionInfo()$otherPkgs), sep = ""),
+    detach,
+    character.only = TRUE,
+    unload = TRUE,
+    force = TRUE
+  ))
+  
+}
+```
+
+```{r load.libraries.pacman, echo=FALSE, include=FALSE, eval=TRUE}
+#-----load libraries pacman-----
+
+# load pacman, installing if needed
+if (!require("pacman")) {install.packages("pacman")}
+
+# load other packages, installing as needed
+pacman::p_load(knitr, dplyr, tidyr, stringr, ggplot2, purrr, magrittr, readr,
+               broom, ggmap,  lubridate, tsibble, stats, feasts)
+
+```
+
+```{r directory.organization.data}
+#-----directory organization and data-----
+
+# set working directory
+work_dir <- getwd()
+
+# name and create output directory
+output_dir <- file.path(work_dir, "output")
+dir.create(output_dir, showWarnings = TRUE, recursive = TRUE)
+
+# create "Datasets" directory if one does not already exist    
+dir.create(file.path(work_dir,"data"), showWarnings=FALSE, recursive = TRUE)
+
+# specify data path
+data_dir <- file.path(work_dir,"data")
+
+# specify the file name and path
+file_name <- "all_week.csv"
+file_path <- file.path(data_dir, file_name)
+
+# Download the file if it is not already present
+if (!file.exists(file_path)) {
+    url <- paste("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary", 
+                 file_name, sep = '/')
+    download.file(url = url, destfile = file_path)
+}
+
+# Output a warning message if the file cannot be found
+if (file.exists(file_path)) {
+    all_data <- read_csv(file_path)
+} else warning(paste("Can't find", file_name, "!"))
+
+# remove temporary variables
+rm(url, file_name, file_path, data_dir)
+
+```
+
+
+# Introduction
+
+## Goal
+
+The goal of this script is to provide ideas, suggestions, and examples of exploratory data analysis (EDA) for spatial and temporal data. For this exercise we will use publicly available data from the USGS earthquake hazards data feed. 
+
+## Exploratory Analysis Part 2: Spatial and Temporal Data 
+
+The goal of EDA is to get acquainted with data, to explore a data set to see what it might tell us, without being a set of specific techniques. EDA is an iterative cycle, where we 1) generate questions about data, 2) search for answers visualizing, transforming and modeling of data, and 3) refine your questions and/or generate new questions. (Hadley Wickham's definition)
+
+Exploring multidimensional data, i.e. data with two or more referential components, for example space and time, can be more complex. The same space and time-referenced data can be viewed as a spatial arrangement of local behaviors over time and as a temporal sequence of momentary behaviors over space. The behavior of multidimensional data may be viewed from different perspectives. 
+
+## Topics covered in Exploratory Data Analysis Part 1 
+
+We will use some of these approaches for today's exercise as well. 
+
+*Data Characteristics*
+* head()
+* dim()
+* class()
+* count()
+* glimpse()
+*Transforming data* 
+* pivot_longer()
+*Descriptive statistics*
+* group_by()
+* summarise()
+* across()
+*Describe data distributions*
+* ggplot()
+_Histograms_
+* geom_histogram()
+_Quantile-quantile (Q-Q) plots_
+* stat_qq()
+_Boxplots_
+* stat_boxplot()
+_Cumulative density function (CDF) plots_
+* stat_ecdf()
+_Pearson correlation_
+* corrplot()
+_Sampling maps_
+* ggmap() 
+
+ 
+## Acknowledgements  
+
+Material adapted from: 
+
+"Exploratory analysis of spatial and temporal data : a systematic approach" by  Natalia Andrienko and Gennady Andrienko
+
+- [book listing at Springer website](https://link.springer.com/book/10.1007/3-540-31190-4)
+
+- [e-book available for free from UW Library](https://alliance-primo.hosted.exlibrisgroup.com/permalink/f/kjtuig/CP7198100710001451)
+
+"R for Data Science" written by Hadley Wickham and Garrett Grolemund.
+
+- [EDA chapter in online ebook](https://r4ds.had.co.nz/exploratory-data-analysis.html)
+
+"Week 9 Lab:  Time Series Data and Analysis Strategies" by Chris Zuidema and Elena Austin 
+ENVH 556 (Dr. Sheppard's course)
+
+
+## About this data
+
+This data was collected United States Geological Survey. Information about the variables were obtained from https://earthquake.usgs.gov/data/comcat/data-eventterms.php
+
+
+# Data characteristics
+
+Here we look at what the data type is, its dimensions, and other attributes. 
+
+```{r dim.var.class}
+#-----dimensions & variable classes-----
+
+# structure of the data, variables, class, first 5 observations 
+str(all_data)
+
+# use `glimpse` to provide another view 
+glimpse(all_data)
+
+# show dimensions
+dim(all_data)
+
+# variable names 
+names(all_data)
+
+# first six rows of the data
+head(all_data)
+
+# show variable classes
+lapply(all_data, class) %>% bind_rows()
+
+# count data by a variable, ie. type of seismic event 
+count(all_data, type)
+
+```
+
+
+# Transforming data
+
+Managing dates and times is a common challenge because there are a variety of common date and time formats used to log instrument data. You could have encountered a variety of formats such as: 
+
+   * `r format(Sys.time(), '%d %b, %Y')`
+   * `r format(Sys.time(), '%m/%d/%Y')`
+   * `r format(Sys.time(), '%Y-%m-%d')`
+
+Converting your data to a standardized format, including the time zone, is a good approach.  Consistently using a standardized date and time format will make it less likely that you'll interpret a date and time incorrectly.
+
+Date objects in `R` are of class `Date`, and compound date and time ("date_time") objects, are of class `POSIXct` (shown as `dttm` when a tibble is printed to the console). Let's take a look at  these object types and show their classes: 
+
+The variable "date_time" was read in as time variable. This class format conveys the sequence, continuity, and passage of time. It also uses UTC or Coordinated Universal Time. UTC is the time standard for which the world regulates clocks and time. 
+
+```{r tidying.data.time}
+# Format time variable 
+ all_data <- all_data %>%
+        mutate(date_time = ymd_hms(time, tz = "UTC")) %>% ### convert to dttm class
+        mutate(date = date(date_time),                            ### separate date
+               hr = hour(date_time),                              ### separate hour
+               mins = minute(date_time),                          ### separate minutes
+               secs = second(date_time))                          ### separate seconds
+
+
+# Arrange data in time order 
+ all_data <- all_data %>% 
+   # arrange data in date order
+   arrange(date) 
+ 
+```
+
+We can check variable class and change class type efficiently assigning names to a vector. 
+
+```{r tidying.data.class}
+# Check columns classes
+sapply(all_data, class)
+
+# Create a vector of variables to be transformed 
+cols.num <- c("magType", "net", "type", "status", "locationSource", "magSource")
+
+# Apply as.factor to all variables in the vector 
+all_data <- all_data %>% mutate(across(.cols = cols.num, .fns = as.factor))
+
+# Check columns classes
+sapply(all_data, class)
+```
+
+
+In the first step of EDA we want to examine the data in general rather than only spatial or spatio-temporal data. 
+
+```{r summary}
+# view basic descriptive statistics for all variables 
+summary(all_data)
+```
+
+
+# Missing Data
+
+Next we try to precisely determine how much missing data we have and what are the likely sources of missingness in our data. First we calculate the total and percent missing for every variable in the dataset. We observe that the presence of missing data in various distance measures.
+
+```{r missing}
+# missing 
+
+lapply(all_data, function(i){ 
+   
+   tibble( 
+          # sum missing
+          n_miss = sum(is.na(i)), 
+          
+          # percent missing
+          perc_miss = round(n_miss/length(i) * 100, 1)
+          )
+   }) %>% 
+   
+   # bind list
+   bind_rows(.id = "variable")
+
+```
+
+
+
+# Patterns 
+
+Patterns provide one of the most useful tools for data scientists because they reveal covariation. If you think of variation as a phenomenon that creates uncertainty, covariation is a phenomenon that reduces it. If two variables covary, you can use the values of one variable to make better predictions about the values of the second. If the covariation is due to a causal relationship (a special case), then you can use the value of one variable to control the value of the second.
+
+If a systematic relationship exists between two variables it will appear as a pattern in the data. If you spot a pattern, ask yourself:
+
+* Could this pattern be due to coincidence (i.e. random chance)?
+
+* How can you describe the relationship implied by the pattern?
+
+* How strong is the relationship implied by the pattern?
+
+* What other variables might affect the relationship?
+
+* Does the relationship change if you look at individual subgroups of the data?
+
+## Scatterplots 
+
+We can examine the features of the data by subset or overall. We can create a separate data frame for geologic activity from earthquakes. 
+
+First, we look at the relationship between magnitude and depth for all of the data. 
+```{r all.mag.depth.pattern}
+ggplot(data = all_data) + 
+  geom_point(mapping = aes(x = mag, y = depth))
+```
+
+
+We create a separate data frame for earthquakes. 
+
+```{r earthquakes}
+# earthquakes dataset
+earthquakes <- all_data %>% filter(type == "earthquake")
+```
+
+
+Second, we look at the relationship between magnitude for only earthquake data. 
+```{r earthquakes.mag.depth.pattern}
+ggplot(data = earthquakes) + 
+  geom_point(mapping = aes(x = mag, y = depth))
+```
+
+A scatterplot of magnitude versus depth can shows us a pattern: higher earthquake magnitude are associated with higher depth. 
+We do not see much difference between the entire data set and the subset, as we did not loose many observations with our subset. 
+
+## Pattterns in space and time 
+ 
+With spatio-temporal data we can look at space and time being independent or dependent. 
+
+For example, for a behavior with a base formed by a spatial and a temporal reference we can see:
+
+1) The spatial behavior over time, i.e. how the spatial distribution changes over time.
+
+2) The temporal behavior over space, i.e. how the local temporal behaviors (behaviors at individual locations) are distributed over space.
+
+
+For example, with the USGS earthquakes data we can view the data in two different ways. 
+
+References of the data 
+* independent variables = earthquakes 
+
+Characteristics of the data
+* dependent variables  = location, time, magnitude, depth 
+
+OR 
+
+References of the data
+* independent variables = time, location 
+
+Characteristics of the data
+* dependent variables: earthquakes, magnitude, depth 
+
+On the other hand, it is possible to treat space and time as referrers and the earthquakes as a phenomenon existing in space and time. In this case, both space and time have continuous value sets with distances between elements. The earthquakes are discrete phenomena, both spatially and temporally: they exist only at specific locations and specific time moments. 
+
+
+## Temporal data aspects
+
+We can start by viewing all magnitude over time for the different types of geological events.  
+
+```{r data.time.2}
+all_data %>% 
+# pipe into ggplot
+ggplot(aes(x = date_time, y = mag)) + 
+  
+  # specify type of plot
+  geom_line() +
+  
+    
+  # plot each location in a facet
+  facet_wrap(~type) + 
+  
+  # specify theme
+  theme_bw()
+```
+
+ 
+Since we are interested in the spatial and temporal properties of earthquakes we can zoom in to this level of the data. Our facets are now differentiating by magnitude source network. 
+
+```{r data.earthquakes}
+earthquakes %>% 
+# pipe into ggplot
+ggplot(aes(x = date_time, y = mag)) + 
+  
+  # plot each location in a facet
+  facet_wrap(~magSource) + 
+  
+  # specify type of plot
+  geom_line() +
+  
+  # specify theme
+  theme_bw()
+
+
+```
+
+
+Data availability plots can be a useful initial check to visualize what data we have across magnitude souces over time. We show one variable from each dataset. In this case the plot is not very informative because the data are fairly incomplete. The data does not appear to be logged in a continuous manner. 
+
+
+```{r all.data.availability.plot}
+# data availability plot 
+
+all_data %>% 
+
+# make plot
+ggplot(aes(x = date_time, y = mag, color = factor(mag)) ) +
+  geom_line(size = 0.5) + 
+  labs(x = "Time", y = "Magnitude") + 
+  theme_bw() + 
+  theme(legend.position = "none")
+
+```
+
+
+```{r earthquakes.data.availability.plot}
+# data availability plot
+
+ earthquakes %>% 
+
+# make plot
+ggplot(aes(x = date_time, y = mag, color = factor(mag)) ) +
+  geom_line(size = 0.5) + 
+  labs(x = "Time", y = "Magnitude") + 
+  theme_bw() + 
+  theme(legend.position = "none")
+
+```
+
+# Timeseries Data
+
+Time series data are marked by measurements that are indexed to a time component. There are many `R` standards for time series data: `ts`, `xts`, `data.frame`, `data.table`, `tibble`, `zoo`, `tsibble`, `tibbletime` or `timeSeries`. The package `tsbox` has many useful functions for converting between these time series formats.
+
+We've focused most of our effort on `tidyverse` tools this term, so let's concentrate on the `tsibble`, `feasts`, and `slider` package functions.
+
+First we want to turn our dataset into a `tsibble`. We use the function `try` so that knitting our document doesn't fail if this operation fails. We observe that it does fail because there were duplicates, so then we inspect them.
+
+```{r try.tsibble}
+# try tsibble 
+
+# use "try" here so document knits
+try( as_tsibble(all_data, index = date_time) )
+
+# inspect duplicate rows
+duplicates(all_data, index = date_time)
+
+```
+
+`tsibble` alerts us of our time issues and prompts us to deal with them, so let's remove the duplicates (you could average duplicates also). 
+
+```{r to.tsibble}
+# to tsibble 
+
+# remove duplicate rows, and convert to `tsibble`
+ts_data <- all_data %>% 
+  distinct(date_time, .keep_all = TRUE) %>% 
+  as_tsibble(index = date_time)
+
+```
+
+
+## Aggregating 
+
+Temporal Smoothing with New Time Scales – Moving Averages
+
+A common task with time series data is averaging to different time scales. So let’s convert our irregular spaced data to a longer time scales.  
+
+ 
+```{r aggregating}
+ts_new <- ts_data %>% 
+  
+  # get the "floor" of each datetime row (unfortunately `tsibble` doesn't let us
+  # use "datetime" for this new variable name)
+  index_by(datetime_new = floor_date(date_time, unit = "5hours")) %>%
+  
+  # summarise the mean of rows across all dataframe columns
+  summarise(across(where(is.numeric), mean, na.rm = TRUE ), .groups = "drop") %>% 
+  
+  # rename to get "datetime" variable name back
+  rename(date_time = datetime_new )
+ 
+# glimpse
+glimpse(ts_new)
+
+```
+
+We can look at new timeseries plots with the new aggregated time scale. First, looking at all of the data. 
+```{r data.time}
+ts_new %>% 
+# pipe into ggplot
+ggplot(aes(x = date_time, y = mag)) + 
+  
+  # specify type of plot
+  geom_point() +
+ 
+  # specify theme
+  theme_bw()
+```
+
+## Spatial Data Aspects 
+
+Just as we examined the data over time, we can look for patterns over space. Some questions we can ask are: 
+ 
+* Describe the variation of the earthquakes over the entire US?
+ 
+* What is the trend over the area during the whole time?
+
+
+Questions that could also be classified as overall-level questions with respect to both space and time:
+
+* How has the spatial distribution evolved over time? 
+
+* Did any earthquakes happen within 48 hours before a given earthquake?
+
+These type of relation questions can provide an overlap of the two features. 
+ 
+
+
+
+# Mapping 
+
+We can create use the `ggmap` package to create simple maps. Mapping the entire region would not load, but we can zoom in on an area of interest. In this case we can look at earthquakes in the Puget Sound region. 
+
+```{r map}
+# map
+
+# define the bounding box for the map 
+#bbox <- with(earthquakes, make_bbox(lon = longitude, lat = latitude) )
+## Note: This area is too large to render in the stamen map below 
+
+# we define the bounding box as the greater Puget Sound region 
+bbox <- c(-123, 47.1,-122, 48.1)
+
+# make a map of the base layer of stamen tiles 
+map <- suppressMessages(get_stamenmap(bbox, maptype = "terrain", zoom = 8))
+
+# make the map image from the tiles
+basemap <- ggmap(map, darken = c(0.5, "white")) + theme_void()
+
+# add locations to map 
+  basemap +
+      
+  # locations with points colored by their sampling date
+  geom_point(data = earthquakes, 
+             aes(x = longitude, y = latitude, 
+                 color = factor(date))) +
+  
+  # labels
+  labs(color = "Date") +
+    
+  # choose a color scale
+  scale_color_brewer(palette = "Dark2") +
+    
+  # theme for legend and border
+  theme(legend.position = "bottom",
+        panel.border = element_rect(colour = "black", fill = NA)
+        ) 
+
+```
+
+```{r terrain.map}
+# map assigning size and color by magnitude 
+basemap +
+        geom_point(data = earthquakes,
+                   aes(x = longitude,
+                       y = latitude,
+                       size = mag,
+                       alpha = mag),
+                   color = "firebrick1")  
+```
+
+
+It looks good but the sizes of the points fail to convey the differences between the magnitude of the different aftershocks. Instead of using the function scale_size_continuous to scale the sizes of our points, we will try to use the scale_radius function.
+
+Using the function "scale_radius" we can get a better understanding of the range of magnitude. 
+```{r terrain.map.scale}
+basemap +
+        geom_point(data = all_data,
+                   aes(x = longitude,
+                       y = latitude,
+                       size = mag,
+                       alpha = mag),
+                   color = "firebrick1") +
+        scale_radius()
+
+```
+
+
+ 
+# Session Information, Code, and Functions
+
+The next three chunks should be included in the appendix of every R Markdown so  that you document your session information, code, and functions defined in the document. This supports the reproducibility of your work.
+
+```{r session.info}
+#-----session information: beginning of Appendix -----------
+# This promotes reproducibility by documenting the version of R and every package
+# you used.
+sessionInfo()
+```
+
+```{r appendix, ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE, include=TRUE}
+#-----appendix------------
+```
+
+```{r functions.defined.in.this.Rmd, eval = TRUE}
+#-----functions defined in this Rmd ------------
+# Show the names of all functions defined in the .Rmd
+# (e.g. loaded in the environment)
+lsf.str()
+# Show the definitions of all functions loaded into the current environment  
+lapply(c(lsf.str()), getAnywhere)
+```

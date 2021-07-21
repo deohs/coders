@@ -1,0 +1,585 @@
+---
+title: "Exploratory Data Analysis - Part 1"
+subtitle: "DEOHS Coders Group"
+author: "Chris Zuidema"
+date: "3/29/2021"
+output:
+  html_document:
+    keep_md: true
+
+---
+
+# Setup
+
+Rmarkdown setup and directory organization, and data download.
+
+```{r setup, include=FALSE}
+#-----setup options-----
+
+# knitr options:
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+```{r load.libraries.pacman, echo=FALSE, include=FALSE, eval=TRUE}
+#-----load libraries pacman-----
+
+# load pacman, installing if needed
+if (!require("pacman")) {install.packages("pacman")}
+
+# load other packages, installing as needed
+pacman::p_load(knitr, dplyr, tidyr, stringr, ggplot2, purrr, magrittr, readr,
+               corrplot, ggrepel, broom, ggmap, egg)
+
+```
+
+```{r directory.organization.data}
+#-----directory organization and data-----
+
+# set working directory
+work_dir <- getwd()
+
+# name and create output directory
+output_dir <- file.path(work_dir, "output")
+dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
+
+# create "Datasets" directory if one does not already exist    
+dir.create(file.path(work_dir,"data"), showWarnings=FALSE, recursive = TRUE)
+
+# specify data path
+data_dir <- file.path(work_dir,"data")
+
+# specify the file name and path
+file_name <- "moss.rds"
+file_path <- file.path(data_dir, file_name)
+
+# Download the file if it is not already present
+if (!file.exists(file_path)) {
+    url <- paste("https://staff.washington.edu/czuidema/data", 
+                 file_name, sep = '/')
+    download.file(url = url, destfile = file_path)
+}
+
+# Output a warning message if the file cannot be found
+if (file.exists(file_path)) {
+    all_data <- readRDS(file_path)
+} else warning(paste("Can't find", file_name, "!"))
+
+# remove temporary variables
+rm(url, file_name, file_path, data_dir)
+
+```
+
+```{r housekeeping}
+#-----housekeeping-----
+
+# create list objects to hold tables and figures
+figs <- list()
+tbls <- list()
+
+# create list of metals of interest, and all metals
+metals <- c("As", "Cd", "Co", "Cr", "Ni", "Pb")
+all_metals <- str_subset(string = names(all_data), pattern = "^[[:alpha:]]{1,2}$")
+
+# create a smaller dataset to work with for most of our plots
+moss <- all_data %>% select(-setdiff(all_metals, metals))
+
+# print message
+print(c("This document focuses on the following priority metals:", metals))
+
+```
+
+
+# Introduction
+
+## Exploratory data analysis
+
+This script focuses on Exploratory Data Analysis (EDA) - an important step for
+any data analysis project. EDA relies on visualization and transformation to
+explore your data. This step happens after and in conjunction with data
+"wrangling," which we've previously discussed, and before deeper statistical
+analysis you'll undertake as your project progresses. EDA is a means to gain
+general and broad understanding of a dataset, and explore and generate
+preliminary hypotheses.
+
+There are no strict rules for EDA - and you'll start many lines of inquiry that
+won't make it through to your final analysis. Here are some questions to think
+about as you approach EDA:
+
+  * How many observations and variables do the data have?
+  * What are the variable types?
+  * What do the distributions look like? Are they normally or lognormally
+    distributed?
+  * Are variables correlated or do some variables covary? 
+  * Are there measurements below the detection limits?
+  * How much missingness is there?
+
+The goal of this script is to provide ideas, suggestions, and examples of EDA
+that may translate to other datasets. A great resource on EDA is 
+[R for Data Science](https://r4ds.had.co.nz/exploratory-data-analysis.html).
+
+## About this data
+
+This data was collected as part of a moss bioindicator study of heavy metal air
+pollution. Briefly, moss accumulates heavy metals from air pollution, and we can
+learn about the relative differences in heavy metals (not their absolute
+concentrations) in an area by quantifying the concentration of metals in moss
+samples. 
+
+I've added random error to the measurements and sampling locations of the
+original data because they have not yet been published or made public.
+
+# Data characteristics
+
+Here we look at what the data type is, its dimensions, and other attributes. 
+
+```{r dim.var.class}
+#-----dimensions & variable classes-----
+
+# show top of dataframe
+head(moss)
+
+# show dimensions
+dim(moss)
+
+# show variable classes
+lapply(moss, class) %>% bind_rows()
+
+# count data by a variable
+count(moss, Expert)
+
+# use `glimpse` to provide another view
+glimpse(moss)
+
+```
+
+# Transforming data
+
+From the steps above, we can see our data is "wide" meaning each variable is in
+a separate column. Many data operations are easier when data are in "long"
+format - where features, names, or data characteristics are presented in one
+column and the values are in another column.
+
+In this example, we're going to transform all of the metal concentration columns
+in our original "wide" dataframe and put the metal names in one column and the
+concentrations in another.
+
+```{r to.long}
+#-----to long dataframe-----
+
+# create long dataframe
+moss_long <- moss %>% 
+  pivot_longer(cols = all_of(metals), names_to = "Metal", values_to = "Conc") 
+
+# show top of long dataframe
+head(moss_long) %>% knitr::kable()
+
+```
+
+
+# Descriptive statistics
+
+A major task of EDA is calculating basic descriptive statistics. One way to do
+this is by using (or transforming) your dataset to a "long" form, and then with
+the `dplyr` `group_by()` and `summarise()` functions.
+
+```{r metal summary, message=FALSE}
+#-----metal summary-----
+
+tbls[["summary_tbl"]] <- moss_long %>% 
+  
+  # group by and calculate summary statistics
+  group_by(Metal) %>%
+  summarise(Min = min(Conc, na.rm = TRUE), 
+            Max = max(Conc, na.rm = TRUE), 
+            Mean = mean(Conc, na.rm = TRUE),
+            Median = median(Conc, na.rm = TRUE), 
+            missing = sum(is.na(Conc)), 
+            .groups = "drop") %>% 
+  
+  # round by mutating on a predicate function
+  mutate_if(is.numeric, round, 3)
+
+tbls[["summary_tbl"]] %>% knitr::kable()
+
+```
+
+
+Similar calculations can be performed on a "wide" dataset using `dplyr` functions
+`summarise()` and `across()`.
+
+```{r mutate.across}
+#-----mutate across-----
+
+# create a list of summary functions
+summ_list <- list(
+  
+  mean = ~mean(.x, na.rm = TRUE),
+  sd = ~sd(.x, na.rm = TRUE),
+  min = ~min(.x, na.rm = TRUE),
+  median = ~median(.x, na.rm = TRUE),
+  max = ~max(.x, na.rm = TRUE)
+  
+)
+
+# run summary functions across dataframe with function names 
+# (can be done with or without groups)
+moss %>%  
+  select(Expert, all_of(metals)) %>%
+  #group_by(Expert) %>%
+  summarise(across(where(is.double), 
+                   summ_list, 
+                   .names = "{.col}_{.fn}") ) %>% 
+  mutate_if(is.numeric, round, 3) %>%
+  pivot_longer(cols = everything(), names_to = "var", values_to = "val") %>%
+  separate(var, into = c('metal', 'stat'), sep = '_') %>% 
+  pivot_wider(id_cols = c(metal), names_from = stat, values_from = val) %>%
+  knitr::kable()
+
+
+```
+
+
+# Describe data distributions
+
+## Histograms
+
+Histograms can help visualize the distribution of a continuous variable. Let's
+look at histograms of the heavy metal concentrations.
+
+```{r histograms, message=FALSE, warning=FALSE}
+#-----histograms----
+
+figs[["histograms"]] <- ggplot(data = moss_long, aes(x = Conc)) + 
+  
+  # specify histograms
+  geom_histogram(bins = 20) + 
+  
+  # facet wrap by metal
+  facet_wrap(~Metal, scales = "free_x") +
+  
+  # specify y axis lower limit equal to zero
+  scale_y_continuous(expand = expansion(mult = c(0, .1))) +
+  
+  # plot labels
+  labs(x = "Concentration, (mg/kg)", y = "Number of Samples ", 
+       title = "Heavy Metal Concentrations") +
+  
+  # choose theme
+  theme_bw()
+
+# show plot
+figs[["histograms"]]
+
+```
+
+
+## Quantile-quantile (Q-Q) plots
+
+The histograms indicate the metal distributions are log-normally distributed.
+One method to investigate the normality of a variable is to plot it against the
+the theoretical quantiles of a comparable normal distribution.
+
+`ggplot` makes this easy, and to look at the log-normality of the heavy metal
+concentrations we can simply plot the `log(Conc)`. This quick visualization help
+you decide if further analysis steps should be conducted on log-transformed
+data.
+
+```{r qq.plot.between.experts.and.nonexperts}
+#-----qq plot between experts and nonexperts------
+
+figs[["qq"]] <- ggplot(data = moss_long, aes(sample = log(Conc)) ) + 
+  stat_qq() +
+  stat_qq_line(colour = "blue") + 
+  facet_wrap(~Metal, scales = "free") +
+  
+  labs(x = "Theoretical Quantiles", 
+       y = "Sample Quantiles", 
+       title = "QQ-Plots for Heavy Metals in Moss Samples (log conc.)")+
+  
+  theme_bw()
+
+figs[["qq"]]
+
+```
+
+
+## Boxplots
+
+Boxplots are a simple, yet effective means to visualize data distributions. Here
+is an example comparing groups within the data. This also provides an example of
+including all the points "within" the boxplot to gain a better understanding of
+the spread of the data.
+
+```{r box.plots, warning=FALSE}
+#-----box plots-----
+
+figs[["boxes"]] <- ggplot(data = moss_long, 
+                          aes(x = as.factor(Metal), y = Conc, color = Expert) ) +
+  
+  # specify geoms
+  stat_boxplot(geom = "errorbar", width = 0.2, position = position_dodge(0.75))+
+  geom_boxplot(outlier.shape = NA) +  
+  geom_point(position = position_jitterdodge(), alpha = 0.25, width = 0.35) +
+  
+  # facet wrap by metal
+  facet_wrap(~Metal, scales = "free") +
+  
+  # specify x as discrete
+  scale_x_discrete(breaks = NULL) +
+  
+  # labels
+  labs(x = "Metal", y = "Concentration (mg/kg)", 
+       title = "Boxplots of Heavy Metal Concentrations in Moss") +
+  
+  # choose theme
+  theme_bw() +
+  
+  # legend position
+  theme(legend.position = "bottom")
+
+# show plot  
+figs[["boxes"]]
+
+```
+
+
+## Cumulative density function (CDF) plots
+
+CDF plots display the the data values against the cumulative distribution. They
+are popular among exposure scientists. It might take some practice interpreting
+these types of figures, but they communicate a lot of information, and form the
+basis for some non-parametric statistical tests (Kolmogorov–Smirnov, "K-S,"
+test).
+
+```{r cumulative.density.plots, message=FALSE, warning=FALSE}
+#-----cumulative density plots------
+
+figs[["ecdf"]] <- ggplot(data = moss_long, aes(x = Conc)) +
+  # specify CDF
+  stat_ecdf(geom = "step") + 
+  
+  # facet wrap by metal
+  facet_wrap(~Metal, scales = "free_x") +
+  
+  # labels
+  labs(x = "Concentration (mg/kg)", y = "Proportion of Samples ", 
+       title = "CDFs of Heavy Metal Concentrations in Moss") +
+  
+  # choose theme
+  theme_bw()
+
+# show plot  
+figs[["ecdf"]]
+
+```
+
+
+## Pearson correlation
+
+This dataset does not have a ton of varibales to investigate univariate
+correlation, but we can take a look and see if all the metals in the samples are
+correlated. We'll use the full dataset (`all_data`) to do this. The easiest way
+to visualize a correlation I have found is with the `corrplot` package. The
+[vingette page](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html)
+provides nice plot ideas and tricks. The drawback with `corrplot` is that the
+plots have to be saved when they are made - the plots themselves cannot be
+assigned to an object. To avoid calling the same `corrplot()` command more than
+once, I've found making a simple wrapper then calling the wrapper function
+simplifies things a bit, especially as you fiddle with the appearance.
+
+```{r correlation.plots, fig.height=8, fig.width=8, message=FALSE}
+#-----correlation plots-----
+
+# select all metals and calculate pearson correlation, with complete observations
+pearson_corr <- all_data %>% 
+    select(all_of(all_metals)) %>% 
+    cor(use = "complete.obs")
+
+# create wrapper function for corrplot for display and saving
+corrplot_fn <- function(df = pearson_corr) {
+  corrplot.mixed(df, 
+                 
+                 # order type (FPC: first principal component)
+                 order = "FPC",
+                 
+                 # inner text (coefficients) size, & color
+                 number.cex = .6, #lower.col = "black"),
+                 
+                 # outer text color
+                 tl.col = "black", 
+                 
+                 # define color limits
+                 cl.lim = c(-0.5, 1)
+                 ) 
+}
+
+
+# display correlation plot 
+corrplot_fn() 
+
+# save correlation plot 
+png(file=file.path(output_dir, "correlation.png"))
+corrplot_fn()
+dev.off()
+
+```
+
+## Sampling maps
+
+Creating maps is topic all its own, and later in the term we will be taking a
+deeper dive into spatial data and tools and methods to work with spatial data.
+That said, here are a couple quick examples of maps that offer a relatively
+simple way to visually represent some spatial features of data using the `ggmap`
+package.
+
+```{r sampling.map}
+#-----sampling map-----
+
+# define the bounding box for the map
+bbox <- with(moss_long, make_bbox(lon = Field_Long, lat = Field_Lat) )
+
+# make a map of the base layer of stamen tiles 
+map <- suppressMessages(get_stamenmap(bbox, zoom = 14, maptype = "terrain"))
+
+# make the map image from the tiles
+basemap <- ggmap(map, darken = c(0.5, "white")) + theme_void()
+
+
+figs[["sampling_map"]] <- basemap +
+      
+  # locations with points colored by their sampling date
+  geom_point(data = moss_long, 
+             aes(x = Field_Long, y = Field_Lat, 
+                 color = factor(Collection_date))) +
+  
+  # labels
+  labs(color = "Collection Date") +
+    
+  # choose a color scale
+  scale_color_brewer(palette = "Dark2") +
+    
+  # theme for legend and border
+  theme(legend.position = "bottom",
+        panel.border = element_rect(colour = "black", fill = NA)
+        )
+
+# show figure
+figs[["sampling_map"]]
+
+```
+
+## Concentration maps
+
+To create some basic maps of the spatial distribution of moss metal
+concentrations, we need to use somewhat convoluted code. The problem is that in
+`ggplot` there is no `free_z` argument for `facet_wrap()`, meaning our metal
+concentrations will be displayed on the same color scale.
+
+That doesn't work out well when the different measurements we are displaying are
+on different scales or have very different effective ranges, a reasonably common
+problem for spatial data. To work around this, the approach below creates
+separate plots for each variable (metal) of interest, then combines them into
+one figure.
+
+```{r map.concentrations}
+#-----map concentrations-------
+
+# make a function to run mapping code for each metal
+map_fn <- function(metal){
+  
+  # start with basemap 
+  basemap +
+    
+    # add locations with concentrations
+    geom_point(data = moss_long %>% filter(Metal == metal), 
+               aes(x = Field_Long, y = Field_Lat, color = Conc ) )+ 
+    
+    # this just adds the facet ribbon
+    facet_wrap(~Metal) + 
+    
+    # color bar label
+    labs(color = "Conc.\n(mg/kg)") +
+    
+    # color scale
+    scale_color_continuous(low = "#56B1F7", high = "#132B43") +
+  
+    # theme (mostly text adjustment)
+    theme(text = element_text(size = 12),
+          legend.title = element_text(size = 9),
+          strip.background = element_rect(fill = "grey"), 
+          panel.border = element_rect(colour = "black", fill = NA),
+          strip.text.x = element_text(margin = margin(2, 0, 2, 0)) 
+          )
+  }
+
+
+# run map function over metals and set names
+maps_list <- lapply(metals, map_fn) %>% set_names(paste0("map_", metals) )
+
+
+# add combined maps to figs list
+figs[["map_all_metals"]] <- egg::ggarrange(plots = maps_list, ncol = 3)
+
+# remove temporary variables
+#rm(bbox, map, maps_list)
+
+```
+
+
+# Save figures and tables
+
+Save figures to `.png` files and tables to `.csv` files in `output` directory. 
+
+```{r save.figures.to.output.directory, include=FALSE}
+#-----save figures to output directory------
+
+# save figures as ".png", ".jpg", or ".pdf" (and more) using lapply and ggsave
+# units can be specified as "in", "cm"
+lapply(names(figs),function(x){
+  ggsave(filename = file.path(output_dir, paste0(x,".png")), plot = figs[[x]], 
+         width = 6, height = 4, units = "in", dpi = "print")
+  })
+
+```
+
+```{r save.tables.to.output.directory, include=FALSE}
+#-----save tables to output directory-----
+
+lapply(names(tbls), function(x){
+  write_csv(tbls[[x]], path = file.path(output_dir, paste0(x,".csv")))
+    })
+
+```
+
+
+# Code appendix
+
+## Session information
+
+```{r session.info}
+#-----session info: beginning of Code Appendix-----
+
+sessionInfo()
+
+```
+
+## Code in the R Markdown file
+
+```{r appendix.code, ref.label=knitr::all_labels(), echo=TRUE, eval=FALSE, tidy=TRUE, tidy.opts=list(width.cutoff=60), include=T}
+#-----appendix code-----
+
+```
+
+## User-written functions loaded in the R Markdown environment
+
+```{r functions.used.in.this.Rmd, eval = TRUE}
+#-----functions used in this Rmd-----
+
+# Show the names of all functions used (loaded in the current environment)
+(fn_names <- lsf.str())
+
+# Show the definitions of all functions loaded into the current environment 
+map(fn_names, get, .GlobalEnv) %>% set_names(fn_names)
+
+```

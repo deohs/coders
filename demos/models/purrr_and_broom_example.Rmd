@@ -1,0 +1,145 @@
+---
+title: "Purrr and Broom Example"
+author: "Brian High"
+date: "11/1/2019"
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Fit multiple models using purrr and broom
+
+See: https://r4ds.had.co.nz/many-models.html
+
+## Setup
+
+```{r}
+# Load packages.
+pacman::p_load(datasets, tibble, dplyr, tidyr, purrr, broom, modelr, knitr)
+
+# Get the dataset.
+data(mtcars)
+```
+
+## Prepare data
+
+```{r}
+# Import the dataset into a nested tibble. Split car name into make and model.
+df <- as_tibble(mtcars %>% 
+                         mutate(model = row.names(mtcars))) %>% 
+  mutate(make = gsub('^(\\w+) .*$', '\\1', model),
+         model = gsub('^\\w+ (.*)$', '\\1', model)) %>% 
+  group_by(make, model) %>% arrange(make, model)
+```
+
+### View data
+
+* Use `kable()` from the `knitr` package.
+
+```{r, render='asis'}
+# Examine the dataset.
+kable(df %>% head(10), format = 'markdown')
+```
+
+\pagebreak
+
+### Nest data
+
+Subset the data by whether or not the "make" is an American car maker. Nest the
+groups for easier automation of modeling.
+
+* Use `group_by()` from the `dplyr` package.
+* Use `nest()` from the `tidyr` package.
+
+```{r}
+# Identify American car makers with: usa = TRUE.
+df <- df %>% 
+  mutate(usa = ifelse(make %in% c('Hornet', 'Valiant', 'Duster', 'Merc', 
+                                  'Cadillac', 'Lincoln', 'Chrysler', 'Dodge', 
+                                  'AMC', 'Camaro', 'Pontiac', 'Ford'), 
+                      TRUE, FALSE))
+
+# Nest by 'usa'.
+df <- df %>% group_by(usa) %>% nest()
+```
+
+## Fit models
+
+Fit using `lm()` with multiple formulas for each nested group. 
+
+* Use `formulas()` and `fit_with()` from the `modelr` package.
+* Use `map()` from the `purrr` package.
+
+```{r}
+# Define formulas.
+lm_formulas <- formulas(~mpg, 
+                              ~ cyl, 
+                              ~ cyl + disp, 
+                              ~ cyl + disp + hp, 
+                              ~ cyl + disp + hp + wt)
+
+# Fit models.
+df <- df %>% 
+  mutate(model = map(.x = data, .f = ~fit_with(lm, lm_formulas, data = .x)))
+```
+
+## Get model summaries and estimates
+
+Extract the summary information from the models. We need to use `lapply()`
+with `map()` because we are using many models and `fit_with()` created `list`
+output like `lapply()` would have. So we use `lapply()` to get "inside" of the
+`list` output of `fit_with()`.
+
+* Use `glance()` and `tidy()` from the `broom` package.
+* Use `map()` from the `purrr` package.
+* Use `lapply()` from `base` to apply `glance()` and `tidy()` to many models.
+
+```{r}
+# Extract model summaries with glance().
+df <- df %>% 
+  mutate(resid = map(model, ~lapply(.x, glance)))
+
+# Extract model estimates with tidy().
+df <- df %>% 
+  mutate(est = map(model, ~lapply(.x, tidy)))
+```
+
+\pagebreak
+
+### View model summaries for "usa"
+
+* Use `unnest()` from the `tidyr` package to unpack the `list` columns.
+* Use `mutate()` from the `dplyr` package to include the formula names.
+
+```{r}
+df.resid <- df %>% select(usa, resid) %>% unnest(resid) %>% 
+  mutate(formula = as.character(lm_formulas)) %>% unnest(resid)
+```
+
+* Use `kable()` from the `knitr` package.
+
+```{r, render='asis'}
+kable(df.resid[, c(1:7, 11, 13)], format = 'markdown', digits = 4)
+```
+
+\pagebreak
+
+### View model estimates for "usa"
+
+* Use `unnest()` from the `tidyr` package to unpack the `list` columns.
+* Use `mutate()` from the `dplyr` package to include the formula names.
+
+```{r}
+df.est <- df %>% select(usa, est) %>% unnest(est) %>% 
+  mutate(formula = as.character(lm_formulas)) %>% unnest(est)
+```
+
+* Use `kable()` from the `knitr` package.
+
+```{r, render='asis'}
+kable(df.est, format = 'markdown', digits = 4)
+```
