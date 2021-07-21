@@ -1,11 +1,8 @@
 # Run a Pearson's Chi-squared by group using a tidyverse pipeline
 # Adapted from: https://stackoverflow.com/questions/49659103
 
-library(dplyr)
-library(tidyr)
-library(purrr)
-library(broom)
-library(titanic)
+if (!require(pacman)) install.packages("pacman")
+pacman::p_load(dplyr, tidyr, purrr, broom, titanic)
 
 titanic_train %>% 
   group_by(Pclass, Survived, Sex) %>%
