@@ -1,5 +1,8 @@
 # Simple example showing how to subset data before running (mc)lapply
 
+# Load packages
+library(parallel)
+
 # Get data
 A <- LETTERS
 n <- length(A)
