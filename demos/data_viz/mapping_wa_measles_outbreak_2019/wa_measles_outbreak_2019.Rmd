@@ -56,7 +56,7 @@ Today's example demonstrates these objectives:
 facilitate collaboration.
 
 The code and this presentation are free to share and modify according to the 
-[MIT License](https://github.com/deohs/coders/blob/master/LICENSE).
+[MIT License](https://github.com/deohs/coders/blob/main/LICENSE).
 
 ## Washington Measles Outbreak of 2019
 
@@ -234,7 +234,7 @@ g
 
 ## Mapping with `ggmap`
 
-<img style="float: right; height:500px;" src="https://github.com/deohs/coders/raw/master/demos/data_viz/mapping_with_ggmap/clark_co_measles_map.jpg" alt="Clark County"/>
+<img style="float: right; height:500px;" src="https://raw.githubusercontent.com/deohs/coders/main/demos/data_viz/mapping_with_ggmap/clark_co_measles_map.jpg" alt="Clark County"/>
 
 We will use the `ggmap` package to create maps with detailed basemaps.
 
@@ -391,7 +391,7 @@ Therefore, it may be worthwhile to take a closer look at the individual schools.
 
 ## How about King County?
 
-<img style="float: right; height:500px;" src="https://github.com/deohs/coders/raw/master/demos/data_viz/mapping_with_ggmap/king_co_measles_map_stamen_toner.jpg" alt="King County"/>
+<img style="float: right; height:500px;" src="https://raw.githubusercontent.com/deohs/coders/main/demos/data_viz/mapping_with_ggmap/king_co_measles_map_stamen_toner.jpg" alt="King County"/>
 
 King County published the exposure sites in batches:
 
@@ -408,7 +408,7 @@ Infection of the few children was due to household contact with previously
 diagnosed adults. In this region, measles did not appear to be spreading at 
 schools or daycare centers.
 
-This map and the ones on the next slide were made with this script: [King County Measles Exposure Sites](https://github.com/deohs/coders/blob/master/demos/data_viz/mapping_with_ggmap/king_co_measles_exposure_sites_map.R)
+This map and the ones on the next slide were made with this script: [King County Measles Exposure Sites](https://github.com/deohs/coders/blob/main/demos/data_viz/mapping_with_ggmap/king_co_measles_exposure_sites_map.R)
 
 ## Alternate basemaps for `ggmap`
 
@@ -431,7 +431,7 @@ grid.arrange(grobs = gl, ncol = 3)
 `leaflet` is a Javascript library for making interactive maps. It can be used 
 from various programming languages, including R.
 
-<img style="float: right; height:400px;" src="https://github.com/deohs/coders/raw/master/demos/data_viz/mapping_with_leaflet/clark_county_leaflet_screen_shot.png" alt="Clark County"/>
+<img style="float: right; height:400px;" src="https://raw.githubusercontent.com/deohs/coders/main/demos/data_viz/mapping_with_leaflet/clark_county_leaflet_screen_shot.png" alt="Clark County"/>
 
 We will make a leaflet map showing the location of all of the K-12 schools in 
 the state. 
@@ -834,7 +834,7 @@ the points marking the exposure locations.
 
 ## Exercise 3: `leaflet` - King County
 
-The [King County Measles Exposure Sites](https://github.com/deohs/coders/blob/master/demos/data_viz/mapping_with_ggmap/king_co_measles_exposure_sites_map.R) 
+The [King County Measles Exposure Sites](https://github.com/deohs/coders/blob/main/demos/data_viz/mapping_with_ggmap/king_co_measles_exposure_sites_map.R) 
 R script was used to download and map exposure locations for the Seattle/Tacoma area.
 
 Create a `leaflet` map plotting these locations using the same method as 
@@ -854,7 +854,7 @@ make the size of the points indicate school enrollment and make the color
 indicate the percent immunization coverage.
 
 A modified data file with geolocations for (most of) these schools has been 
-provided for you: [or_k12_immunization_coverage.csv](https://github.com/deohs/coders/blob/master/demos/data_viz/mapping_with_leaflet/or_k12_immunization_coverage.csv).
+provided for you: [or_k12_immunization_coverage.csv](https://github.com/deohs/coders/blob/main/demos/data_viz/mapping_with_leaflet/or_k12_immunization_coverage.csv).
 
 The code which generated this file is in the next section of this document.
 
