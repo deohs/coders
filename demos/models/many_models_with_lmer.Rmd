@@ -1,7 +1,7 @@
 ---
 title: "Many Models with lme4::lmer() and broom.mixed::tidy()"
 author: "Brian High"
-date: "3/18/2021"
+date: "2022-10-17"
 output:
   html_document:
     df_print: paged
@@ -38,21 +38,26 @@ if (!require(pacman)) {
 }
 
 # Load packages, installing as needed.
-pacman::p_load(nycflights13,
-               tibble,
-               tidyr,
-               dplyr,
-               broom.mixed,
-               purrr,
-               furrr,
-               lme4,
-               tictoc)
+suppressPackageStartupMessages(
+  pacman::p_load(
+    nycflights13,
+    tibble,
+    tidyr,
+    dplyr,
+    lme4,
+    broom.mixed,
+    purrr,
+    furrr,
+    tictoc,
+    kableExtra
+  )
+)
 
 # Show number of available CPU cores.
 availableCores()
 
 # Set number of multicore "workers" to 1/2 the number of cores.
-plan(multiprocess, workers = availableCores()/2)
+plan(multisession, workers = availableCores()/2)
 ```
 
 ## Prepare formulas
@@ -110,15 +115,16 @@ model_fit_list <- formula_df$formula %>% future_map(lmer, data = data_df)
 # Extract the estimates with broom.mixed::tidy().
 est <- 
   model_fit_list %>%
-  future_map(tidy, conf.int = TRUE, conf.method = "Wald", conf.level = 0.95) %>%
+  map(broom.mixed::tidy, conf.int = TRUE, 
+      conf.method = "Wald", conf.level = 0.95) %>%
   bind_rows(.id = "ID") %>%
   select(-group)
 
 # Calculate confidence intervals with confint.merMod().
 CI <-  
   model_fit_list %>%
-  future_map(confint.merMod, method = "Wald", level = 0.95) %>%
-  future_map(as_tibble, rownames = "term") %>%
+  map(confint.merMod, method = "Wald", level = 0.95) %>%
+  map(as_tibble, rownames = "term") %>%
   bind_rows(.id = "ID")
 
 # Merge estimates and confidence intervals by formula number (ID) and term.
@@ -159,12 +165,12 @@ so we can compare performance.
 # Start timer.
 tic()
 
-# Fit the models with lmer() and extract the estimates and confidence intervals 
-# with broom.mixed::tidy() using future_map() for multicore processing.
+# Fit the models with lmer() using future_map() and extract the estimates and 
+# confidence intervals with broom.mixed::tidy() using map().
 results_df <- formula_df %>% 
   mutate(model = future_map(formula, lmer, data = data_df)) %>%
-  mutate(est = future_map(model, tidy, conf.int = TRUE, conf.method = "Wald", 
-                          conf.level = 0.95)) %>%
+  mutate(est = map(model, broom.mixed::tidy, conf.int = TRUE, 
+                   conf.method = "Wald", conf.level = 0.95)) %>%
   select(-model) %>% unnest(cols = everything()) %>%
   filter(is.na(group)) %>% 
   select(-group, -effect, -std.error, -statistic) %>%

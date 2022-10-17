@@ -1,7 +1,7 @@
 ---
 title: "Many Models with lme4::lmer() and broom.mixed::tidy()"
 author: "Brian High"
-date: "3/18/2021"
+date: "2022-10-17"
 output:
   html_document:
     df_print: paged
@@ -41,15 +41,20 @@ if (!require(pacman)) {
 
 ```r
 # Load packages, installing as needed.
-pacman::p_load(nycflights13,
-               tibble,
-               tidyr,
-               dplyr,
-               broom.mixed,
-               purrr,
-               furrr,
-               lme4,
-               tictoc)
+suppressPackageStartupMessages(
+  pacman::p_load(
+    nycflights13,
+    tibble,
+    tidyr,
+    dplyr,
+    lme4,
+    broom.mixed,
+    purrr,
+    furrr,
+    tictoc,
+    kableExtra
+  )
+)
 
 # Show number of available CPU cores.
 availableCores()
@@ -57,12 +62,12 @@ availableCores()
 
 ```
 ## system 
-##     64
+##      8
 ```
 
 ```r
 # Set number of multicore "workers" to 1/2 the number of cores.
-plan(multiprocess, workers = availableCores()/2)
+plan(multisession, workers = availableCores()/2)
 ```
 
 ## Prepare formulas
@@ -123,15 +128,16 @@ model_fit_list <- formula_df$formula %>% future_map(lmer, data = data_df)
 # Extract the estimates with broom.mixed::tidy().
 est <- 
   model_fit_list %>%
-  future_map(tidy, conf.int = TRUE, conf.method = "Wald", conf.level = 0.95) %>%
+  map(broom.mixed::tidy, conf.int = TRUE, 
+      conf.method = "Wald", conf.level = 0.95) %>%
   bind_rows(.id = "ID") %>%
   select(-group)
 
 # Calculate confidence intervals with confint.merMod().
 CI <-  
   model_fit_list %>%
-  future_map(confint.merMod, method = "Wald", level = 0.95) %>%
-  future_map(as_tibble, rownames = "term") %>%
+  map(confint.merMod, method = "Wald", level = 0.95) %>%
+  map(as_tibble, rownames = "term") %>%
   bind_rows(.id = "ID")
 
 # Merge estimates and confidence intervals by formula number (ID) and term.
@@ -147,7 +153,7 @@ toc()
 ```
 
 ```
-## 16.119 sec elapsed
+## 22.606 sec elapsed
 ```
 
 Display the results.
@@ -157,29 +163,212 @@ Display the results.
 results_df %>% knitr::kable(digits = 4)
 ```
 
-
-
-|fgroup |formula                                                    |term        | estimate| conf.low| conf.high|   2.5 %|  97.5 %|
-|:------|:----------------------------------------------------------|:-----------|--------:|--------:|---------:|-------:|-------:|
-|crude  |arr_delay ~ air_time + (1&#124;carrier)                    |(Intercept) |   5.5096|   0.6767|   10.3424|  0.6767| 10.3424|
-|crude  |arr_delay ~ air_time + (1&#124;carrier)                    |air_time    |   0.0085|   0.0065|    0.0105|  0.0065|  0.0105|
-|crude  |arr_delay ~ distance + (1&#124;carrier)                    |(Intercept) |   8.9182|   4.8971|   12.9394|  4.8971| 12.9394|
-|crude  |arr_delay ~ distance + (1&#124;carrier)                    |distance    |  -0.0014|  -0.0016|   -0.0011| -0.0016| -0.0011|
-|crude  |arr_delay ~ month + (1&#124;carrier)                       |(Intercept) |   8.5815|   4.1367|   13.0263|  4.1367| 13.0263|
-|crude  |arr_delay ~ month + (1&#124;carrier)                       |month       |  -0.2242|  -0.2686|   -0.1797| -0.2686| -0.1797|
-|max    |arr_delay ~ distance + air_time + month + (1&#124;carrier) |(Intercept) |  -2.7542|  -6.7541|    1.2457| -6.7541|  1.2457|
-|max    |arr_delay ~ distance + air_time + month + (1&#124;carrier) |air_time    |   0.6717|   0.6599|    0.6835|  0.6599|  0.6835|
-|max    |arr_delay ~ distance + air_time + month + (1&#124;carrier) |distance    |  -0.0862|  -0.0877|   -0.0847| -0.0877| -0.0847|
-|max    |arr_delay ~ distance + air_time + month + (1&#124;carrier) |month       |  -0.0443|  -0.0881|   -0.0006| -0.0881| -0.0006|
-|min    |arr_delay ~ air_time + month + (1&#124;carrier)            |(Intercept) |   6.9904|   2.1389|   11.8419|  2.1389| 11.8419|
-|min    |arr_delay ~ air_time + month + (1&#124;carrier)            |air_time    |   0.0086|   0.0066|    0.0106|  0.0066|  0.0106|
-|min    |arr_delay ~ air_time + month + (1&#124;carrier)            |month       |  -0.2262|  -0.2706|   -0.1817| -0.2706| -0.1817|
-|min    |arr_delay ~ distance + air_time + (1&#124;carrier)         |(Intercept) |  -3.0548|  -7.0448|    0.9351| -7.0448|  0.9351|
-|min    |arr_delay ~ distance + air_time + (1&#124;carrier)         |air_time    |   0.6725|   0.6608|    0.6843|  0.6608|  0.6843|
-|min    |arr_delay ~ distance + air_time + (1&#124;carrier)         |distance    |  -0.0863|  -0.0878|   -0.0848| -0.0878| -0.0848|
-|min    |arr_delay ~ distance + month + (1&#124;carrier)            |(Intercept) |  10.3305|   6.2897|   14.3714|  6.2897| 14.3714|
-|min    |arr_delay ~ distance + month + (1&#124;carrier)            |distance    |  -0.0013|  -0.0016|   -0.0011| -0.0016| -0.0011|
-|min    |arr_delay ~ distance + month + (1&#124;carrier)            |month       |  -0.2190|  -0.2635|   -0.1745| -0.2635| -0.1745|
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> fgroup </th>
+   <th style="text-align:left;"> formula </th>
+   <th style="text-align:left;"> term </th>
+   <th style="text-align:right;"> estimate </th>
+   <th style="text-align:right;"> conf.low </th>
+   <th style="text-align:right;"> conf.high </th>
+   <th style="text-align:right;"> 2.5 % </th>
+   <th style="text-align:right;"> 97.5 % </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> crude </td>
+   <td style="text-align:left;"> arr_delay ~ air_time + (1|carrier) </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> 5.5096 </td>
+   <td style="text-align:right;"> 0.6767 </td>
+   <td style="text-align:right;"> 10.3424 </td>
+   <td style="text-align:right;"> 0.6767 </td>
+   <td style="text-align:right;"> 10.3424 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> crude </td>
+   <td style="text-align:left;"> arr_delay ~ air_time + (1|carrier) </td>
+   <td style="text-align:left;"> air_time </td>
+   <td style="text-align:right;"> 0.0085 </td>
+   <td style="text-align:right;"> 0.0065 </td>
+   <td style="text-align:right;"> 0.0105 </td>
+   <td style="text-align:right;"> 0.0065 </td>
+   <td style="text-align:right;"> 0.0105 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> crude </td>
+   <td style="text-align:left;"> arr_delay ~ distance + (1|carrier) </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> 8.9182 </td>
+   <td style="text-align:right;"> 4.8971 </td>
+   <td style="text-align:right;"> 12.9394 </td>
+   <td style="text-align:right;"> 4.8971 </td>
+   <td style="text-align:right;"> 12.9394 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> crude </td>
+   <td style="text-align:left;"> arr_delay ~ distance + (1|carrier) </td>
+   <td style="text-align:left;"> distance </td>
+   <td style="text-align:right;"> -0.0014 </td>
+   <td style="text-align:right;"> -0.0016 </td>
+   <td style="text-align:right;"> -0.0011 </td>
+   <td style="text-align:right;"> -0.0016 </td>
+   <td style="text-align:right;"> -0.0011 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> crude </td>
+   <td style="text-align:left;"> arr_delay ~ month + (1|carrier) </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> 8.5815 </td>
+   <td style="text-align:right;"> 4.1367 </td>
+   <td style="text-align:right;"> 13.0263 </td>
+   <td style="text-align:right;"> 4.1367 </td>
+   <td style="text-align:right;"> 13.0263 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> crude </td>
+   <td style="text-align:left;"> arr_delay ~ month + (1|carrier) </td>
+   <td style="text-align:left;"> month </td>
+   <td style="text-align:right;"> -0.2242 </td>
+   <td style="text-align:right;"> -0.2686 </td>
+   <td style="text-align:right;"> -0.1797 </td>
+   <td style="text-align:right;"> -0.2686 </td>
+   <td style="text-align:right;"> -0.1797 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> max </td>
+   <td style="text-align:left;"> arr_delay ~ distance + air_time + month + (1|carrier) </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -2.7542 </td>
+   <td style="text-align:right;"> -6.7541 </td>
+   <td style="text-align:right;"> 1.2457 </td>
+   <td style="text-align:right;"> -6.7541 </td>
+   <td style="text-align:right;"> 1.2457 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> max </td>
+   <td style="text-align:left;"> arr_delay ~ distance + air_time + month + (1|carrier) </td>
+   <td style="text-align:left;"> air_time </td>
+   <td style="text-align:right;"> 0.6717 </td>
+   <td style="text-align:right;"> 0.6599 </td>
+   <td style="text-align:right;"> 0.6835 </td>
+   <td style="text-align:right;"> 0.6599 </td>
+   <td style="text-align:right;"> 0.6835 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> max </td>
+   <td style="text-align:left;"> arr_delay ~ distance + air_time + month + (1|carrier) </td>
+   <td style="text-align:left;"> distance </td>
+   <td style="text-align:right;"> -0.0862 </td>
+   <td style="text-align:right;"> -0.0877 </td>
+   <td style="text-align:right;"> -0.0847 </td>
+   <td style="text-align:right;"> -0.0877 </td>
+   <td style="text-align:right;"> -0.0847 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> max </td>
+   <td style="text-align:left;"> arr_delay ~ distance + air_time + month + (1|carrier) </td>
+   <td style="text-align:left;"> month </td>
+   <td style="text-align:right;"> -0.0443 </td>
+   <td style="text-align:right;"> -0.0881 </td>
+   <td style="text-align:right;"> -0.0006 </td>
+   <td style="text-align:right;"> -0.0881 </td>
+   <td style="text-align:right;"> -0.0006 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ air_time + month + (1|carrier) </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> 6.9904 </td>
+   <td style="text-align:right;"> 2.1389 </td>
+   <td style="text-align:right;"> 11.8419 </td>
+   <td style="text-align:right;"> 2.1389 </td>
+   <td style="text-align:right;"> 11.8419 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ air_time + month + (1|carrier) </td>
+   <td style="text-align:left;"> air_time </td>
+   <td style="text-align:right;"> 0.0086 </td>
+   <td style="text-align:right;"> 0.0066 </td>
+   <td style="text-align:right;"> 0.0106 </td>
+   <td style="text-align:right;"> 0.0066 </td>
+   <td style="text-align:right;"> 0.0106 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ air_time + month + (1|carrier) </td>
+   <td style="text-align:left;"> month </td>
+   <td style="text-align:right;"> -0.2262 </td>
+   <td style="text-align:right;"> -0.2706 </td>
+   <td style="text-align:right;"> -0.1817 </td>
+   <td style="text-align:right;"> -0.2706 </td>
+   <td style="text-align:right;"> -0.1817 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ distance + air_time + (1|carrier) </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -3.0548 </td>
+   <td style="text-align:right;"> -7.0448 </td>
+   <td style="text-align:right;"> 0.9351 </td>
+   <td style="text-align:right;"> -7.0448 </td>
+   <td style="text-align:right;"> 0.9351 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ distance + air_time + (1|carrier) </td>
+   <td style="text-align:left;"> air_time </td>
+   <td style="text-align:right;"> 0.6725 </td>
+   <td style="text-align:right;"> 0.6608 </td>
+   <td style="text-align:right;"> 0.6843 </td>
+   <td style="text-align:right;"> 0.6608 </td>
+   <td style="text-align:right;"> 0.6843 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ distance + air_time + (1|carrier) </td>
+   <td style="text-align:left;"> distance </td>
+   <td style="text-align:right;"> -0.0863 </td>
+   <td style="text-align:right;"> -0.0878 </td>
+   <td style="text-align:right;"> -0.0848 </td>
+   <td style="text-align:right;"> -0.0878 </td>
+   <td style="text-align:right;"> -0.0848 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ distance + month + (1|carrier) </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> 10.3305 </td>
+   <td style="text-align:right;"> 6.2897 </td>
+   <td style="text-align:right;"> 14.3714 </td>
+   <td style="text-align:right;"> 6.2897 </td>
+   <td style="text-align:right;"> 14.3714 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ distance + month + (1|carrier) </td>
+   <td style="text-align:left;"> distance </td>
+   <td style="text-align:right;"> -0.0013 </td>
+   <td style="text-align:right;"> -0.0016 </td>
+   <td style="text-align:right;"> -0.0011 </td>
+   <td style="text-align:right;"> -0.0016 </td>
+   <td style="text-align:right;"> -0.0011 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ distance + month + (1|carrier) </td>
+   <td style="text-align:left;"> month </td>
+   <td style="text-align:right;"> -0.2190 </td>
+   <td style="text-align:right;"> -0.2635 </td>
+   <td style="text-align:right;"> -0.1745 </td>
+   <td style="text-align:right;"> -0.2635 </td>
+   <td style="text-align:right;"> -0.1745 </td>
+  </tr>
+</tbody>
+</table>
 
 ### Compare confidence intervals
 
@@ -214,12 +403,12 @@ so we can compare performance.
 # Start timer.
 tic()
 
-# Fit the models with lmer() and extract the estimates and confidence intervals 
-# with broom.mixed::tidy() using future_map() for multicore processing.
+# Fit the models with lmer() using future_map() and extract the estimates and 
+# confidence intervals with broom.mixed::tidy() using map().
 results_df <- formula_df %>% 
   mutate(model = future_map(formula, lmer, data = data_df)) %>%
-  mutate(est = future_map(model, tidy, conf.int = TRUE, conf.method = "Wald", 
-                          conf.level = 0.95)) %>%
+  mutate(est = map(model, broom.mixed::tidy, conf.int = TRUE, 
+                   conf.method = "Wald", conf.level = 0.95)) %>%
   select(-model) %>% unnest(cols = everything()) %>%
   filter(is.na(group)) %>% 
   select(-group, -effect, -std.error, -statistic) %>%
@@ -230,7 +419,7 @@ toc()
 ```
 
 ```
-## 14.911 sec elapsed
+## 13.207 sec elapsed
 ```
 
 Display the results.
@@ -240,26 +429,169 @@ Display the results.
 results_df %>% knitr::kable(digits = 4)
 ```
 
-
-
-|fgroup |formula                                                    |term        | estimate| conf.low| conf.high|
-|:------|:----------------------------------------------------------|:-----------|--------:|--------:|---------:|
-|crude  |arr_delay ~ air_time + (1&#124;carrier)                    |(Intercept) |   5.5096|   0.6767|   10.3424|
-|crude  |arr_delay ~ air_time + (1&#124;carrier)                    |air_time    |   0.0085|   0.0065|    0.0105|
-|crude  |arr_delay ~ distance + (1&#124;carrier)                    |(Intercept) |   8.9182|   4.8971|   12.9394|
-|crude  |arr_delay ~ distance + (1&#124;carrier)                    |distance    |  -0.0014|  -0.0016|   -0.0011|
-|crude  |arr_delay ~ month + (1&#124;carrier)                       |(Intercept) |   8.5815|   4.1367|   13.0263|
-|crude  |arr_delay ~ month + (1&#124;carrier)                       |month       |  -0.2242|  -0.2686|   -0.1797|
-|max    |arr_delay ~ distance + air_time + month + (1&#124;carrier) |(Intercept) |  -2.7542|  -6.7541|    1.2457|
-|max    |arr_delay ~ distance + air_time + month + (1&#124;carrier) |air_time    |   0.6717|   0.6599|    0.6835|
-|max    |arr_delay ~ distance + air_time + month + (1&#124;carrier) |distance    |  -0.0862|  -0.0877|   -0.0847|
-|max    |arr_delay ~ distance + air_time + month + (1&#124;carrier) |month       |  -0.0443|  -0.0881|   -0.0006|
-|min    |arr_delay ~ air_time + month + (1&#124;carrier)            |(Intercept) |   6.9904|   2.1389|   11.8419|
-|min    |arr_delay ~ air_time + month + (1&#124;carrier)            |air_time    |   0.0086|   0.0066|    0.0106|
-|min    |arr_delay ~ air_time + month + (1&#124;carrier)            |month       |  -0.2262|  -0.2706|   -0.1817|
-|min    |arr_delay ~ distance + air_time + (1&#124;carrier)         |(Intercept) |  -3.0548|  -7.0448|    0.9351|
-|min    |arr_delay ~ distance + air_time + (1&#124;carrier)         |air_time    |   0.6725|   0.6608|    0.6843|
-|min    |arr_delay ~ distance + air_time + (1&#124;carrier)         |distance    |  -0.0863|  -0.0878|   -0.0848|
-|min    |arr_delay ~ distance + month + (1&#124;carrier)            |(Intercept) |  10.3305|   6.2897|   14.3714|
-|min    |arr_delay ~ distance + month + (1&#124;carrier)            |distance    |  -0.0013|  -0.0016|   -0.0011|
-|min    |arr_delay ~ distance + month + (1&#124;carrier)            |month       |  -0.2190|  -0.2635|   -0.1745|
+<table>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> fgroup </th>
+   <th style="text-align:left;"> formula </th>
+   <th style="text-align:left;"> term </th>
+   <th style="text-align:right;"> estimate </th>
+   <th style="text-align:right;"> conf.low </th>
+   <th style="text-align:right;"> conf.high </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> crude </td>
+   <td style="text-align:left;"> arr_delay ~ air_time + (1|carrier) </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> 5.5096 </td>
+   <td style="text-align:right;"> 0.6767 </td>
+   <td style="text-align:right;"> 10.3424 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> crude </td>
+   <td style="text-align:left;"> arr_delay ~ air_time + (1|carrier) </td>
+   <td style="text-align:left;"> air_time </td>
+   <td style="text-align:right;"> 0.0085 </td>
+   <td style="text-align:right;"> 0.0065 </td>
+   <td style="text-align:right;"> 0.0105 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> crude </td>
+   <td style="text-align:left;"> arr_delay ~ distance + (1|carrier) </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> 8.9182 </td>
+   <td style="text-align:right;"> 4.8971 </td>
+   <td style="text-align:right;"> 12.9394 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> crude </td>
+   <td style="text-align:left;"> arr_delay ~ distance + (1|carrier) </td>
+   <td style="text-align:left;"> distance </td>
+   <td style="text-align:right;"> -0.0014 </td>
+   <td style="text-align:right;"> -0.0016 </td>
+   <td style="text-align:right;"> -0.0011 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> crude </td>
+   <td style="text-align:left;"> arr_delay ~ month + (1|carrier) </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> 8.5815 </td>
+   <td style="text-align:right;"> 4.1367 </td>
+   <td style="text-align:right;"> 13.0263 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> crude </td>
+   <td style="text-align:left;"> arr_delay ~ month + (1|carrier) </td>
+   <td style="text-align:left;"> month </td>
+   <td style="text-align:right;"> -0.2242 </td>
+   <td style="text-align:right;"> -0.2686 </td>
+   <td style="text-align:right;"> -0.1797 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> max </td>
+   <td style="text-align:left;"> arr_delay ~ distance + air_time + month + (1|carrier) </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -2.7542 </td>
+   <td style="text-align:right;"> -6.7541 </td>
+   <td style="text-align:right;"> 1.2457 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> max </td>
+   <td style="text-align:left;"> arr_delay ~ distance + air_time + month + (1|carrier) </td>
+   <td style="text-align:left;"> air_time </td>
+   <td style="text-align:right;"> 0.6717 </td>
+   <td style="text-align:right;"> 0.6599 </td>
+   <td style="text-align:right;"> 0.6835 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> max </td>
+   <td style="text-align:left;"> arr_delay ~ distance + air_time + month + (1|carrier) </td>
+   <td style="text-align:left;"> distance </td>
+   <td style="text-align:right;"> -0.0862 </td>
+   <td style="text-align:right;"> -0.0877 </td>
+   <td style="text-align:right;"> -0.0847 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> max </td>
+   <td style="text-align:left;"> arr_delay ~ distance + air_time + month + (1|carrier) </td>
+   <td style="text-align:left;"> month </td>
+   <td style="text-align:right;"> -0.0443 </td>
+   <td style="text-align:right;"> -0.0881 </td>
+   <td style="text-align:right;"> -0.0006 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ air_time + month + (1|carrier) </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> 6.9904 </td>
+   <td style="text-align:right;"> 2.1389 </td>
+   <td style="text-align:right;"> 11.8419 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ air_time + month + (1|carrier) </td>
+   <td style="text-align:left;"> air_time </td>
+   <td style="text-align:right;"> 0.0086 </td>
+   <td style="text-align:right;"> 0.0066 </td>
+   <td style="text-align:right;"> 0.0106 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ air_time + month + (1|carrier) </td>
+   <td style="text-align:left;"> month </td>
+   <td style="text-align:right;"> -0.2262 </td>
+   <td style="text-align:right;"> -0.2706 </td>
+   <td style="text-align:right;"> -0.1817 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ distance + air_time + (1|carrier) </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> -3.0548 </td>
+   <td style="text-align:right;"> -7.0448 </td>
+   <td style="text-align:right;"> 0.9351 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ distance + air_time + (1|carrier) </td>
+   <td style="text-align:left;"> air_time </td>
+   <td style="text-align:right;"> 0.6725 </td>
+   <td style="text-align:right;"> 0.6608 </td>
+   <td style="text-align:right;"> 0.6843 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ distance + air_time + (1|carrier) </td>
+   <td style="text-align:left;"> distance </td>
+   <td style="text-align:right;"> -0.0863 </td>
+   <td style="text-align:right;"> -0.0878 </td>
+   <td style="text-align:right;"> -0.0848 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ distance + month + (1|carrier) </td>
+   <td style="text-align:left;"> (Intercept) </td>
+   <td style="text-align:right;"> 10.3305 </td>
+   <td style="text-align:right;"> 6.2897 </td>
+   <td style="text-align:right;"> 14.3714 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ distance + month + (1|carrier) </td>
+   <td style="text-align:left;"> distance </td>
+   <td style="text-align:right;"> -0.0013 </td>
+   <td style="text-align:right;"> -0.0016 </td>
+   <td style="text-align:right;"> -0.0011 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> min </td>
+   <td style="text-align:left;"> arr_delay ~ distance + month + (1|carrier) </td>
+   <td style="text-align:left;"> month </td>
+   <td style="text-align:right;"> -0.2190 </td>
+   <td style="text-align:right;"> -0.2635 </td>
+   <td style="text-align:right;"> -0.1745 </td>
+  </tr>
+</tbody>
+</table>
