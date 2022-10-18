@@ -142,7 +142,7 @@ toc()
 Display the results.
 
 ```{r, fig.cap="Stepwise processing with merge."}
-results_df %>% knitr::kable(digits = 4)
+results_df %>% knitr::kable(digits = 4) %>% kable_styling(full_width = TRUE)
 ```
 
 ### Compare confidence intervals
@@ -183,5 +183,5 @@ toc()
 Display the results.
 
 ```{r, fig.cap="Single pipeline processing."}
-results_df %>% knitr::kable(digits = 4)
+results_df %>% knitr::kable(digits = 4) %>% kable_styling(full_width = TRUE)
 ```

@@ -153,17 +153,17 @@ toc()
 ```
 
 ```
-## 22.606 sec elapsed
+## 22.972 sec elapsed
 ```
 
 Display the results.
 
 
 ```r
-results_df %>% knitr::kable(digits = 4)
+results_df %>% knitr::kable(digits = 4) %>% kable_styling(full_width = TRUE)
 ```
 
-<table>
+<table class="table" style="margin-left: auto; margin-right: auto;">
  <thead>
   <tr>
    <th style="text-align:left;"> fgroup </th>
@@ -419,17 +419,17 @@ toc()
 ```
 
 ```
-## 13.207 sec elapsed
+## 13.311 sec elapsed
 ```
 
 Display the results.
 
 
 ```r
-results_df %>% knitr::kable(digits = 4)
+results_df %>% knitr::kable(digits = 4) %>% kable_styling(full_width = TRUE)
 ```
 
-<table>
+<table class="table" style="margin-left: auto; margin-right: auto;">
  <thead>
   <tr>
    <th style="text-align:left;"> fgroup </th>
