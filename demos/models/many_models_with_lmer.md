@@ -30,16 +30,10 @@ We will use the *broom.mixed* package to support `lmer()` from the *lme4* packag
 
 ```r
 # Install pacman if not installed.
-if (!require(pacman)) {
-  install.packages('pacman', repos = 'http://cran.us.r-project.org')
+if (!requireNamespace("pacman", quietly = TRUE)) {
+  install.packages('pacman', repos = 'https://cloud.r-project.org')
 }
-```
 
-```
-## Loading required package: pacman
-```
-
-```r
 # Load packages, installing as needed.
 suppressPackageStartupMessages(
   pacman::p_load(
@@ -153,7 +147,7 @@ toc()
 ```
 
 ```
-## 23.011 sec elapsed
+## 22.868 sec elapsed
 ```
 
 Display the results.
@@ -420,7 +414,7 @@ toc()
 ```
 
 ```
-## 13.207 sec elapsed
+## 13.07 sec elapsed
 ```
 
 Display the results.
