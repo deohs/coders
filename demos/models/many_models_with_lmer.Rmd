@@ -142,6 +142,7 @@ toc()
 Display the results.
 
 ```{r, fig.cap="Stepwise processing with merge."}
+# Note: use kable_styling(font_size = 10) for PDF output
 results_df %>% knitr::kable(digits = 4) %>% kable_styling(full_width = TRUE)
 ```
 
@@ -183,5 +184,6 @@ toc()
 Display the results.
 
 ```{r, fig.cap="Single pipeline processing."}
+# Note: use kable_styling(font_size = 10) for PDF output
 results_df %>% knitr::kable(digits = 4) %>% kable_styling(full_width = TRUE)
 ```

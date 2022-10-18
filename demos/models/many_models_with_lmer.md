@@ -153,13 +153,14 @@ toc()
 ```
 
 ```
-## 22.972 sec elapsed
+## 23.011 sec elapsed
 ```
 
 Display the results.
 
 
 ```r
+# Note: use kable_styling(font_size = 10) for PDF output
 results_df %>% knitr::kable(digits = 4) %>% kable_styling(full_width = TRUE)
 ```
 
@@ -419,13 +420,14 @@ toc()
 ```
 
 ```
-## 13.311 sec elapsed
+## 13.207 sec elapsed
 ```
 
 Display the results.
 
 
 ```r
+# Note: use kable_styling(font_size = 10) for PDF output
 results_df %>% knitr::kable(digits = 4) %>% kable_styling(full_width = TRUE)
 ```
 
