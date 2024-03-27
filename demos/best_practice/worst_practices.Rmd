@@ -40,7 +40,7 @@ library(knitr)
 library(lubridate)
 
 ### Some of the worst practices this chunk ### 
-# Load all packages at once 
+# Loading packages with naming conflicts (order matters, provide comments)
 # Assuming all packages were previously installed 
 # Loading packages that are not needed 
 # Not loading all packages that will be used in the analysis 
@@ -75,8 +75,8 @@ if (file.exists(DEMS_path)) {
 
 
 ### Some of the worst practices this chunk ### 
-# not using file.path() to construct directories 
-# read data from absolute path instead of using directories 
+# not using file.path() or here() to construct folder/file paths 
+# read data from absolute path (/a/b/c) instead of relative paths (b/c)
 # plat-form specific paths (Mac vs. Windows)
 # large objects should be removed to reduce memory being used 
 
