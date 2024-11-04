@@ -42,11 +42,12 @@ list.dirs(my.o365$sharepoint, recursive = FALSE, full.names = FALSE)
 remote_path <- paste(c(shQuote('og_sphtech'), shQuote('SPH HPC Service')), 
                      collapse = ':')
 local_path <- shQuote(normalizePath(file.path(my.o365$sharepoint, 
-                                              'og_sphtech', 'Documents', 'SPH HPC Service')))
+                                              'og_sphtech', 'Documents', 'SPH HPC Service'),
+                                    mustWork = FALSE))
 rclone_conf <- 
   tail(system2("rclone", args = c("config", "file"), stdout = TRUE), 1)
 if(file.exists(rclone_conf)) {
-  rclone_args <- c('sync', remote_path, local_path)
+  rclone_args <- c('sync', '--update', remote_path, local_path)
   system2(command = 'rclone', args = rclone_args)
 }
 
@@ -82,6 +83,6 @@ normalizePath(list.files(data_folder, recursive = TRUE, full.names = TRUE))
 
 # Sync files to remote
 if(file.exists(rclone_conf)) {
-  rclone_args <- c('sync', local_path, remote_path)
+  rclone_args <- c('sync', '--update', local_path, remote_path)
   system2(command = 'rclone', args = rclone_args)
 }
